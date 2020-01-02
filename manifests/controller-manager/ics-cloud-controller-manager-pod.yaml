@@ -1,0 +1,60 @@
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: cloud-controller-manager
+  namespace: kube-system
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    scheduler.alpha.kubernetes.io/critical-pod: ""
+  labels:
+    component: cloud-controller-manager
+    tier: control-plane
+  name: ics-cloud-controller-manager
+  namespace: kube-system
+spec:
+  containers:
+    - name: ics-cloud-controller-manager
+      image: gcr.io/cloud-provider-ics/cpi/release/manager:latest
+      args:
+        - --v=1
+        - --cloud-config=/etc/cloud/ics.conf
+        - --cloud-provider=ics
+      volumeMounts:
+        - mountPath: /etc/cloud
+          name: cloud-config-volume
+          readOnly: true
+      resources:
+        requests:
+          cpu: 200m
+  hostNetwork: true
+  tolerations:
+    - key: node.cloudprovider.kubernetes.io/uninitialized
+      value: "true"
+      effect: NoSchedule
+  securityContext:
+    runAsUser: 1001
+  serviceAccountName: cloud-controller-manager
+  volumes:
+    - name: cloud-config-volume
+      configMap:
+        name: cloud-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    component: cloud-controller-manager
+  name: ics-cloud-controller-manager
+  namespace: kube-system
+spec:
+  type: NodePort
+  ports:
+    - port: 43001
+      protocol: TCP
+      targetPort: 43001
+  selector:
+    component: cloud-controller-manager
