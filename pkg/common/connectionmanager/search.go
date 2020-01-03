@@ -46,12 +46,14 @@ func (f FindVM) String() string {
 func (cm *ConnectionManager) WhichVCandDCByNodeID(ctx context.Context, nodeID string, searchBy FindVM) (*VMDiscoveryInfo, error) {
 	if nodeID == "" {
 		klog.V(3).Info("WhichVCandDCByNodeID called but nodeID is empty")
+//ics
 		return nil, icslib.ErrNoVMFound
 	}
 	type vmSearch struct {
 		tenantRef  string
 		vc         string
 		datacenter *icslib.Datacenter
+//ics
 	}
 
 	var mutex = &sync.Mutex{}
@@ -99,8 +101,9 @@ func (cm *ConnectionManager) WhichVCandDCByNodeID(ctx context.Context, nodeID st
 //ics
 	go func() {
 		for _, vsi := range cm.IcsInstanceMap {
+//ics
 			var datacenterObjs []*icslib.Datacenter
-
+//ics
 			if getVMFound() {
 				break
 			}
@@ -121,7 +124,9 @@ func (cm *ConnectionManager) WhichVCandDCByNodeID(ctx context.Context, nodeID st
 			}
 
 			if vsi.Cfg.Datacenters == "" {
+//ics
 				datacenterObjs, err = icslib.GetAllDatacenter(ctx, vsi.Conn)
+//ics
 				if err != nil {
 					klog.Error("WhichVCandDCByNodeID error dc:", err)
 					setGlobalErr(err)
@@ -134,7 +139,9 @@ func (cm *ConnectionManager) WhichVCandDCByNodeID(ctx context.Context, nodeID st
 					if dc == "" {
 						continue
 					}
+//ics
 					datacenterObj, err := icslib.GetDatacenter(ctx, vsi.Conn, dc)
+//ics
 					if err != nil {
 						klog.Error("WhichVCandDCByNodeID error dc:", err)
 						setGlobalErr(err)
@@ -165,7 +172,9 @@ func (cm *ConnectionManager) WhichVCandDCByNodeID(ctx context.Context, nodeID st
 		wg.Add(1)
 		go func() {
 			for res := range queueChannel {
+//ics
 				var vm *icslib.VirtualMachine
+//ics
 				var err error
 
 				switch searchBy {
@@ -180,7 +189,9 @@ func (cm *ConnectionManager) WhichVCandDCByNodeID(ctx context.Context, nodeID st
 				if err != nil {
 					klog.Errorf("Error while looking for vm=%s(%s) in vc=%s and datacenter=%s: %v",
 						myNodeID, searchBy, res.vc, res.datacenter.Name(), err)
+//ics
 					if err != icslib.ErrNoVMFound {
+//ics
 						setGlobalErr(err)
 					} else {
 						klog.V(2).Infof("Did not find node %s in vc=%s and datacenter=%s",
@@ -188,7 +199,7 @@ func (cm *ConnectionManager) WhichVCandDCByNodeID(ctx context.Context, nodeID st
 					}
 					continue
 				}
-
+//ics
 				var oVM goicssdk.VirtualMachine
 				err = vm.Properties(ctx, vm.Reference(), []string{"config", "summary", "guest"}, &oVM)
 				if err != nil {

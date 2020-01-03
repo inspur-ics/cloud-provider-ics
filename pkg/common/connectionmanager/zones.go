@@ -96,8 +96,9 @@ func (cm *ConnectionManager) getDIFromSingleVC(ctx context.Context,
 		}
 		time.Sleep(time.Duration(RetryAttemptDelaySecs) * time.Second)
 	}
-
+//ics
 	numOfDc, err := icslib.GetNumberOfDatacenters(ctx, tmpVsi.Conn)
+//ics
 	if err != nil {
 		klog.Errorf("%v", err)
 		return nil, err
@@ -111,8 +112,9 @@ func (cm *ConnectionManager) getDIFromSingleVC(ctx context.Context,
 
 	// We are sure this is single VC and DC
 	klog.Info("Single iCenter/Datacenter configuration detected")
-
+//ics
 	datacenterObjs, err := icslib.GetAllDatacenter(ctx, tmpVsi.Conn)
+//ics
 	if err != nil {
 		klog.Error("GetAllDatacenter failed. Err:", err)
 		return nil, err
@@ -139,8 +141,10 @@ func (cm *ConnectionManager) getDIFromMultiVCorDC(ctx context.Context,
 	type zoneSearch struct {
 		tenantRef  string
 		vc         string
+//ics
 		datacenter *icslib.Datacenter
 		host       *icsobject.HostSystem
+//ics
 	}
 
 	var mutex = &sync.Mutex{}
@@ -175,8 +179,9 @@ func (cm *ConnectionManager) getDIFromMultiVCorDC(ctx context.Context,
 
 	go func() {
 		for _, vsi := range cm.IcsInstanceMap {
+//ics
 			var datacenterObjs []*icslib.Datacenter
-
+//ics
 			if getZoneFound() {
 				break
 			}
@@ -197,7 +202,9 @@ func (cm *ConnectionManager) getDIFromMultiVCorDC(ctx context.Context,
 			}
 
 			if vsi.Cfg.Datacenters == "" {
+//ics
 				datacenterObjs, err = icslib.GetAllDatacenter(ctx, vsi.Conn)
+//ics
 				if err != nil {
 					klog.Error("getDIFromMultiVCorDC error dc:", err)
 					setGlobalErr(err)
@@ -210,7 +217,9 @@ func (cm *ConnectionManager) getDIFromMultiVCorDC(ctx context.Context,
 					if dc == "" {
 						continue
 					}
+//ics
 					datacenterObj, err := icslib.GetDatacenter(ctx, vsi.Conn, dc)
+//ics
 					if err != nil {
 						klog.Error("getDIFromMultiVCorDC error dc:", err)
 						setGlobalErr(err)
@@ -219,7 +228,7 @@ func (cm *ConnectionManager) getDIFromMultiVCorDC(ctx context.Context,
 					datacenterObjs = append(datacenterObjs, datacenterObj)
 				}
 			}
-
+//ics
 			for _, datacenterObj := range datacenterObjs {
 				if getZoneFound() {
 					break
@@ -244,6 +253,7 @@ func (cm *ConnectionManager) getDIFromMultiVCorDC(ctx context.Context,
 					}
 				}
 			}
+//ics
 		}
 		close(queueChannel)
 	}()
@@ -289,9 +299,12 @@ func (cm *ConnectionManager) getDIFromMultiVCorDC(ctx context.Context,
 	}
 
 	klog.V(4).Infof("getDIFromMultiVCorDC: zone: %s and region: %s not found", zoneLabel, regionLabel)
+//ics
 	return nil, icslib.ErrNoZoneRegionFound
+//ics
 }
 
+//ics
 func withTagsClient(ctx context.Context, connection *icslib.ICsConnection, f func(c *icsrest.Client) error) error {
 	c := icsrest.NewClient(connection.Client)
 	signer, err := connection.Signer(ctx, connection.Client)
@@ -315,7 +328,8 @@ func withTagsClient(ctx context.Context, connection *icslib.ICsConnection, f fun
 	}()
 	return f(c)
 }
-
+//ics
+//ics
 // LookupZoneByMoref searches for a zone using the provided managed object reference.
 func (cm *ConnectionManager) LookupZoneByMoref(ctx context.Context, tenantRef string,
 	moRef icstypes.ManagedObjectReference, zoneLabel string, regionLabel string) (map[string]string, error) {
@@ -378,7 +392,7 @@ func (cm *ConnectionManager) LookupZoneByMoref(ctx context.Context, tenantRef st
 				}
 			}
 		}
-
+//ics
 		if result[RegionLabel] == "" {
 			if regionLabel != "" {
 				return fmt.Errorf("ics region category %s does not match any tags for mo: %v", regionLabel, moRef)

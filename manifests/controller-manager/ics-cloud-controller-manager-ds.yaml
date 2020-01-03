@@ -36,7 +36,7 @@ spec:
       serviceAccountName: cloud-controller-manager
       containers:
         - name: ics-cloud-controller-manager
-          image: gcr.io/cloud-provider-ics/cpi/release/manager:latest
+          image: registry.cn-qingdao.aliyuncs.com/incloud/icsccm:latest
           args:
             - --v=1
             - --cloud-provider=ics

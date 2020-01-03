@@ -13,7 +13,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-
+/*
 // The icsctl tool is responsible for facilitating cloud controller manager provisioning
 
 package main
@@ -23,7 +23,7 @@ import (
 	"os"
 
 	"github.com/spf13/cobra"
-	"github.com/inspur-incloud/cloud-provider-ics/cmd/icsctl/provision"
+	"github.com/inspur-ics/cloud-provider-ics/cmd/icsctl/provision"
 )
 
 func main() {
@@ -54,3 +54,4 @@ var cmd = &cobra.Command{
 func RunMain(cmd *cobra.Command, args []string) {
 	cmd.Help()
 }
+*/

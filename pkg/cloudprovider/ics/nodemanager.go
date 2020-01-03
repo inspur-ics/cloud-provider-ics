@@ -61,7 +61,7 @@ func newNodeManager(cpiCfg *CPIConfig, cm *cm.ConnectionManager) *NodeManager {
 // RegisterNode is the handler for when a node is added to a K8s cluster.
 func (nm *NodeManager) RegisterNode(node *v1.Node) {
 	klog.V(4).Info("RegisterNode ENTER: ", node.Name)
-	//needed by ics ？ ics 应该不需要
+	//needed by ics ? don't needed!
 //	uuid := ConvertK8sUUIDtoNormal(node.Status.NodeInfo.SystemUUID)
 	uuid := node.Status.NodeInfo.SystemUUID
 	nm.DiscoverNode(uuid, cm.FindVMByUUID)
@@ -72,7 +72,7 @@ func (nm *NodeManager) RegisterNode(node *v1.Node) {
 // UnregisterNode is the handler for when a node is removed from a K8s cluster.
 func (nm *NodeManager) UnregisterNode(node *v1.Node) {
 	klog.V(4).Info("UnregisterNode ENTER: ", node.Name)
-	//needed by ics ？ ics 应该不需要
+	//needed by ics ? don't needed!
 //	uuid := ConvertK8sUUIDtoNormal(node.Status.NodeInfo.SystemUUID)
         uuid := node.Status.NodeInfo.SystemUUID
 	nm.removeNode(uuid, node)
@@ -129,9 +129,9 @@ func (nm *NodeManager) shakeOutNodeIDLookup(ctx context.Context, nodeID string, 
 	}
 
 	// Need to lookup the original format of the UUID because photon 2.0 formats the UUID
-	// different from Photon 3, RHEL, CentOS, Ubuntu, and et
-/*	
+	// different from Photon 3, RHEL, CentOS, Ubuntu, and etc
 	klog.Errorf("WhichVCandDCByNodeID failed using normally formatted UUID. Err: %v", err)
+/*
 	reverseUUID := ConvertK8sUUIDtoNormal(nodeID)
 	vmDI, err = nm.connectionManager.WhichVCandDCByNodeID(ctx, reverseUUID, cm.FindVM(searchBy))
 	if err == nil {
@@ -173,6 +173,7 @@ func (nm *NodeManager) DiscoverNode(nodeID string, searchBy cm.FindVM) error {
 		return err
 	}
 
+//ics
 	var oVM goicssdk.VirtualMachine
 	err = vmDI.VM.Properties(ctx, vmDI.VM.Reference(), []string{"guest", "summary"}, &oVM)
 	if err != nil {
@@ -180,7 +181,7 @@ func (nm *NodeManager) DiscoverNode(nodeID string, searchBy cm.FindVM) error {
 			vmDI.VM, vmDI.VcServer, vmDI.DataCenter.Name(), err)
 		return err
 	}
-
+//ics
 	tenantRef := vmDI.VcServer
 	if vmDI.TenantRef != "" {
 		tenantRef = vmDI.TenantRef
@@ -223,7 +224,7 @@ func (nm *NodeManager) DiscoverNode(nodeID string, searchBy cm.FindVM) error {
 
 	found := false
 	addrs := []v1.NodeAddress{}
-
+//ics
 	klog.V(2).Infof("Adding Hostname: %s", oVM.Guest.HostName)
 	v1helper.AddToNodeAddresses(&addrs,
 		v1.NodeAddress{
@@ -237,7 +238,7 @@ func (nm *NodeManager) DiscoverNode(nodeID string, searchBy cm.FindVM) error {
 			klog.V(4).Info("Skipping device because not a vNIC")
 			continue
 		}
-
+//ics
 		klog.V(6).Infof("internalVMNetworkName = %s", internalVMNetworkName)
 		klog.V(6).Infof("externalVMNetworkName = %s", externalVMNetworkName)
 		klog.V(6).Infof("v.Network = %s", v.Network)
@@ -332,13 +333,12 @@ func (nm *NodeManager) DiscoverNode(nodeID string, searchBy cm.FindVM) error {
 	if !found {
 		klog.Warningf("Unable to find a suitable IP address. ipFamily: %s", ipFamily)
 	}
-
+//ics
 	klog.V(2).Infof("Found node %s as vm=%+v in vc=%s and datacenter=%s",
 		nodeID, vmDI.VM, vmDI.VcServer, vmDI.DataCenter.Name())
 	klog.V(2).Info("Hostname: ", oVM.Guest.HostName, " UUID: ", oVM.Summary.Config.Uuid)
 
 	os := "unknown"
-//ics
 	if g, ok := GuestOSLookup[oVM.Summary.Config.GuestId]; ok {
 		os = g
 	}

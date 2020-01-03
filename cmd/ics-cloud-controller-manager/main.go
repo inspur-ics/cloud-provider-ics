@@ -32,7 +32,7 @@ import (
 	_ "k8s.io/kubernetes/pkg/util/prometheusclientgo" // for client metric registration
 	_ "k8s.io/kubernetes/pkg/version/prometheus"      // for version metric registration
 
-	"INSPUR-InCloud/cloud-provider-ics/pkg/cloudprovider/ics"
+	"github.com/inspur-ics/cloud-provider-ics/pkg/cloudprovider/ics"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"

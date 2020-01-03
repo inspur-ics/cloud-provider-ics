@@ -70,7 +70,7 @@ func NewConnectionManager(cfg *vcfg.Config, informMgr *k8s.InformerManager, clie
 // use to create a connection to a iCenter using icslib package
 func generateInstanceMap(cfg *vcfg.Config) map[string]*ICsInstance {
 	icsInstanceMap := make(map[string]*ICsInstance)
-
+//ics
 	for _, vcConfig := range cfg.VirtualCenter {
 		icsConn := icslib.ICsConnection{
 			Username:          vcConfig.User,
@@ -141,8 +141,9 @@ func (connMgr *ConnectionManager) Connect(ctx context.Context, vcInstance *ICsIn
 	if err == nil {
 		return nil
 	}
-
-	if !icslib.IsInvalidCredentialsError(err) || connMgr.credentialManagers == nil {
+//ics
+	if !icslib.IsInvalidCredentialsError(err) || connMgr.credentialManagers == nil 
+//ics
 		klog.Errorf("Cannot connect to iCenter with err: %v", err)
 		return err
 	}
@@ -166,6 +167,7 @@ func (connMgr *ConnectionManager) Connect(ctx context.Context, vcInstance *ICsIn
 
 // Logout closes existing connections to remote iCenter endpoints.
 func (connMgr *ConnectionManager) Logout() {
+//ics
 	for _, icsIns := range connMgr.IcsInstanceMap {
 		connMgr.Lock()
 		c := icsIns.Conn.Client
@@ -173,7 +175,8 @@ func (connMgr *ConnectionManager) Logout() {
 		if c != nil {
 			icsIns.Conn.Logout(context.TODO())
 		}
-	}
+	
+//ics
 }
 
 // Verify validates the configuration by attempting to connect to the

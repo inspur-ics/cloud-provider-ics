@@ -54,7 +54,8 @@ func (z *zones) GetZone(ctx context.Context) (cloudprovider.Zone, error) {
 		klog.V(2).Info("zones.GetZone() NOT FOUND with ", nodeName)
 		return zone, ErrVMNotFound
 	}
-//ics
+//ics 
+//vm's host summary
 	vmHost, err := node.vm.HostSystem(ctx)
 	if err != nil {
 		klog.Errorf("Failed to get host system for VM: %q. err: %+v", node.vm.InventoryPath, err)
@@ -96,6 +97,7 @@ func (z *zones) GetZoneByNodeName(ctx context.Context, nodeName k8stypes.NodeNam
 		return zone, ErrVMNotFound
 	}
 //ics
+//vm's host summary
 	vmHost, err := node.vm.HostSystem(ctx)
 	if err != nil {
 		klog.Errorf("Failed to get host system for VM: %q. err: %+v", node.vm.InventoryPath, err)
@@ -136,6 +138,7 @@ func (z *zones) GetZoneByProviderID(ctx context.Context, providerID string) (clo
 		return zone, ErrVMNotFound
 	}
 //ics
+//vm's host summary
 	vmHost, err := node.vm.HostSystem(ctx)
 	if err != nil {
 		klog.Errorf("Failed to get host system for VM: %q. err: %+v", node.vm.InventoryPath, err)

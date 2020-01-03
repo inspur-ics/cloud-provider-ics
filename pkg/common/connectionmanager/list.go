@@ -33,9 +33,10 @@ func (cm *ConnectionManager) ListAllVCandDCPairs(ctx context.Context) ([]*ListDi
 
 	listOfVCAndDCPairs := make([]*ListDiscoveryInfo, 0)
 
+//ics
 	for _, vsi := range cm.IcsInstanceMap {
 		var datacenterObjs []*icslib.Datacenter
-
+//ics
 		var err error
 		for i := 0; i < NumConnectionAttempts; i++ {
 			err = cm.Connect(ctx, vsi)
@@ -49,9 +50,10 @@ func (cm *ConnectionManager) ListAllVCandDCPairs(ctx context.Context) ([]*ListDi
 			klog.Error("Connect error vc:", err)
 			continue
 		}
-
+//ics
 		if vsi.Cfg.Datacenters == "" {
 			datacenterObjs, err = icslib.GetAllDatacenter(ctx, vsi.Conn)
+//ics
 			if err != nil {
 				klog.Error("GetAllDatacenter error dc:", err)
 				continue
@@ -63,7 +65,9 @@ func (cm *ConnectionManager) ListAllVCandDCPairs(ctx context.Context) ([]*ListDi
 				if dc == "" {
 					continue
 				}
+//ics
 				datacenterObj, err := icslib.GetDatacenter(ctx, vsi.Conn, dc)
+//ics
 				if err != nil {
 					klog.Error("GetDatacenter error dc:", err)
 					continue

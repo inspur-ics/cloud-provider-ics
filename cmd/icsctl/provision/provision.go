@@ -13,7 +13,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-
+/*
 package provision
 
 import (
@@ -90,7 +90,6 @@ func RunProvision(cmd *cobra.Command, args []string) {
 	}
 	defer client.Logout(ctx)
 	o.Client = client
-	/*
 	fmt.Println("Create solution user...")
 	err = cli.CreateSolutionUser(ctx, &o)
 	if err != nil {
@@ -110,5 +109,5 @@ func RunProvision(cmd *cobra.Command, args []string) {
 		fmt.Fprintf(os.Stderr, "error: %v\n", err)
 		os.Exit(1)
 	}
-	*/
 }
+*/
