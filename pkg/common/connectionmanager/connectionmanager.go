@@ -142,12 +142,11 @@ func (connMgr *ConnectionManager) Connect(ctx context.Context, vcInstance *ICsIn
 		return nil
 	}
 //ics
-	if !icslib.IsInvalidCredentialsError(err) || connMgr.credentialManagers == nil 
-//ics
+	if !icslib.IsInvalidCredentialsError(err) || connMgr.credentialManagers == nil {
 		klog.Errorf("Cannot connect to iCenter with err: %v", err)
 		return err
 	}
-
+//ics
 	klog.V(2).Infof("Invalid credentials. Fetching credentials from secrets. vcServer=%s credentialHolder=%s",
 		vcInstance.Cfg.VCenterIP, vcInstance.Cfg.SecretRef)
 
@@ -175,7 +174,7 @@ func (connMgr *ConnectionManager) Logout() {
 		if c != nil {
 			icsIns.Conn.Logout(context.TODO())
 		}
-	
+    }
 //ics
 }
 
