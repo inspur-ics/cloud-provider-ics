@@ -1,5 +1,3 @@
-module github.com/cloud-provider-ics
-
 go 1.12
 
 require (
@@ -61,3 +59,5 @@ replace (
 	k8s.io/node-api => k8s.io/kubernetes/staging/src/k8s.io/node-api v0.0.0-20190615005809-e8462b5b5dc2
 	k8s.io/sample-apiserver => k8s.io/kubernetes/staging/src/k8s.io/sample-apiserver v0.0.0-20190615005809-e8462b5b5dc2
 )
+
+module github.com/inspur-ics/cloud-provider-ics

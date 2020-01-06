@@ -9,7 +9,7 @@ import (
 	"google.golang.org/grpc"
 
 	pb "github.com/inspur-ics/cloud-provider-ics/pkg/cloudprovider/ics/proto"
-	vcfg "github.com/inspur-ics/cloud-provider-vsphere/pkg/common/config"
+	vcfg "github.com/inspur-ics/cloud-provider-ics/pkg/common/config"
 )
 
 // NewIcsCloudProviderClient creates CloudProviderIcsClient

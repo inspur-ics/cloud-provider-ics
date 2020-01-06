@@ -18,7 +18,7 @@ package ics
 
 import (
 	"context"
-	"os"
+//	"os"
 
 //	"github.com/inspur-ics/cloud-provider-ics/pkg/common/goicssdk"
 	"k8s.io/klog"
@@ -26,7 +26,7 @@ import (
 	k8stypes "k8s.io/apimachinery/pkg/types"
 	cloudprovider "k8s.io/cloud-provider"
 
-	cm "github.com/inspur-ics/cloud-provider-ics/pkg/common/connectionmanager"
+//	cm "github.com/inspur-ics/cloud-provider-ics/pkg/common/connectionmanager"
 )
 
 func newZones(nodeManager *NodeManager, zone string, region string) cloudprovider.Zones {
@@ -42,7 +42,7 @@ func (z *zones) GetZone(ctx context.Context) (cloudprovider.Zone, error) {
 	klog.V(4).Info("zones.GetZone() called")
 
 	zone := cloudprovider.Zone{}
-
+/*
 	nodeName, err := os.Hostname()
 	if err != nil {
 		klog.V(2).Info("Failed to get hostname. Err: ", err)
@@ -54,6 +54,8 @@ func (z *zones) GetZone(ctx context.Context) (cloudprovider.Zone, error) {
 		klog.V(2).Info("zones.GetZone() NOT FOUND with ", nodeName)
 		return zone, ErrVMNotFound
 	}
+ */
+
 //ics 
 //vm's host summary
 /*
@@ -92,12 +94,14 @@ func (z *zones) GetZoneByNodeName(ctx context.Context, nodeName k8stypes.NodeNam
 	klog.V(4).Info("zones.GetZoneByNodeName() called with ", string(nodeName))
 
 	zone := cloudprovider.Zone{}
-
+/*
 	node, ok := z.nodeManager.nodeNameMap[string(nodeName)]
 	if !ok {
 		klog.V(2).Info("zones.GetZoneByNodeName() NOT FOUND with ", string(nodeName))
 		return zone, ErrVMNotFound
 	}
+ */
+
 //ics
 //vm's host summary
 /*
@@ -134,6 +138,7 @@ func (z *zones) GetZoneByProviderID(ctx context.Context, providerID string) (clo
 	klog.V(4).Info("zones.GetZoneByProviderID() called with ", providerID)
 
 	zone := cloudprovider.Zone{}
+/*
 	uid := GetUUIDFromProviderID(providerID)
 
 	node, ok := z.nodeManager.nodeUUIDMap[uid]
@@ -141,6 +146,8 @@ func (z *zones) GetZoneByProviderID(ctx context.Context, providerID string) (clo
 		klog.V(2).Info("zones.GetZoneByProviderID() NOT FOUND with ", uid)
 		return zone, ErrVMNotFound
 	}
+*/
+
 //ics
 //vm's host summary
 /*

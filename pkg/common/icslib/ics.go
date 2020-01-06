@@ -19,9 +19,9 @@ package icslib
 import (
 	"context"
 	"errors"
-	"fmt"
-	"path/filepath"
-	"strings"
+//	"fmt"
+//	"path/filepath"
+//	"strings"
 	"sync"
 
 	"k8s.io/klog"
@@ -55,6 +55,7 @@ var (
 
 type ICsConnection struct {
 //	Client            *vim25.Client
+    Client            string
 	Username          string
 	Password          string
 	Hostname          string
@@ -81,13 +82,19 @@ func (connection *ICsConnection) Logout(ctx context.Context) {
 type Datacenter struct {
 //	*object.Datacenter
 //ics added
-	name          string
+	 dcname          string
 }
 
 // VirtualMachine extends the govmomi VirtualMachine object
 type VirtualMachine struct {
 //	*object.VirtualMachine
 	Datacenter *Datacenter
+}
+
+// IsActive checks if the VM is active.
+// Returns true if VM is in poweredOn state.
+func (vm *VirtualMachine) IsActive(ctx context.Context) (bool, error) {
+	return false, nil
 }
 
 // IsInvalidCredentialsError returns true if error is of type InvalidLogin
@@ -144,4 +151,18 @@ func (dc *Datacenter) GetVMByUUID(ctx context.Context, vmUUID string) (*VirtualM
 	return nil, nil
 }
 
+// GetVMByUUID gets the VM object from the given vmUUID
+func (dc *Datacenter) Name() string {
+	return dc.dcname
+}
+
+
+// UpdateCredentials updates username and password.
+// Note: Updated username and password will be used when there is no session active
+func (connection *ICsConnection) UpdateCredentials(username string, password string) {
+	connection.credentialsLock.Lock()
+	defer connection.credentialsLock.Unlock()
+	connection.Username = username
+	connection.Password = password
+}
 /********************************************************************************************/

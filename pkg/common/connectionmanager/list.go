@@ -84,7 +84,12 @@ func (cm *ConnectionManager) ListAllVCandDCPairs(ctx context.Context) ([]*ListDi
 			})
 		}
 	}
-
+/*
+	sort.Slice(listOfVCAndDCPairs, func(i, j int) bool {
+		return strings.Compare(listOfVCAndDCPairs[i].VcServer, listOfVCAndDCPairs[j].VcServer) > 0 &&
+			strings.Compare(listOfVCAndDCPairs[i].DataCenter.Name(), listOfVCAndDCPairs[j].DataCenter.Name()) > 0
+	})
+*/
 	sort.Slice(listOfVCAndDCPairs, func(i, j int) bool {
 		return strings.Compare(listOfVCAndDCPairs[i].VcServer, listOfVCAndDCPairs[j].VcServer) > 0 &&
 			strings.Compare(listOfVCAndDCPairs[i].DataCenter.Name(), listOfVCAndDCPairs[j].DataCenter.Name()) > 0

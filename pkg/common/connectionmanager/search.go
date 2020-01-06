@@ -204,7 +204,7 @@ func (cm *ConnectionManager) WhichVCandDCByNodeID(ctx context.Context, nodeID st
 				err = vm.Properties(ctx, vm.Reference(), []string{"config", "summary", "guest"}, &oVM)
 				if err != nil {
 					klog.Errorf("Error collecting properties for vm=%+v in vc=%s and datacenter=%s: %v",
-						vm, res.vc, res.datacenter.Name(), err)
+						vm, res.vc, res.datacenter.name, err)
 					continue
 				}
 
@@ -217,7 +217,7 @@ func (cm *ConnectionManager) WhichVCandDCByNodeID(ctx context.Context, nodeID st
 				UUID := strings.ToLower(strings.TrimSpace(oVM.Summary.Config.Uuid))
 
 				klog.V(2).Infof("Found node %s as vm=%+v in vc=%s and datacenter=%s",
-					nodeID, vm, res.vc, res.datacenter.Name())
+					nodeID, vm, res.vc, res.datacenter.name)
 				klog.V(2).Infof("Hostname: %s, UUID: %s", hostName, UUID)
 */
 //ics block

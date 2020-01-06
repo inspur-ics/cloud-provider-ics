@@ -18,19 +18,19 @@ package connectionmanager
 
 import (
 	"context"
-	"fmt"
-	"net/url"
-	"strings"
-	"sync"
+//	"fmt"
+//	"net/url"
+//	"strings"
+//	"sync"
 	"time"
 
 	"k8s.io/klog"
 
 //	"github.com/inspur-ics/cloud-provider-ics/pkg/common/goicssdk/icsfind"
 //	"github.com/inspur-ics/cloud-provider-ics/pkg/common/goicssdk/icsobject"
-	"github.com/inspur-ics/cloud-provider-ics/pkg/common/goicssdk/vapi/icsrest"
+//	"github.com/inspur-ics/cloud-provider-ics/pkg/common/goicssdk/vapi/icsrest"
 //	"github.com/inspur-ics/cloud-provider-ics/pkg/common/goicssdk/vapi/icstags"
-	"github.com/inspur-ics/cloud-provider-ics/pkg/common/goicssdk"
+//	"github.com/inspur-ics/cloud-provider-ics/pkg/common/goicssdk"
 //	"github.com/inspur-ics/cloud-provider-ics/pkg/common/goicssdk/icstypes"
 
 	icslib "github.com/inspur-ics/cloud-provider-ics/pkg/common/icslib"

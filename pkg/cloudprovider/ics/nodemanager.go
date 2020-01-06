@@ -19,7 +19,7 @@ package ics
 import (
 	"context"
 	"errors"
-	"fmt"
+//	"fmt"
 	"net"
 	"strings"
 
@@ -27,7 +27,7 @@ import (
 	pb "github.com/inspur-ics/cloud-provider-ics/pkg/cloudprovider/ics/proto"
 	vcfg "github.com/inspur-ics/cloud-provider-ics/pkg/common/config"
 	cm "github.com/inspur-ics/cloud-provider-ics/pkg/common/connectionmanager"
-	v1helper "k8s.io/cloud-provider/node/helpers"
+//	v1helper "k8s.io/cloud-provider/node/helpers"
 	"k8s.io/klog"
 
 //	"github.com/inspur-ics/cloud-provider-ics/pkg/common/goicssdk"
@@ -196,15 +196,16 @@ func (nm *NodeManager) DiscoverNode(nodeID string, searchBy cm.FindVM) error {
 	} else {
 		klog.Warningf("Unable to find vcInstance for %s. Defaulting to ipv4.", tenantRef)
 	}
-
-	var internalNetworkSubnet *net.IPNet
-	var externalNetworkSubnet *net.IPNet
 //ics
 /*
+	var internalNetworkSubnet *net.IPNet
+	var externalNetworkSubnet *net.IPNet
+
 	var internalVMNetworkName string
 	var externalVMNetworkName string
 */
 //ics
+/*
 	if nm.cpiCfg != nil {
 		if nm.cpiCfg.Nodes.InternalNetworkSubnetCIDR != "" {
 			_, internalNetworkSubnet, err = net.ParseCIDR(nm.cpiCfg.Nodes.InternalNetworkSubnetCIDR)
@@ -218,16 +219,18 @@ func (nm *NodeManager) DiscoverNode(nodeID string, searchBy cm.FindVM) error {
 				return err
 			}
 		}
-		internalVMNetworkName = nm.cpiCfg.Nodes.InternalVMNetworkName
-		externalVMNetworkName = nm.cpiCfg.Nodes.ExternalVMNetworkName
+//		internalVMNetworkName = nm.cpiCfg.Nodes.InternalVMNetworkName
+//		externalVMNetworkName = nm.cpiCfg.Nodes.ExternalVMNetworkName
 	}
+*/
+//ics
+/*
+	var addressMatchingEnabled bool
 
-//ics
-//	var addressMatchingEnabled bool
-//ics
 	if internalNetworkSubnet != nil && externalNetworkSubnet != nil {
 		addressMatchingEnabled = true
 	}
+ */
 //ics block
 /*
 	found := false

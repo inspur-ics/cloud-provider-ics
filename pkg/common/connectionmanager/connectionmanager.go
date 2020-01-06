@@ -27,7 +27,7 @@ import (
 	vcfg "github.com/inspur-ics/cloud-provider-ics/pkg/common/config"
 	cm "github.com/inspur-ics/cloud-provider-ics/pkg/common/credentialmanager"
 	k8s "github.com/inspur-ics/cloud-provider-ics/pkg/common/kubernetes"
-	icslib "github.com/inspur-ics/cloud-provider-ics/common/icslib"
+	icslib "github.com/inspur-ics/cloud-provider-ics/pkg/common/icslib"
 )
 
 // NewConnectionManager returns a new ConnectionManager object
@@ -171,7 +171,8 @@ func (connMgr *ConnectionManager) Logout() {
 		connMgr.Lock()
 		c := icsIns.Conn.Client
 		connMgr.Unlock()
-		if c != nil {
+//		if c != nil {
+        if len(c) != 0{
 			icsIns.Conn.Logout(context.TODO())
 		}
     }
