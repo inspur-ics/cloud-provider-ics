@@ -1,4 +1,4 @@
-module k8s.io/cloud-provider-vsphere
+module github.com/cloud-provider-ics
 
 go 1.12
 
