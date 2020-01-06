@@ -30,7 +30,7 @@ import (
 	v1helper "k8s.io/cloud-provider/node/helpers"
 	"k8s.io/klog"
 
-	"github.com/inspur-ics/cloud-provider-ics/pkg/common/goicssdk"
+//	"github.com/inspur-ics/cloud-provider-ics/pkg/common/goicssdk"
 )
 
 // Errors
@@ -173,7 +173,8 @@ func (nm *NodeManager) DiscoverNode(nodeID string, searchBy cm.FindVM) error {
 		return err
 	}
 
-//ics
+//ics block
+/*
 	var oVM goicssdk.VirtualMachine
 	err = vmDI.VM.Properties(ctx, vmDI.VM.Reference(), []string{"guest", "summary"}, &oVM)
 	if err != nil {
@@ -181,7 +182,8 @@ func (nm *NodeManager) DiscoverNode(nodeID string, searchBy cm.FindVM) error {
 			vmDI.VM, vmDI.VcServer, vmDI.DataCenter.Name(), err)
 		return err
 	}
-//ics
+*/		
+//ics block
 	tenantRef := vmDI.VcServer
 	if vmDI.TenantRef != "" {
 		tenantRef = vmDI.TenantRef
@@ -197,9 +199,12 @@ func (nm *NodeManager) DiscoverNode(nodeID string, searchBy cm.FindVM) error {
 
 	var internalNetworkSubnet *net.IPNet
 	var externalNetworkSubnet *net.IPNet
+//ics
+/*
 	var internalVMNetworkName string
 	var externalVMNetworkName string
-
+*/
+//ics
 	if nm.cpiCfg != nil {
 		if nm.cpiCfg.Nodes.InternalNetworkSubnetCIDR != "" {
 			_, internalNetworkSubnet, err = net.ParseCIDR(nm.cpiCfg.Nodes.InternalNetworkSubnetCIDR)
@@ -217,28 +222,34 @@ func (nm *NodeManager) DiscoverNode(nodeID string, searchBy cm.FindVM) error {
 		externalVMNetworkName = nm.cpiCfg.Nodes.ExternalVMNetworkName
 	}
 
-	var addressMatchingEnabled bool
+//ics
+//	var addressMatchingEnabled bool
+//ics
 	if internalNetworkSubnet != nil && externalNetworkSubnet != nil {
 		addressMatchingEnabled = true
 	}
-
+//ics block
+/*
 	found := false
 	addrs := []v1.NodeAddress{}
-//ics
+
 	klog.V(2).Infof("Adding Hostname: %s", oVM.Guest.HostName)
 	v1helper.AddToNodeAddresses(&addrs,
 		v1.NodeAddress{
 			Type:    v1.NodeHostName,
 			Address: oVM.Guest.HostName,
+                        Address: "localhost"
 		},
 	)
-
+*/
+//ics block
+/*
 	for _, v := range oVM.Guest.Net {
 		if v.DeviceConfigId == -1 {
 			klog.V(4).Info("Skipping device because not a vNIC")
 			continue
 		}
-//ics
+
 		klog.V(6).Infof("internalVMNetworkName = %s", internalVMNetworkName)
 		klog.V(6).Infof("externalVMNetworkName = %s", externalVMNetworkName)
 		klog.V(6).Infof("v.Network = %s", v.Network)
@@ -333,7 +344,12 @@ func (nm *NodeManager) DiscoverNode(nodeID string, searchBy cm.FindVM) error {
 	if !found {
 		klog.Warningf("Unable to find a suitable IP address. ipFamily: %s", ipFamily)
 	}
-//ics
+*/
+        if true {
+		klog.Warningf("Unable to find a suitable IP address. ipFamily: %s", ipFamily)
+	}	
+//ics block
+/*
 	klog.V(2).Infof("Found node %s as vm=%+v in vc=%s and datacenter=%s",
 		nodeID, vmDI.VM, vmDI.VcServer, vmDI.DataCenter.Name())
 	klog.V(2).Info("Hostname: ", oVM.Guest.HostName, " UUID: ", oVM.Summary.Config.Uuid)
@@ -350,10 +366,15 @@ func (nm *NodeManager) DiscoverNode(nodeID string, searchBy cm.FindVM) error {
 		os,
 	)
 
+        instanceType := "ics-vm.cpu-4.mem-4gb.os-centos7"
+
 	nodeInfo := &NodeInfo{tenantRef: tenantRef, dataCenter: vmDI.DataCenter, vm: vmDI.VM, vcServer: vmDI.VcServer,
 		UUID: vmDI.UUID, NodeName: vmDI.NodeName, NodeType: instanceType, NodeAddresses: addrs}
+*/
+//ics block
+	nodeInfo := &NodeInfo{}
 	nm.addNodeInfo(nodeInfo)
-//ics
+
 	return nil
 }
 

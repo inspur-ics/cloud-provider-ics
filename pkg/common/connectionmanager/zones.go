@@ -26,12 +26,12 @@ import (
 
 	"k8s.io/klog"
 
-	"github.com/inspur-ics/cloud-provider-ics/pkg/common/goicssdk/icsfind"
-	"github.com/inspur-ics/cloud-provider-ics/pkg/common/goicssdk/icsobject"
+//	"github.com/inspur-ics/cloud-provider-ics/pkg/common/goicssdk/icsfind"
+//	"github.com/inspur-ics/cloud-provider-ics/pkg/common/goicssdk/icsobject"
 	"github.com/inspur-ics/cloud-provider-ics/pkg/common/goicssdk/vapi/icsrest"
-	"github.com/inspur-ics/cloud-provider-ics/pkg/common/goicssdk/vapi/icstags"
+//	"github.com/inspur-ics/cloud-provider-ics/pkg/common/goicssdk/vapi/icstags"
 	"github.com/inspur-ics/cloud-provider-ics/pkg/common/goicssdk"
-	"github.com/inspur-ics/cloud-provider-ics/pkg/common/goicssdk/icstypes"
+//	"github.com/inspur-ics/cloud-provider-ics/pkg/common/goicssdk/icstypes"
 
 	icslib "github.com/inspur-ics/cloud-provider-ics/pkg/common/icslib"
 )
@@ -130,6 +130,7 @@ func (cm *ConnectionManager) getDIFromSingleVC(ctx context.Context,
 
 func (cm *ConnectionManager) getDIFromMultiVCorDC(ctx context.Context,
 	zoneLabel string, regionLabel string, zoneLooking string, regionLooking string) (*ZoneDiscoveryInfo, error) {
+/*	
 	klog.V(4).Infof("getDIFromMultiVCorDC called with zone: %s and region: %s", zoneLooking, regionLooking)
 
 	if len(zoneLabel) == 0 || len(regionLabel) == 0 || len(zoneLooking) == 0 || len(regionLooking) == 0 {
@@ -236,8 +237,9 @@ func (cm *ConnectionManager) getDIFromMultiVCorDC(ctx context.Context,
 
 				finder := icsfind.NewFinder(datacenterObj.Client(), false)
 				finder.SetDatacenter(datacenterObj.Datacenter)
-
-				hostList, err := finder.HostSystemList(ctx, "*/*")
+*/
+//				hostList, err := finder.HostSystemList(ctx, "*/*")
+/*
 				if err != nil {
 					klog.Errorf("HostSystemList failed: %v", err)
 					continue
@@ -299,12 +301,14 @@ func (cm *ConnectionManager) getDIFromMultiVCorDC(ctx context.Context,
 	}
 
 	klog.V(4).Infof("getDIFromMultiVCorDC: zone: %s and region: %s not found", zoneLabel, regionLabel)
+*/
 //ics
 	return nil, icslib.ErrNoZoneRegionFound
 //ics
 }
 
 //ics
+/*
 func withTagsClient(ctx context.Context, connection *icslib.ICsConnection, f func(c *icsrest.Client) error) error {
 	c := icsrest.NewClient(connection.Client)
 	signer, err := connection.Signer(ctx, connection.Client)
@@ -327,9 +331,14 @@ func withTagsClient(ctx context.Context, connection *icslib.ICsConnection, f fun
 		}
 	}()
 	return f(c)
+    return nil
 }
+*/
+
 //ics
 //ics
+
+/*
 // LookupZoneByMoref searches for a zone using the provided managed object reference.
 func (cm *ConnectionManager) LookupZoneByMoref(ctx context.Context, tenantRef string,
 	moRef icstypes.ManagedObjectReference, zoneLabel string, regionLabel string) (map[string]string, error) {
@@ -412,3 +421,4 @@ func (cm *ConnectionManager) LookupZoneByMoref(ctx context.Context, tenantRef st
 	}
 	return result, nil
 }
+*/

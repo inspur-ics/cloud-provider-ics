@@ -22,7 +22,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/inspur-ics/cloud-provider-ics/pkg/common/goicssdk"
+//	"github.com/inspur-ics/cloud-provider-ics/pkg/common/goicssdk"
 	"k8s.io/klog"
 
 	icslib "github.com/inspur-ics/cloud-provider-ics/pkg/common/icslib"
@@ -174,7 +174,6 @@ func (cm *ConnectionManager) WhichVCandDCByNodeID(ctx context.Context, nodeID st
 			for res := range queueChannel {
 //ics
 				var vm *icslib.VirtualMachine
-//ics
 				var err error
 
 				switch searchBy {
@@ -185,7 +184,7 @@ func (cm *ConnectionManager) WhichVCandDCByNodeID(ctx context.Context, nodeID st
 				default:
 					vm, err = res.datacenter.GetVMByDNSName(ctx, myNodeID)
 				}
-
+//ics
 				if err != nil {
 					klog.Errorf("Error while looking for vm=%s(%s) in vc=%s and datacenter=%s: %v",
 						myNodeID, searchBy, res.vc, res.datacenter.Name(), err)
@@ -199,7 +198,8 @@ func (cm *ConnectionManager) WhichVCandDCByNodeID(ctx context.Context, nodeID st
 					}
 					continue
 				}
-//ics
+//ics block
+/*
 				var oVM goicssdk.VirtualMachine
 				err = vm.Properties(ctx, vm.Reference(), []string{"config", "summary", "guest"}, &oVM)
 				if err != nil {
@@ -219,16 +219,20 @@ func (cm *ConnectionManager) WhichVCandDCByNodeID(ctx context.Context, nodeID st
 				klog.V(2).Infof("Found node %s as vm=%+v in vc=%s and datacenter=%s",
 					nodeID, vm, res.vc, res.datacenter.Name())
 				klog.V(2).Infof("Hostname: %s, UUID: %s", hostName, UUID)
-
+*/
+//ics block
+				hostName := "ics"
+				UUID := "fc889adc-f691-4af0-b6b2-8032fb22322a"
 				vmInfo = &VMDiscoveryInfo{TenantRef: res.tenantRef, DataCenter: res.datacenter, VM: vm, VcServer: res.vc,
 					UUID: UUID, NodeName: hostName}
+
 				setVMFound(true)
 				break
 			}
 			wg.Done()
 		}()
 	}
-//ics
+
 	wg.Wait()
 	if vmFound {
 		return vmInfo, nil

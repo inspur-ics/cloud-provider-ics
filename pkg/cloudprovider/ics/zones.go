@@ -20,7 +20,7 @@ import (
 	"context"
 	"os"
 
-	"github.com/inspur-ics/cloud-provider-ics/pkg/common/goicssdk"
+//	"github.com/inspur-ics/cloud-provider-ics/pkg/common/goicssdk"
 	"k8s.io/klog"
 
 	k8stypes "k8s.io/apimachinery/pkg/types"
@@ -56,6 +56,7 @@ func (z *zones) GetZone(ctx context.Context) (cloudprovider.Zone, error) {
 	}
 //ics 
 //vm's host summary
+/*
 	vmHost, err := node.vm.HostSystem(ctx)
 	if err != nil {
 		klog.Errorf("Failed to get host system for VM: %q. err: %+v", node.vm.InventoryPath, err)
@@ -76,10 +77,11 @@ func (z *zones) GetZone(ctx context.Context) (cloudprovider.Zone, error) {
 		klog.Errorf("Failed to get host system properties. err: %+v", err)
 		return zone, err
 	}
-//ics
+
 	zone.FailureDomain = zoneResult[cm.ZoneLabel]
 	zone.Region = zoneResult[cm.RegionLabel]
-
+*/
+//ics
 	return zone, nil
 }
 
@@ -98,6 +100,7 @@ func (z *zones) GetZoneByNodeName(ctx context.Context, nodeName k8stypes.NodeNam
 	}
 //ics
 //vm's host summary
+/*
 	vmHost, err := node.vm.HostSystem(ctx)
 	if err != nil {
 		klog.Errorf("Failed to get host system for VM: %q. err: %+v", node.vm.InventoryPath, err)
@@ -118,10 +121,11 @@ func (z *zones) GetZoneByNodeName(ctx context.Context, nodeName k8stypes.NodeNam
 		klog.Errorf("Failed to get host system properties. err: %+v", err)
 		return zone, err
 	}
-//ics
+
 	zone.FailureDomain = zoneResult[cm.ZoneLabel]
 	zone.Region = zoneResult[cm.RegionLabel]
-
+*/
+//ics
 	return zone, nil
 }
 
@@ -139,6 +143,7 @@ func (z *zones) GetZoneByProviderID(ctx context.Context, providerID string) (clo
 	}
 //ics
 //vm's host summary
+/*
 	vmHost, err := node.vm.HostSystem(ctx)
 	if err != nil {
 		klog.Errorf("Failed to get host system for VM: %q. err: %+v", node.vm.InventoryPath, err)
@@ -159,9 +164,10 @@ func (z *zones) GetZoneByProviderID(ctx context.Context, providerID string) (clo
 		klog.Errorf("Failed to get host system properties. err: %+v", err)
 		return zone, err
 	}
-//ics
+
 	zone.FailureDomain = zoneResult[cm.ZoneLabel]
 	zone.Region = zoneResult[cm.RegionLabel]
-
+*/	
+//ics
 	return zone, nil
 }

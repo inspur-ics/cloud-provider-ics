@@ -214,6 +214,7 @@ func (connMgr *ConnectionManager) APIVersion(vcInstance *ICsInstance) (string, e
 		return "", err
 	}
 //ics
-	return vcInstance.Conn.Client.ServiceContent.About.ApiVersion, nil
+//	return vcInstance.Conn.Client.ServiceContent.About.ApiVersion, nil
+        return "v1", nil	
 //ics
 }
