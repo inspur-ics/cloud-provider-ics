@@ -26,6 +26,7 @@ import (
 
 	"k8s.io/klog"
 	tp "github.com/inspur-ics/ics-go-sdk/client/types"
+//	icsvm "github.com/inspur-ics/ics-go-sdk/vm"
 )
 
 // Error Messages
@@ -97,7 +98,10 @@ func (vm *VirtualMachine) IsActive(ctx context.Context) (bool, error) {
 	if vm.Status == "STARTED" {
 		return true, nil
 	}
+	return false, nil
+}
 
+func (vm *VirtualMachine) HostSystem(ctx context.Context) (bool, error) {
 	return false, nil
 }
 

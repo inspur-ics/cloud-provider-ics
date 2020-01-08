@@ -158,7 +158,7 @@ func (z *zones) GetZoneByProviderID(ctx context.Context, providerID string) (clo
 	}
 
 	var oHost goicssdk.HostSystem
-	err = vmHost.Properties(ctx, vmHost.Reference(), []string{"summary"}, &oHost)
+	err = vmHost.cpuProperties(ctx, vmHost.Reference(), []string{"summary"}, &oHost)
 	if err != nil {
 		klog.Errorf("Failed to get host system properties. err: %+v", err)
 		return zone, err
