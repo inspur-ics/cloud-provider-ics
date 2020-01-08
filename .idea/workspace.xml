@@ -2,16 +2,12 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="0f1b762b-03da-4a34-8e16-e2bb6eca0618" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/cloud-provider-ics.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/cloud-provider-ics.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/go.mod" beforeDir="false" afterPath="$PROJECT_DIR$/go.mod" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/go.sum" beforeDir="false" afterPath="$PROJECT_DIR$/go.sum" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/manifests/controller-manager/ics.conf" beforeDir="false" afterPath="$PROJECT_DIR$/manifests/controller-manager/ics.conf" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pkg/cloudprovider/ics/nodemanager.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/cloudprovider/ics/nodemanager.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/cloudprovider/ics/server/client.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/cloudprovider/ics/server/client.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/cloudprovider/ics/zones.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/cloudprovider/ics/zones.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/common/connectionmanager/connectionmanager.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/common/connectionmanager/connectionmanager.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/common/connectionmanager/list.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/common/connectionmanager/list.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/common/connectionmanager/search.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/common/connectionmanager/search.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/common/connectionmanager/types.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/common/connectionmanager/types.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/common/connectionmanager/zones.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/common/connectionmanager/zones.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pkg/common/icslib/ics.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/common/icslib/ics.go" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -36,68 +32,44 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/pkg/cloudprovider/ics/nodemanager.go">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="177">
-              <caret line="166" column="6" selection-start-line="166" selection-start-column="6" selection-end-line="166" selection-end-column="6" />
-              <folding>
-                <element signature="e#584#1013#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/pkg/cloudprovider/ics/instances.go">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="352">
-              <caret line="187" column="61" selection-start-line="187" selection-start-column="53" selection-end-line="187" selection-end-column="61" />
-              <folding>
-                <element signature="e#584#805#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/pkg/common/icslib/ics.go">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="291">
-              <caret line="97" column="1" lean-forward="true" selection-start-line="97" selection-start-column="1" selection-end-line="97" selection-end-column="1" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/pkg/common/connectionmanager/list.go">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="335">
-              <caret line="96" lean-forward="true" selection-start-line="96" selection-end-line="96" />
+            <state relative-caret-position="419">
+              <caret line="99" lean-forward="true" selection-start-line="99" selection-end-line="99" />
               <folding>
-                <element signature="e#598#732#0" expanded="true" />
+                <element signature="e#587#683#0" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/pkg/cloudprovider/ics/zones.go">
+        <entry file="file://$PROJECT_DIR$/pkg/common/kubernetes/envvars.go">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="242">
-              <caret line="20" column="2" selection-start-line="20" selection-start-column="2" selection-end-line="20" selection-end-column="2" />
+            <state relative-caret-position="352">
+              <caret line="16" column="18" lean-forward="true" selection-start-line="16" selection-start-column="18" selection-end-line="16" selection-end-column="18" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/pkg/cloudprovider/ics/nodemanager.go">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="190">
+              <caret line="167" column="20" lean-forward="true" selection-start-line="167" selection-start-column="20" selection-end-line="167" selection-end-column="20" />
+              <folding>
+                <element signature="e#584#1010#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/pkg/common/connectionmanager/types.go">
+        <entry file="file://$PROJECT_DIR$/../../icsgosdk/src/github.com/inspur-ics/ics-go-sdk/client/types/vm.go">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="177">
-              <caret line="47" column="4" selection-start-line="47" selection-start-column="4" selection-end-line="47" selection-end-column="4" />
-              <folding>
-                <element signature="e#598#940#0" expanded="true" />
-              </folding>
+            <state relative-caret-position="67">
+              <caret line="148" column="48" selection-start-line="148" selection-start-column="4" selection-end-line="148" selection-end-column="48" />
             </state>
           </provider>
         </entry>
@@ -105,8 +77,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/pkg/cloudprovider/ics/types.go">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="185">
-              <caret line="68" column="4" selection-start-line="68" selection-start-column="4" selection-end-line="68" selection-end-column="4" />
+            <state relative-caret-position="155">
+              <caret line="100" lean-forward="true" selection-start-line="100" selection-end-line="100" />
               <folding>
                 <element signature="e#584#943#0" expanded="true" />
               </folding>
@@ -115,10 +87,19 @@
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/pkg/common/connectionmanager/connectionmanager.go">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="242">
+              <caret line="29" column="71" selection-start-line="29" selection-start-column="4" selection-end-line="29" selection-end-column="71" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/pkg/common/connectionmanager/search.go">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="352">
-              <caret line="166" column="27" lean-forward="true" selection-start-line="166" selection-start-column="27" selection-end-line="166" selection-end-column="27" />
+            <state relative-caret-position="256">
+              <caret line="220" column="73" selection-start-line="220" selection-start-column="73" selection-end-line="220" selection-end-column="73" />
               <folding>
                 <element signature="e#598#798#0" expanded="true" />
               </folding>
@@ -127,38 +108,55 @@
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/pkg/common/connectionmanager/connectionmanager.go">
+        <entry file="file://$PROJECT_DIR$/pkg/cloudprovider/ics/zones.go">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="330">
-              <caret line="162" column="37" selection-start-line="162" selection-start-column="20" selection-end-line="162" selection-end-column="37" />
+            <state relative-caret-position="198">
+              <caret line="27" selection-start-line="27" selection-end-line="27" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/pkg/cloudprovider/ics/instances.go">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="3916">
+              <caret line="187" column="51" selection-start-line="187" selection-start-column="51" selection-end-line="187" selection-end-column="51" />
               <folding>
-                <element signature="e#598#1015#0" expanded="true" />
+                <element signature="e#584#805#0" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/pkg/common/connectionmanager/zones.go">
+        <entry file="file://$PROJECT_DIR$/pkg/common/connectionmanager/types.go">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-2252">
-              <caret line="23" column="10" lean-forward="true" selection-start-line="23" selection-start-column="10" selection-end-line="23" selection-end-column="10" />
+            <state relative-caret-position="221">
+              <caret line="54" column="28" lean-forward="true" selection-start-line="54" selection-start-column="28" selection-end-line="54" selection-end-column="28" />
+              <folding>
+                <element signature="e#598#940#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
       </file>
     </leaf>
   </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Go File" />
+      </list>
+    </option>
+  </component>
   <component name="FindInProjectRecents">
     <findStrings>
       <find>Connect</find>
       <find>clientset</find>
       <find>GetAllDatacente</find>
-      <find>DoesFirstClassDiskExist</find>
       <find>fcdInfo</find>
       <find>FcdDiscoveryInfo</find>
       <find>ErrNoDiskIDFound</find>
-      <find>oVM</find>
       <find>addressMatchingEnabled</find>
       <find>addrs</find>
       <find>LookupZoneByMoref</find>
@@ -174,6 +172,13 @@
       <find>goicssdk</find>
       <find>Name</find>
       <find>Name(</find>
+      <find>DOCKER_SOCK</find>
+      <find>DoesFirstClassDiskExist</find>
+      <find>internalNetworkSubnet</find>
+      <find>oVM</find>
+      <find>v.Network</find>
+      <find>tp</find>
+      <find>ApiVersion</find>
     </findStrings>
   </component>
   <component name="GOROOT" path="C:\Go" />
@@ -182,6 +187,12 @@
   </component>
   <component name="GoLibraries">
     <option name="indexEntireGoPath" value="false" />
+    <option name="urls">
+      <list>
+        <option value="file://$PROJECT_DIR$/../../icsgosdk/src/github.com/inspur-ics/ics-go-sdk" />
+      </list>
+    </option>
+    <option name="useGoPathFromSystemEnvironment" value="false" />
   </component>
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
@@ -197,74 +208,55 @@
         <option value="$PROJECT_DIR$/pkg/common/connectionmanager/list.go" />
         <option value="$PROJECT_DIR$/pkg/common/connectionmanager/search.go" />
         <option value="$PROJECT_DIR$/pkg/common/connectionmanager/connectionmanager.go" />
-        <option value="$PROJECT_DIR$/pkg/common/icslib/ics.go" />
         <option value="$PROJECT_DIR$/pkg/cloudprovider/ics/zones.go" />
+        <option value="$PROJECT_DIR$/../../icsgosdk/ics-go-sdk/client/types/host.go" />
+        <option value="$PROJECT_DIR$/../../icsgosdk/ics-go-sdk/client/types/datacenter.go" />
+        <option value="$PROJECT_DIR$/../../icsgosdk/src/github.com/inspur-ics/ics-go-sdk/client/types/datacenter.go" />
+        <option value="$PROJECT_DIR$/../../icsgosdk/src/github.com/inspur-ics/ics-go-sdk/datacenter/datacenter.go" />
+        <option value="$PROJECT_DIR$/pkg/common/icslib/ics.go" />
         <option value="$PROJECT_DIR$/pkg/cloudprovider/ics/nodemanager.go" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="-8" />
-    <option name="y" value="-8" />
-    <option name="width" value="1382" />
-    <option name="height" value="744" />
+    <option name="x" value="325" />
+    <option name="y" value="70" />
+    <option name="width" value="1239" />
+    <option name="height" value="788" />
   </component>
   <component name="ProjectView">
     <navigator proportions="" version="1">
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
             <path>
               <item name="cloud-provider-ics" type="b2602c69:ProjectViewProjectNode" />
+              <item name="cloud-provider-ics" type="47feb1d3:ProjectViewModuleNode" />
+            </path>
+            <path>
+              <item name="cloud-provider-ics" type="b2602c69:ProjectViewProjectNode" />
+              <item name="cloud-provider-ics" type="47feb1d3:ProjectViewModuleNode" />
               <item name="cloud-provider-ics" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="cloud-provider-ics" type="b2602c69:ProjectViewProjectNode" />
-              <item name="cloud-provider-ics" type="462c0819:PsiDirectoryNode" />
-              <item name="cmd" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="cloud-provider-ics" type="b2602c69:ProjectViewProjectNode" />
-              <item name="cloud-provider-ics" type="462c0819:PsiDirectoryNode" />
-              <item name="cmd" type="462c0819:PsiDirectoryNode" />
-              <item name="ics-cloud-controller-manager" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="cloud-provider-ics" type="b2602c69:ProjectViewProjectNode" />
-              <item name="cloud-provider-ics" type="462c0819:PsiDirectoryNode" />
-              <item name="cmd" type="462c0819:PsiDirectoryNode" />
-              <item name="icsctl" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="cloud-provider-ics" type="b2602c69:ProjectViewProjectNode" />
-              <item name="cloud-provider-ics" type="462c0819:PsiDirectoryNode" />
-              <item name="cmd" type="462c0819:PsiDirectoryNode" />
-              <item name="icsctl" type="462c0819:PsiDirectoryNode" />
-              <item name="provision" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="cloud-provider-ics" type="b2602c69:ProjectViewProjectNode" />
+              <item name="cloud-provider-ics" type="47feb1d3:ProjectViewModuleNode" />
               <item name="cloud-provider-ics" type="462c0819:PsiDirectoryNode" />
               <item name="pkg" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="cloud-provider-ics" type="b2602c69:ProjectViewProjectNode" />
-              <item name="cloud-provider-ics" type="462c0819:PsiDirectoryNode" />
-              <item name="pkg" type="462c0819:PsiDirectoryNode" />
-              <item name="cli" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="cloud-provider-ics" type="b2602c69:ProjectViewProjectNode" />
+              <item name="cloud-provider-ics" type="47feb1d3:ProjectViewModuleNode" />
               <item name="cloud-provider-ics" type="462c0819:PsiDirectoryNode" />
               <item name="pkg" type="462c0819:PsiDirectoryNode" />
               <item name="cloudprovider" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="cloud-provider-ics" type="b2602c69:ProjectViewProjectNode" />
+              <item name="cloud-provider-ics" type="47feb1d3:ProjectViewModuleNode" />
               <item name="cloud-provider-ics" type="462c0819:PsiDirectoryNode" />
               <item name="pkg" type="462c0819:PsiDirectoryNode" />
               <item name="cloudprovider" type="462c0819:PsiDirectoryNode" />
@@ -272,28 +264,14 @@
             </path>
             <path>
               <item name="cloud-provider-ics" type="b2602c69:ProjectViewProjectNode" />
-              <item name="cloud-provider-ics" type="462c0819:PsiDirectoryNode" />
-              <item name="pkg" type="462c0819:PsiDirectoryNode" />
-              <item name="cloudprovider" type="462c0819:PsiDirectoryNode" />
-              <item name="ics" type="462c0819:PsiDirectoryNode" />
-              <item name="proto" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="cloud-provider-ics" type="b2602c69:ProjectViewProjectNode" />
-              <item name="cloud-provider-ics" type="462c0819:PsiDirectoryNode" />
-              <item name="pkg" type="462c0819:PsiDirectoryNode" />
-              <item name="cloudprovider" type="462c0819:PsiDirectoryNode" />
-              <item name="ics" type="462c0819:PsiDirectoryNode" />
-              <item name="server" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="cloud-provider-ics" type="b2602c69:ProjectViewProjectNode" />
+              <item name="cloud-provider-ics" type="47feb1d3:ProjectViewModuleNode" />
               <item name="cloud-provider-ics" type="462c0819:PsiDirectoryNode" />
               <item name="pkg" type="462c0819:PsiDirectoryNode" />
               <item name="common" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="cloud-provider-ics" type="b2602c69:ProjectViewProjectNode" />
+              <item name="cloud-provider-ics" type="47feb1d3:ProjectViewModuleNode" />
               <item name="cloud-provider-ics" type="462c0819:PsiDirectoryNode" />
               <item name="pkg" type="462c0819:PsiDirectoryNode" />
               <item name="common" type="462c0819:PsiDirectoryNode" />
@@ -301,26 +279,39 @@
             </path>
             <path>
               <item name="cloud-provider-ics" type="b2602c69:ProjectViewProjectNode" />
+              <item name="cloud-provider-ics" type="47feb1d3:ProjectViewModuleNode" />
               <item name="cloud-provider-ics" type="462c0819:PsiDirectoryNode" />
               <item name="pkg" type="462c0819:PsiDirectoryNode" />
               <item name="common" type="462c0819:PsiDirectoryNode" />
               <item name="icslib" type="462c0819:PsiDirectoryNode" />
             </path>
+            <path>
+              <item name="cloud-provider-ics" type="b2602c69:ProjectViewProjectNode" />
+              <item name="cloud-provider-ics" type="47feb1d3:ProjectViewModuleNode" />
+              <item name="ics-go-sdk" type="462c0819:PsiDirectoryNode" />
+            </path>
           </expand>
           <select />
         </subPane>
       </pane>
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
+    <property name="DefaultGoTemplateProperty" value="Go File" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="configurable.Global.GOPATH.is.expanded" value="true" />
+    <property name="configurable.Module.GOPATH.is.expanded" value="true" />
+    <property name="configurable.Project.GOPATH.is.expanded" value="true" />
     <property name="go.gopath.indexing.explicitly.defined" value="true" />
     <property name="go.import.settings.migrated" value="true" />
     <property name="go.sdk.automatically.set" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="go.vendoring.notification.had.been.shown" value="true" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../../icsgosdk/src/github.com/inspur-ics/ics-go-sdk" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
+    <property name="settings.editor.selected.configurable" value="com.goide.configuration.GoLibrariesConfigurableProvider" />
   </component>
   <component name="RunDashboard">
     <option name="ruleStates">
@@ -334,16 +325,42 @@
       </list>
     </option>
   </component>
+  <component name="RunManager" selected="Go Test.virtual_machine_test.go (1)">
+    <configuration name="virtual_machine_test.go (1)" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
+      <module name="cloud-provider-ics" />
+      <working_directory value="$PROJECT_DIR$/../../icsgosdk/src/github.com/inspur-ics/ics-go-sdk/vm" />
+      <framework value="gotest" />
+      <kind value="FILE" />
+      <directory value="$PROJECT_DIR$/" />
+      <filePath value="$PROJECT_DIR$/../../icsgosdk/src/github.com/inspur-ics/ics-go-sdk/vm/virtual_machine_test.go" />
+      <method v="2" />
+    </configuration>
+    <configuration name="virtual_machine_test.go" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
+      <module name="cloud-provider-ics" />
+      <working_directory value="$PROJECT_DIR$/../../icsgosdk/ics-go-sdk/vm" />
+      <framework value="gotest" />
+      <kind value="FILE" />
+      <directory value="$PROJECT_DIR$/" />
+      <filePath value="$PROJECT_DIR$/../../icsgosdk/ics-go-sdk/vm/virtual_machine_test.go" />
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Go Test.virtual_machine_test.go (1)" />
+        <item itemvalue="Go Test.virtual_machine_test.go" />
+      </list>
+    </recent_temporary>
+  </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1382" height="744" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.17170954" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.1785174" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.32935154" />
-      <window_info anchor="bottom" id="Run" order="2" />
+      <window_info anchor="bottom" id="Run" order="2" weight="0.32935154" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -351,7 +368,7 @@
       <window_info anchor="bottom" id="Docker" order="7" show_stripe_button="false" />
       <window_info anchor="bottom" id="Database Changes" order="8" />
       <window_info anchor="bottom" id="Version Control" order="9" />
-      <window_info anchor="bottom" id="Terminal" order="10" />
+      <window_info anchor="bottom" id="Terminal" order="10" weight="0.32935154" />
       <window_info anchor="bottom" id="Event Log" order="11" side_tool="true" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
@@ -368,109 +385,12 @@
         <line-breakpoint enabled="true" type="DlvLineBreakpoint">
           <url>file://$PROJECT_DIR$/pkg/common/kubernetes/kubernetes.go</url>
           <line>18</line>
-          <properties />
           <option name="timeStamp" value="1" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/pkg/cli/cli.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="374">
-          <caret line="17" lean-forward="true" selection-start-line="17" selection-end-line="17" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/pkg/cli/util.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="330">
-          <caret line="15" selection-start-line="15" selection-end-line="15" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/pkg/cli/client.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="374">
-          <caret line="17" selection-start-line="17" selection-end-line="17" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/pkg/cli/user.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="374">
-          <caret line="17" selection-start-line="17" selection-end-line="17" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Makefile">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="506">
-          <caret line="83" column="27" lean-forward="true" selection-start-line="83" selection-start-column="27" selection-end-line="83" selection-end-column="27" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/pkg/common/kubernetes/envvars.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-132" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/pkg/common/kubernetes/informers.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-132" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/pkg/common/kubernetes/kubernetes.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="198">
-          <caret line="18" selection-start-line="18" selection-end-line="18" />
-          <folding>
-            <element signature="e#591#737#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/pkg/common/kubernetes/types.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-132">
-          <folding>
-            <element signature="e#591#745#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/pkg/common/credentialmanager/types.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-132">
-          <folding>
-            <element signature="e#598#687#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/pkg/common/credentialmanager/credentialmanager.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-134">
-          <folding>
-            <element signature="e#598#776#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/pkg/common/credentialmanager/consts_and_errors.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-130">
-          <folding>
-            <element signature="e#598#618#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/pkg/common/config/types.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-198" />
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/pkg/common/config/virtualcenterconfig.go">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
@@ -507,16 +427,6 @@
           <caret line="11" column="8" lean-forward="true" selection-start-line="11" selection-start-column="8" selection-end-line="11" selection-end-column="8" />
           <folding>
             <element signature="e#587#637#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/pkg/cloudprovider/ics/cloud.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2099">
-          <caret line="112" column="1" selection-start-line="112" selection-start-column="1" selection-end-line="112" selection-end-column="1" />
-          <folding>
-            <element signature="e#584#912#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -579,90 +489,194 @@
     <entry file="file://$PROJECT_DIR$/pkg/common/connectionmanager/zones.go">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-2252">
-          <caret line="23" column="10" lean-forward="true" selection-start-line="23" selection-start-column="10" selection-end-line="23" selection-end-column="10" />
+          <caret line="23" column="10" selection-start-line="23" selection-start-column="10" selection-end-line="23" selection-end-column="10" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/pkg/common/connectionmanager/list.go">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="335">
-          <caret line="96" lean-forward="true" selection-start-line="96" selection-end-line="96" />
+          <caret line="96" selection-start-line="96" selection-end-line="96" />
           <folding>
             <element signature="e#598#732#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/cluster/images/controller-manager/Dockerfile">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/hack/release.sh">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="167">
+          <caret line="107" column="8" selection-start-line="107" selection-start-column="8" selection-end-line="107" selection-end-column="8" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/hack/images/ci/Makefile">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/hack/images/ci/conformance.sh">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-1122" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/hack/images/ci/Dockerfile">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-2244" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/README.md">
+      <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
+        <state split_layout="SPLIT">
+          <first_editor />
+          <second_editor />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Makefile">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-40">
+          <caret line="284" column="30" selection-start-line="284" selection-start-column="30" selection-end-line="284" selection-end-column="30" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../../icsgosdk/ics-go-sdk/storage/doc.go" />
+    <entry file="file://$PROJECT_DIR$/../../icsgosdk/ics-go-sdk/README.md" />
+    <entry file="file://$PROJECT_DIR$/../../icsgosdk/ics-go-sdk/LICENSE" />
+    <entry file="file://$PROJECT_DIR$/../../icsgosdk/ics-go-sdk/client/types/errors.go" />
+    <entry file="file://$PROJECT_DIR$/../../icsgosdk/ics-go-sdk/client/types/host.go" />
+    <entry file="file://$PROJECT_DIR$/../../icsgosdk/ics-go-sdk/client/methods/service_content.go" />
+    <entry file="file://$PROJECT_DIR$/../../icsgosdk/ics-go-sdk/client/types/datacenter.go" />
+    <entry file="file://$PROJECT_DIR$/../../icsgosdk/ics-go-sdk/client/types/vm.go" />
+    <entry file="file://$PROJECT_DIR$/../../icsgosdk/ics-go-sdk/common/client.go" />
+    <entry file="file://$PROJECT_DIR$/../../icsgosdk/ics-go-sdk/connection.go" />
+    <entry file="file://$PROJECT_DIR$/../../icsgosdk/ics-go-sdk/client/methods/methods.go" />
+    <entry file="file://$PROJECT_DIR$/../../icsgosdk/ics-go-sdk/client/methods/vm.go" />
+    <entry file="file://$PROJECT_DIR$/../../icsgosdk/ics-go-sdk/vm/virtual_machine.go" />
+    <entry file="file://$PROJECT_DIR$/../../icsgosdk/ics-go-sdk/vm/virtual_machine_test.go" />
+    <entry file="file://$PROJECT_DIR$/../../icsgosdk/ics-go-sdk/session/manager.go" />
+    <entry file="file://$PROJECT_DIR$/../../icsgosdk/src/github.com/inspur-ics/ics-go-sdk/client/types/datacenter.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="44">
+          <caret line="2" column="24" selection-start-line="2" selection-start-column="24" selection-end-line="2" selection-end-column="24" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../../icsgosdk/src/github.com/inspur-ics/ics-go-sdk/datacenter/datacenter.go">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../../icsgosdk/src/github.com/inspur-ics/ics-go-sdk/vm/virtual_machine_test.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="286">
+          <caret line="22" selection-start-line="22" selection-end-line="22" />
+          <folding>
+            <element signature="e#12#105#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pkg/cloudprovider/ics/cloud.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="183">
+          <caret line="133" column="31" selection-start-line="133" selection-end-line="133" selection-end-column="31" />
+          <folding>
+            <element signature="e#584#912#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/pkg/common/connectionmanager/search.go">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="352">
-          <caret line="166" column="27" lean-forward="true" selection-start-line="166" selection-start-column="27" selection-end-line="166" selection-end-column="27" />
+        <state relative-caret-position="256">
+          <caret line="220" column="73" selection-start-line="220" selection-start-column="73" selection-end-line="220" selection-end-column="73" />
           <folding>
             <element signature="e#598#798#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/pkg/common/connectionmanager/types.go">
+    <entry file="file://$PROJECT_DIR$/../../icsgosdk/src/k8s.io/apimachinery/pkg/types/nodename.go">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="177">
-          <caret line="47" column="4" selection-start-line="47" selection-start-column="4" selection-end-line="47" selection-end-column="4" />
-          <folding>
-            <element signature="e#598#940#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/pkg/common/connectionmanager/connectionmanager.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="330">
-          <caret line="162" column="37" selection-start-line="162" selection-start-column="20" selection-end-line="162" selection-end-column="37" />
-          <folding>
-            <element signature="e#598#1015#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="403">
+          <caret line="42" column="5" selection-start-line="42" selection-start-column="5" selection-end-line="42" selection-end-column="5" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/pkg/cloudprovider/ics/types.go">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="185">
-          <caret line="68" column="4" selection-start-line="68" selection-start-column="4" selection-end-line="68" selection-end-column="4" />
+        <state relative-caret-position="155">
+          <caret line="100" lean-forward="true" selection-start-line="100" selection-end-line="100" />
           <folding>
             <element signature="e#584#943#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/pkg/cloudprovider/ics/instances.go">
+    <entry file="file://$PROJECT_DIR$/pkg/common/kubernetes/envvars.go">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="352">
-          <caret line="187" column="61" selection-start-line="187" selection-start-column="53" selection-end-line="187" selection-end-column="61" />
+          <caret line="16" column="18" lean-forward="true" selection-start-line="16" selection-start-column="18" selection-end-line="16" selection-end-column="18" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../../icsgosdk/src/github.com/inspur-ics/ics-go-sdk/client/types/vm.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="67">
+          <caret line="148" column="48" selection-start-line="148" selection-start-column="4" selection-end-line="148" selection-end-column="48" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pkg/common/icslib/ics.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="419">
+          <caret line="99" lean-forward="true" selection-start-line="99" selection-end-line="99" />
+          <folding>
+            <element signature="e#587#683#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pkg/common/connectionmanager/types.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="221">
+          <caret line="54" column="28" lean-forward="true" selection-start-line="54" selection-start-column="28" selection-end-line="54" selection-end-column="28" />
+          <folding>
+            <element signature="e#598#940#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pkg/cloudprovider/ics/instances.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="3916">
+          <caret line="187" column="51" selection-start-line="187" selection-start-column="51" selection-end-line="187" selection-end-column="51" />
           <folding>
             <element signature="e#584#805#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/pkg/common/icslib/ics.go">
+    <entry file="file://$PROJECT_DIR$/pkg/cloudprovider/ics/zones.go">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="291">
-          <caret line="97" column="1" lean-forward="true" selection-start-line="97" selection-start-column="1" selection-end-line="97" selection-end-column="1" />
+        <state relative-caret-position="198">
+          <caret line="27" selection-start-line="27" selection-end-line="27" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/pkg/cloudprovider/ics/zones.go">
+    <entry file="file://$PROJECT_DIR$/pkg/common/connectionmanager/connectionmanager.go">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="242">
-          <caret line="20" column="2" selection-start-line="20" selection-start-column="2" selection-end-line="20" selection-end-column="2" />
+          <caret line="29" column="71" selection-start-line="29" selection-start-column="4" selection-end-line="29" selection-end-column="71" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/pkg/cloudprovider/ics/nodemanager.go">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="177">
-          <caret line="166" column="6" selection-start-line="166" selection-start-column="6" selection-end-line="166" selection-end-column="6" />
+        <state relative-caret-position="190">
+          <caret line="167" column="20" lean-forward="true" selection-start-line="167" selection-start-column="20" selection-end-line="167" selection-end-column="20" />
           <folding>
-            <element signature="e#584#1013#0" expanded="true" />
+            <element signature="e#584#1010#0" expanded="true" />
           </folding>
         </state>
       </provider>

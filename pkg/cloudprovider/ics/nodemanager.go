@@ -19,7 +19,9 @@ package ics
 import (
 	"context"
 	"errors"
-//	"fmt"
+	"fmt"
+
+	//	"fmt"
 	"net"
 	"strings"
 
@@ -27,10 +29,11 @@ import (
 	pb "github.com/inspur-ics/cloud-provider-ics/pkg/cloudprovider/ics/proto"
 	vcfg "github.com/inspur-ics/cloud-provider-ics/pkg/common/config"
 	cm "github.com/inspur-ics/cloud-provider-ics/pkg/common/connectionmanager"
-//	v1helper "k8s.io/cloud-provider/node/helpers"
+	v1helper "k8s.io/cloud-provider/node/helpers"
 	"k8s.io/klog"
 
-//	"github.com/inspur-ics/cloud-provider-ics/pkg/common/goicssdk"
+//	tp "github.com/inspur-ics/ics-go-sdk/client/types"
+	icslib "github.com/inspur-ics/cloud-provider-ics/pkg/common/icslib"
 )
 
 // Errors
@@ -61,8 +64,6 @@ func newNodeManager(cpiCfg *CPIConfig, cm *cm.ConnectionManager) *NodeManager {
 // RegisterNode is the handler for when a node is added to a K8s cluster.
 func (nm *NodeManager) RegisterNode(node *v1.Node) {
 	klog.V(4).Info("RegisterNode ENTER: ", node.Name)
-	//needed by ics ? don't needed!
-//	uuid := ConvertK8sUUIDtoNormal(node.Status.NodeInfo.SystemUUID)
 	uuid := node.Status.NodeInfo.SystemUUID
 	nm.DiscoverNode(uuid, cm.FindVMByUUID)
 	nm.addNode(uuid, node)
@@ -72,8 +73,6 @@ func (nm *NodeManager) RegisterNode(node *v1.Node) {
 // UnregisterNode is the handler for when a node is removed from a K8s cluster.
 func (nm *NodeManager) UnregisterNode(node *v1.Node) {
 	klog.V(4).Info("UnregisterNode ENTER: ", node.Name)
-	//needed by ics ? don't needed!
-//	uuid := ConvertK8sUUIDtoNormal(node.Status.NodeInfo.SystemUUID)
         uuid := node.Status.NodeInfo.SystemUUID
 	nm.removeNode(uuid, node)
 	klog.V(4).Info("UnregisterNode LEAVE: ", node.Name)
@@ -131,14 +130,6 @@ func (nm *NodeManager) shakeOutNodeIDLookup(ctx context.Context, nodeID string, 
 	// Need to lookup the original format of the UUID because photon 2.0 formats the UUID
 	// different from Photon 3, RHEL, CentOS, Ubuntu, and etc
 	klog.Errorf("WhichVCandDCByNodeID failed using normally formatted UUID. Err: %v", err)
-/*
-	reverseUUID := ConvertK8sUUIDtoNormal(nodeID)
-	vmDI, err = nm.connectionManager.WhichVCandDCByNodeID(ctx, reverseUUID, cm.FindVM(searchBy))
-	if err == nil {
-		klog.Info("Discovered VM using reverse UUID format")
-		return vmDI, err
-	}
-*/
 	klog.Errorf("WhichVCandDCByNodeID failed using UUID. Err: %v", err)
 	return nil, err
 }
@@ -173,17 +164,9 @@ func (nm *NodeManager) DiscoverNode(nodeID string, searchBy cm.FindVM) error {
 		return err
 	}
 
-//ics block
-/*
-	var oVM goicssdk.VirtualMachine
-	err = vmDI.VM.Properties(ctx, vmDI.VM.Reference(), []string{"guest", "summary"}, &oVM)
-	if err != nil {
-		klog.Errorf("Error collecting properties for vm=%+v in vc=%s and datacenter=%s: %v",
-			vmDI.VM, vmDI.VcServer, vmDI.DataCenter.Name(), err)
-		return err
-	}
-*/		
-//ics block
+    var dstVM icslib.VirtualMachine
+	dstVM = *vmDI.VM
+
 	tenantRef := vmDI.VcServer
 	if vmDI.TenantRef != "" {
 		tenantRef = vmDI.TenantRef
@@ -196,16 +179,12 @@ func (nm *NodeManager) DiscoverNode(nodeID string, searchBy cm.FindVM) error {
 	} else {
 		klog.Warningf("Unable to find vcInstance for %s. Defaulting to ipv4.", tenantRef)
 	}
-//ics
-/*
+
 	var internalNetworkSubnet *net.IPNet
 	var externalNetworkSubnet *net.IPNet
-
 	var internalVMNetworkName string
 	var externalVMNetworkName string
-*/
-//ics
-/*
+
 	if nm.cpiCfg != nil {
 		if nm.cpiCfg.Nodes.InternalNetworkSubnetCIDR != "" {
 			_, internalNetworkSubnet, err = net.ParseCIDR(nm.cpiCfg.Nodes.InternalNetworkSubnetCIDR)
@@ -219,56 +198,53 @@ func (nm *NodeManager) DiscoverNode(nodeID string, searchBy cm.FindVM) error {
 				return err
 			}
 		}
-//		internalVMNetworkName = nm.cpiCfg.Nodes.InternalVMNetworkName
-//		externalVMNetworkName = nm.cpiCfg.Nodes.ExternalVMNetworkName
+		internalVMNetworkName = nm.cpiCfg.Nodes.InternalVMNetworkName
+		externalVMNetworkName = nm.cpiCfg.Nodes.ExternalVMNetworkName
 	}
-*/
-//ics
-/*
-	var addressMatchingEnabled bool
 
+	var addressMatchingEnabled bool
 	if internalNetworkSubnet != nil && externalNetworkSubnet != nil {
 		addressMatchingEnabled = true
 	}
- */
-//ics block
-/*
+
+//ics
 	found := false
 	addrs := []v1.NodeAddress{}
 
-	klog.V(2).Infof("Adding Hostname: %s", oVM.Guest.HostName)
+	klog.V(2).Infof("Adding Hostname: %s", dstVM.VMHostName)
 	v1helper.AddToNodeAddresses(&addrs,
 		v1.NodeAddress{
 			Type:    v1.NodeHostName,
-			Address: oVM.Guest.HostName,
-                        Address: "localhost"
+			Address: dstVM.VMHostName,
 		},
 	)
-*/
 //ics block
-/*
-	for _, v := range oVM.Guest.Net {
+	for _, v := range dstVM.Nics {
+		/*
 		if v.DeviceConfigId == -1 {
 			klog.V(4).Info("Skipping device because not a vNIC")
 			continue
 		}
+		*/
 
 		klog.V(6).Infof("internalVMNetworkName = %s", internalVMNetworkName)
 		klog.V(6).Infof("externalVMNetworkName = %s", externalVMNetworkName)
-		klog.V(6).Infof("v.Network = %s", v.Network)
+		klog.V(6).Infof("v.NetworkName = %s", v.NetworkName)
 
-		if (internalVMNetworkName != "" && !strings.EqualFold(internalVMNetworkName, v.Network)) &&
-			(externalVMNetworkName != "" && !strings.EqualFold(externalVMNetworkName, v.Network)) {
+		if (internalVMNetworkName != "" && !strings.EqualFold(internalVMNetworkName, v.NetworkName)) &&
+			(externalVMNetworkName != "" && !strings.EqualFold(externalVMNetworkName, v.NetworkName)) {
 			klog.V(4).Infof("Skipping device because vNIC Network=%s doesn't match internal=%s or external=%s network names",
-				v.Network, internalVMNetworkName, externalVMNetworkName)
+				v.NetworkName, internalVMNetworkName, externalVMNetworkName)
 			continue
 		}
 
 		// Only return a single IP address based on the preference of IPFamily
 		// Must break out of loop in the event of ipv6,ipv4 where the NIC does
 		// contain a valid IPv6 and IPV4 address
+		var iplist []string
+		iplist = append(iplist, v.IP)
 		for _, family := range ipFamily {
-			ips := returnIPsFromSpecificFamily(family, v.IpAddress)
+			ips := returnIPsFromSpecificFamily(family, iplist)
 
 			if addressMatchingEnabled {
 				for _, ip := range ips {
@@ -297,7 +273,7 @@ func (nm *NodeManager) DiscoverNode(nodeID string, searchBy cm.FindVM) error {
 						)
 					}
 				}
-			} else if internalVMNetworkName != "" && strings.EqualFold(internalVMNetworkName, v.Network) {
+			} else if internalVMNetworkName != "" && strings.EqualFold(internalVMNetworkName, v.NetworkName) {
 				for _, ip := range ips {
 					klog.V(2).Infof("Adding Internal IP by NetworkName: %s", ip)
 					v1helper.AddToNodeAddresses(&addrs,
@@ -309,7 +285,7 @@ func (nm *NodeManager) DiscoverNode(nodeID string, searchBy cm.FindVM) error {
 					found = true
 					break
 				}
-			} else if externalVMNetworkName != "" && strings.EqualFold(externalVMNetworkName, v.Network) {
+			} else if externalVMNetworkName != "" && strings.EqualFold(externalVMNetworkName, v.NetworkName) {
 				for _, ip := range ips {
 					klog.V(2).Infof("Adding External IP by NetworkName: %s", ip)
 					v1helper.AddToNodeAddresses(&addrs,
@@ -343,39 +319,28 @@ func (nm *NodeManager) DiscoverNode(nodeID string, searchBy cm.FindVM) error {
 			}
 		}
 	}
-
+//ics block
 	if !found {
 		klog.Warningf("Unable to find a suitable IP address. ipFamily: %s", ipFamily)
 	}
-*/
-        if true {
-		klog.Warningf("Unable to find a suitable IP address. ipFamily: %s", ipFamily)
-	}	
-//ics block
-/*
+
 	klog.V(2).Infof("Found node %s as vm=%+v in vc=%s and datacenter=%s",
 		nodeID, vmDI.VM, vmDI.VcServer, vmDI.DataCenter.Name())
-	klog.V(2).Info("Hostname: ", oVM.Guest.HostName, " UUID: ", oVM.Summary.Config.Uuid)
+	klog.V(2).Info("Hostname: ", dstVM.VMHostName, " UUID: ", dstVM.HostID)
 
 	os := "unknown"
-	if g, ok := GuestOSLookup[oVM.Summary.Config.GuestId]; ok {
-		os = g
-	}
+	os = dstVM.GuestosType
 
 	// store instance type in nodeinfo map
 	instanceType := fmt.Sprintf("ics-vm.cpu-%d.mem-%dgb.os-%s",
-		oVM.Summary.Config.NumCpu,
-		(oVM.Summary.Config.MemorySizeMB / 1024),
+		dstVM.CPUNum,
+		(dstVM.Memory / 1024),
 		os,
 	)
 
-        instanceType := "ics-vm.cpu-4.mem-4gb.os-centos7"
-
 	nodeInfo := &NodeInfo{tenantRef: tenantRef, dataCenter: vmDI.DataCenter, vm: vmDI.VM, vcServer: vmDI.VcServer,
 		UUID: vmDI.UUID, NodeName: vmDI.NodeName, NodeType: instanceType, NodeAddresses: addrs}
-*/
-//ics block
-	nodeInfo := &NodeInfo{}
+
 	nm.addNodeInfo(nodeInfo)
 
 	return nil

@@ -25,6 +25,7 @@ import (
 	"sync"
 
 	"k8s.io/klog"
+	tp "github.com/inspur-ics/ics-go-sdk/client/types"
 )
 
 // Error Messages
@@ -85,15 +86,18 @@ type Datacenter struct {
 	 dcname          string
 }
 
-// VirtualMachine extends the govmomi VirtualMachine object
 type VirtualMachine struct {
-//	*object.VirtualMachine
-	Datacenter *Datacenter
+	*tp.VirtualMachine
+//	Datacenter *Datacenter
 }
 
 // IsActive checks if the VM is active.
 // Returns true if VM is in poweredOn state.
 func (vm *VirtualMachine) IsActive(ctx context.Context) (bool, error) {
+	if vm.Status == "STARTED" {
+		return true, nil
+	}
+
 	return false, nil
 }
 
