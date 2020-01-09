@@ -37,7 +37,7 @@ import (
 func NewConnectionManager(cfg *vcfg.Config, informMgr *k8s.InformerManager, client clientset.Interface) *ConnectionManager {
 	connMgr := &ConnectionManager{
 		client:             client,
-		IcsInstanceMap: generateInstanceMap(cfg),
+		IcsInstanceMap:     generateInstanceMap(cfg),
 		credentialManagers: make(map[string]*cm.CredentialManager),
 		informerManagers:   make(map[string]*k8s.InformerManager),
 	}
@@ -72,7 +72,7 @@ func generateInstanceMap(cfg *vcfg.Config) map[string]*ICsInstance {
 	icsInstanceMap := make(map[string]*ICsInstance)
 //ics
 	for _, vcConfig := range cfg.VirtualCenter {
-		icsConn := icslib.ICsConnection{
+		icsConn := icslib.ICSConnection{
 			Username:          vcConfig.User,
 			Password:          vcConfig.Password,
 			Hostname:          vcConfig.VCenterIP,

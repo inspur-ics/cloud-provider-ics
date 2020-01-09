@@ -55,7 +55,7 @@ var (
 	ErrNoDataStoreClustersFound = errors.New(NoDataStoreClustersFoundErrMsg)
 )
 
-type ICsConnection struct {
+type ICSConnection struct {
 //	Client            *vim25.Client
     Client            string
 	Username          string
@@ -71,12 +71,12 @@ type ICsConnection struct {
 // Connect makes connection to vCenter and sets VSphereConnection.Client.
 // If connection.Client is already set, it obtains the existing user session.
 // if user session is not valid, connection.Client will be set to the new client.
-func (connection *ICsConnection) Connect(ctx context.Context) error {
+func (connection *ICSConnection) Connect(ctx context.Context) error {
 	return nil
 }
 
 // Logout calls SessionManager.Logout for the given connection.
-func (connection *ICsConnection) Logout(ctx context.Context) {
+func (connection *ICSConnection) Logout(ctx context.Context) {
 	return
 }
 
@@ -112,19 +112,19 @@ func IsInvalidCredentialsError(err error) bool {
 
 // GetDatacenter returns the DataCenter Object for the given datacenterPath
 // If datacenter is located in a folder, include full path to datacenter else just provide the datacenter name
-func GetDatacenter(ctx context.Context, connection *ICsConnection, datacenterPath string) (*Datacenter, error) {
+func GetDatacenter(ctx context.Context, connection *ICSConnection, datacenterPath string) (*Datacenter, error) {
 	dc := Datacenter{}
 	return &dc, nil
 }
 
 // GetAllDatacenter returns all the DataCenter Objects
-func GetAllDatacenter(ctx context.Context, connection *ICsConnection) ([]*Datacenter, error) {
+func GetAllDatacenter(ctx context.Context, connection *ICSConnection) ([]*Datacenter, error) {
 	var dc []*Datacenter
 	return dc, nil
 }
 
 // GetNumberOfDatacenters returns the number of DataCenters in this vCenter
-func GetNumberOfDatacenters(ctx context.Context, connection *ICsConnection) (int, error) {
+func GetNumberOfDatacenters(ctx context.Context, connection *ICSConnection) (int, error) {
 	return 10, nil
 }
 
@@ -167,7 +167,7 @@ func (dc *Datacenter) Name() string {
 
 // UpdateCredentials updates username and password.
 // Note: Updated username and password will be used when there is no session active
-func (connection *ICsConnection) UpdateCredentials(username string, password string) {
+func (connection *ICSConnection) UpdateCredentials(username string, password string) {
 	connection.credentialsLock.Lock()
 	defer connection.credentialsLock.Unlock()
 	connection.Username = username

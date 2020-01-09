@@ -45,7 +45,7 @@ type ConnectionManager struct {
 
 // ICsInstance represents a ics instance where one or more kubernetes nodes are running.
 type ICsInstance struct {
-	Conn *icslib.ICsConnection
+	Conn *icslib.ICSConnection
 	Cfg  *vcfg.VirtualCenterConfig
 }
 

@@ -309,7 +309,7 @@ func (cm *ConnectionManager) getDIFromMultiVCorDC(ctx context.Context,
 
 //ics
 /*
-func withTagsClient(ctx context.Context, connection *icslib.ICsConnection, f func(c *icsrest.Client) error) error {
+func withTagsClient(ctx context.Context, connection *icslib.ICSConnection, f func(c *icsrest.Client) error) error {
 	c := icsrest.NewClient(connection.Client)
 	signer, err := connection.Signer(ctx, connection.Client)
 	if err != nil {
