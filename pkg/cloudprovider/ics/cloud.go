@@ -44,13 +44,13 @@ func init() {
 		if err != nil {
 			return nil, err
 		}
-		return newICs(cpiConfig, true)
+		return newICS(cpiConfig, true)
 	})
 }
 
 // Creates new Controller node interface and returns
-func newICs(cfg *CPIConfig, finalize ...bool) (*ICS, error) {
-	vs, err := buildICsFromConfig(cfg)
+func newICS(cfg *CPIConfig, finalize ...bool) (*ICS, error) {
+	vs, err := buildICSFromConfig(cfg)
 	if err != nil {
 		return nil, err
 	}
@@ -143,7 +143,7 @@ func (vs *ICS) HasClusterID() bool {
 }
 
 // Initializes ics from ics CloudProvider Configuration
-func buildICsFromConfig(cfg *CPIConfig) (*ICS, error) {
+func buildICSFromConfig(cfg *CPIConfig) (*ICS, error) {
 	nm := newNodeManager(cfg, nil)
 
 	vs := ICS{
