@@ -34,21 +34,19 @@ type Config struct {
 		// Soap round tripper count (retries = RoundTripper - 1)
 		RoundTripperCount uint `gcfg:"soap-roundtrip-count"`
 
-		// Thumbprint of the VCenter's certificate thumbprint
-		Thumbprint string `gcfg:"thumbprint"`
-		// Name of the secret were vCenter credentials are present.
+		// Name of the secret were iCenter credentials are present.
 		SecretName string `gcfg:"secret-name"`
-		// Secret Namespace where secret will be present that has vCenter credentials.
+		// Secret Namespace where secret will be present that has iCenter credentials.
 		SecretNamespace string `gcfg:"secret-namespace"`
 		// Secret directory in the event that:
 		// 1) we don't want to use the k8s API to listen for changes to secrets
 		// 2) we are not in a k8s env, namely DC/OS, since CSI is CO agnostic
 		// Default: /etc/cloud/credentials
 		SecretsDirectory string `gcfg:"secrets-directory"`
-		// Disable the vSphere CCM API
+		// Disable the ICS CCM API
 		// Default: true
 		APIDisable bool `gcfg:"api-disable"`
-		// Configurable vSphere CCM API port
+		// Configurable ICS CCM API port
 		// Default: 43001
 		APIBinding string `gcfg:"api-binding"`
 		// IP Family enables the ability to support IPv4 or IPv6
@@ -87,12 +85,11 @@ type VirtualCenterConfig struct {
 	ICenterPort string `gcfg:"port"`
 
 	// Datacenter in which VMs are located.
+	//like,"dc1,dc2,dc3,..."
 	Datacenters string `gcfg:"datacenters"`
 	// Soap round tripper count (retries = RoundTripper - 1)
 	RoundTripperCount uint `gcfg:"soap-roundtrip-count"`
 
-	// Thumbprint of the VCenter's certificate thumbprint
-	Thumbprint string `gcfg:"thumbprint"`
 	// SecretRef (intentionally not exposed via the config) is a key to identify which
 	// InformerManager holds the secret
 	SecretRef string
