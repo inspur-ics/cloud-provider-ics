@@ -29,35 +29,7 @@ import (
 //	icsvm "github.com/inspur-ics/ics-go-sdk/vm"
 )
 
-<<<<<<< HEAD
-=======
-// Error Messages
-const (
-	FileAlreadyExistErrMsg         = "File requested already exist"
-	NoDevicesFoundErrMsg           = "No devices found"
-	DiskNotFoundErrMsg             = "No vSphere disk ID/Name found"
-	InvalidVolumeOptionsErrMsg     = "VolumeOptions verification failed"
-	NoVMFoundErrMsg                = "No VM found"
-	NoZoneRegionFoundErrMsg        = "Unable to find the Zone/Region pair"
-	NoDatastoreFoundErrMsg         = "Datastore not found"
-	NoDatacenterFoundErrMsg        = "Datacenter not found"
-	NoDataStoreClustersFoundErrMsg = "No DatastoreClusters Found"
-)
 
-// Error constants
-var (
-	ErrFileAlreadyExist         = errors.New(FileAlreadyExistErrMsg)
-	ErrNoDevicesFound           = errors.New(NoDevicesFoundErrMsg)
-	ErrNoDiskIDFound            = errors.New(DiskNotFoundErrMsg)
-	ErrInvalidVolumeOptions     = errors.New(InvalidVolumeOptionsErrMsg)
-	ErrNoVMFound                = errors.New(NoVMFoundErrMsg)
-	ErrNoZoneRegionFound        = errors.New(NoZoneRegionFoundErrMsg)
-	ErrNoDatastoreFound         = errors.New(NoDatastoreFoundErrMsg)
-	ErrNoDatacenterFound        = errors.New(NoDatacenterFoundErrMsg)
-	ErrNoDataStoreClustersFound = errors.New(NoDataStoreClustersFoundErrMsg)
-)
-
->>>>>>> 0d5eea4cb56729edcc47376aadcf81e342eeea9d
 type ICSConnection struct {
 //	Client            *vim25.Client
     Client            string
@@ -127,11 +99,7 @@ func IsInvalidCredentialsError(err error) bool {
 
 // GetDatacenter returns the DataCenter Object for the given datacenterPath
 // If datacenter is located in a folder, include full path to datacenter else just provide the datacenter name
-<<<<<<< HEAD
 func GetDatacenter(ctx context.Context, connection *ICSConnection, datacenterName string) (*Datacenter, error) {
-=======
-func GetDatacenter(ctx context.Context, connection *ICSConnection, datacenterPath string) (*Datacenter, error) {
->>>>>>> 0d5eea4cb56729edcc47376aadcf81e342eeea9d
 	dc := Datacenter{}
 	return &dc, nil
 }
