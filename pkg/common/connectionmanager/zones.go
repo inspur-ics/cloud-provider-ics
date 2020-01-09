@@ -83,7 +83,7 @@ func (cm *ConnectionManager) getDIFromSingleVC(ctx context.Context,
 	var vc string
 
 	// Get first ics Instance
-	var tmpVsi *ICsInstance
+	var tmpVsi *ICSInstance
 	for _, tmpVsi = range cm.IcsInstanceMap {
 		break //Grab the first one because there is only one
 	}

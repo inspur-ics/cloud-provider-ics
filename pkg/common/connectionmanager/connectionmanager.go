@@ -24,7 +24,7 @@ import (
 	listerv1 "k8s.io/client-go/listers/core/v1"
 	"k8s.io/klog"
 
-	vcfg "github.com/inspur-ics/cloud-provider-ics/pkg/common/config"
+	icscfg "github.com/inspur-ics/cloud-provider-ics/pkg/common/config"
 	cm "github.com/inspur-ics/cloud-provider-ics/pkg/common/credentialmanager"
 	k8s "github.com/inspur-ics/cloud-provider-ics/pkg/common/kubernetes"
 	icslib "github.com/inspur-ics/cloud-provider-ics/pkg/common/icslib"
@@ -34,7 +34,7 @@ import (
 // This function also initializes the Default/Global lister for secrets. In other words,
 // If a single global secret is used for all VCs, the informMgr param will be used to
 // obtain those secrets
-func NewConnectionManager(cfg *vcfg.Config, informMgr *k8s.InformerManager, client clientset.Interface) *ConnectionManager {
+func NewConnectionManager(cfg *icscfg.Config, informMgr *k8s.InformerManager, client clientset.Interface) *ConnectionManager {
 	connMgr := &ConnectionManager{
 		client:             client,
 		IcsInstanceMap:     generateInstanceMap(cfg),
@@ -45,8 +45,8 @@ func NewConnectionManager(cfg *vcfg.Config, informMgr *k8s.InformerManager, clie
 	if informMgr != nil {
 		klog.V(2).Info("Initializing with K8s SecretLister")
 		credMgr := cm.NewCredentialManager(cfg.Global.SecretName, cfg.Global.SecretNamespace, "", informMgr.GetSecretLister())
-		connMgr.credentialManagers[vcfg.DefaultCredentialManager] = credMgr
-		connMgr.informerManagers[vcfg.DefaultCredentialManager] = informMgr
+		connMgr.credentialManagers[icscfg.DefaultCredentialManager] = credMgr
+		connMgr.informerManagers[icscfg.DefaultCredentialManager] = informMgr
 
 		return connMgr
 	}
@@ -54,22 +54,22 @@ func NewConnectionManager(cfg *vcfg.Config, informMgr *k8s.InformerManager, clie
 	if cfg.Global.SecretsDirectory != "" {
 		klog.V(2).Info("Initializing for generic CO with secrets")
 		credMgr, _ := connMgr.createManagersPerTenant("", "", cfg.Global.SecretsDirectory, nil)
-		connMgr.credentialManagers[vcfg.DefaultCredentialManager] = credMgr
+		connMgr.credentialManagers[icscfg.DefaultCredentialManager] = credMgr
 
 		return connMgr
 	}
 
 	klog.V(2).Info("Initializing generic CO")
 	credMgr := cm.NewCredentialManager("", "", "", nil)
-	connMgr.credentialManagers[vcfg.DefaultCredentialManager] = credMgr
+	connMgr.credentialManagers[icscfg.DefaultCredentialManager] = credMgr
 
 	return connMgr
 }
 
 // generateInstanceMap creates a map of iCenter connection objects that can be
 // use to create a connection to a iCenter using icslib package
-func generateInstanceMap(cfg *vcfg.Config) map[string]*ICsInstance {
-	icsInstanceMap := make(map[string]*ICsInstance)
+func generateInstanceMap(cfg *icscfg.Config) map[string]*ICSInstance {
+	icsInstanceMap := make(map[string]*ICSInstance)
 //ics
 	for _, vcConfig := range cfg.VirtualCenter {
 		icsConn := icslib.ICSConnection{
@@ -80,7 +80,7 @@ func generateInstanceMap(cfg *vcfg.Config) map[string]*ICsInstance {
 			Port:              vcConfig.VCenterPort,
 			Thumbprint:        vcConfig.Thumbprint,
 		}
-		icsIns := ICsInstance{
+		icsIns := ICSInstance{
 			Conn: &icsConn,
 			Cfg:  vcConfig,
 		}
@@ -96,7 +96,7 @@ func (connMgr *ConnectionManager) InitializeSecretLister() {
 	// For each vsi that has a Secret set createManagersPerTenant
 	for _, vInstance := range connMgr.IcsInstanceMap {
 		klog.V(3).Infof("Checking vcServer=%s SecretRef=%s", vInstance.Cfg.VCenterIP, vInstance.Cfg.SecretRef)
-		if strings.EqualFold(vInstance.Cfg.SecretRef, vcfg.DefaultCredentialManager) {
+		if strings.EqualFold(vInstance.Cfg.SecretRef, icscfg.DefaultCredentialManager) {
 			klog.V(3).Infof("Skipping. iCenter %s is configured using global service account/secret.", vInstance.Cfg.VCenterIP)
 			continue
 		}
@@ -133,7 +133,7 @@ func (connMgr *ConnectionManager) createManagersPerTenant(secretName string, sec
 // 		1. It will fetch credentials from credentialManager
 //      2. Update the credentials
 //		3. Connects again to iCenter with fetched credentials
-func (connMgr *ConnectionManager) Connect(ctx context.Context, vcInstance *ICsInstance) error {
+func (connMgr *ConnectionManager) Connect(ctx context.Context, vcInstance *ICSInstance) error {
 	connMgr.Lock()
 	defer connMgr.Unlock()
 
@@ -210,7 +210,7 @@ func (connMgr *ConnectionManager) VerifyWithContext(ctx context.Context) error {
 }
 
 // APIVersion returns the version of the iCenter API
-func (connMgr *ConnectionManager) APIVersion(vcInstance *ICsInstance) (string, error) {
+func (connMgr *ConnectionManager) APIVersion(vcInstance *ICSInstance) (string, error) {
 	if err := connMgr.Connect(context.Background(), vcInstance); err != nil {
 		return "", err
 	}

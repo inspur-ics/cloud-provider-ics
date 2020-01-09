@@ -20,7 +20,7 @@ import (
 	"sync"
 
 	clientset "k8s.io/client-go/kubernetes"
-	vcfg "github.com/inspur-ics/cloud-provider-ics/pkg/common/config"
+	icscfg "github.com/inspur-ics/cloud-provider-ics/pkg/common/config"
 	cm "github.com/inspur-ics/cloud-provider-ics/pkg/common/credentialmanager"
 	k8s "github.com/inspur-ics/cloud-provider-ics/pkg/common/kubernetes"
 	icslib "github.com/inspur-ics/cloud-provider-ics/pkg/common/icslib"
@@ -33,8 +33,8 @@ type ConnectionManager struct {
 	// The k8s client init from the cloud provider service account
 	client clientset.Interface
 
-	// Maps the VC server to ICsInstance
-	IcsInstanceMap map[string]*ICsInstance
+	// Maps the VC server to ICSInstance
+	IcsInstanceMap map[string]*ICSInstance
 	// CredentialManager per VC
 	// The global CredentialManager will have an entry in this map with the key of "Global"
 	credentialManagers map[string]*cm.CredentialManager
@@ -43,10 +43,10 @@ type ConnectionManager struct {
 	informerManagers map[string]*k8s.InformerManager
 }
 
-// ICsInstance represents a ics instance where one or more kubernetes nodes are running.
-type ICsInstance struct {
+// ICSInstance represents a ics instance where one or more kubernetes nodes are running.
+type ICSInstance struct {
 	Conn *icslib.ICSConnection
-	Cfg  *vcfg.VirtualCenterConfig
+	Cfg  *icscfg.VirtualCenterConfig
 }
 
 // VMDiscoveryInfo contains VM info about a discovered VM

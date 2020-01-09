@@ -22,7 +22,6 @@ import (
 	"sync"
 	"time"
 
-//	"github.com/inspur-ics/cloud-provider-ics/pkg/common/goicssdk"
 	"k8s.io/klog"
 
 	icslib "github.com/inspur-ics/cloud-provider-ics/pkg/common/icslib"

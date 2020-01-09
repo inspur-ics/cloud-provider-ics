@@ -338,7 +338,7 @@ func (cfg *Config) validateConfig() error {
 		return err
 	}
 
-	// Create a single instance of ICsInstance for the Global VCenterIP if the
+	// Create a single instance of ICSInstance for the Global VCenterIP if the
 	// VirtualCenter does not already exist in the map
 	if cfg.Global.VCenterIP != "" && cfg.VirtualCenter[cfg.Global.VCenterIP] == nil {
 		vcConfig := &VirtualCenterConfig{
