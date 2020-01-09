@@ -79,7 +79,7 @@ func (cm *ConnectionManager) ListAllVCandDCPairs(ctx context.Context) ([]*ListDi
 		for _, datacenterObj := range datacenterObjs {
 			listOfVCAndDCPairs = append(listOfVCAndDCPairs, &ListDiscoveryInfo{
 				TenantRef:  vsi.Cfg.TenantRef,
-				VcServer:   vsi.Cfg.VCenterIP,
+				VcServer:   vsi.Cfg.ICenterIP,
 				DataCenter: datacenterObj,
 			})
 		}

@@ -155,10 +155,10 @@ func (cm *ConnectionManager) WhichVCandDCByNodeID(ctx context.Context, nodeID st
 					break
 				}
 
-				klog.V(4).Infof("Finding node %s in vc=%s and datacenter=%s", myNodeID, vsi.Cfg.VCenterIP, datacenterObj.Name())
+				klog.V(4).Infof("Finding node %s in vc=%s and datacenter=%s", myNodeID, vsi.Cfg.ICenterIP, datacenterObj.Name())
 				queueChannel <- &vmSearch{
 					tenantRef:  vsi.Cfg.TenantRef,
-					vc:         vsi.Cfg.VCenterIP,
+					vc:         vsi.Cfg.ICenterIP,
 					datacenter: datacenterObj,
 				}
 			}
@@ -341,10 +341,10 @@ func (cm *ConnectionManager) WhichVCandDCByFCDId(ctx context.Context, fcdID stri
 					break
 				}
 
-				klog.V(4).Infof("Finding FCD %s in vc=%s and datacenter=%s", fcdID, vsi.Cfg.VCenterIP, datacenterObj.Name())
+				klog.V(4).Infof("Finding FCD %s in vc=%s and datacenter=%s", fcdID, vsi.Cfg.ICenterIP, datacenterObj.Name())
 				queueChannel <- &fcdSearch{
 					tenantRef:  vsi.Cfg.TenantRef,
-					vc:         vsi.Cfg.VCenterIP,
+					vc:         vsi.Cfg.ICenterIP,
 					datacenter: datacenterObj,
 				}
 			}

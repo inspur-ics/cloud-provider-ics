@@ -71,20 +71,20 @@ func NewConnectionManager(cfg *icscfg.Config, informMgr *k8s.InformerManager, cl
 func generateInstanceMap(cfg *icscfg.Config) map[string]*ICSInstance {
 	icsInstanceMap := make(map[string]*ICSInstance)
 //ics
-	for _, vcConfig := range cfg.VirtualCenter {
+	for _, icsConfig := range cfg.VirtualCenter {
 		icsConn := icslib.ICSConnection{
-			Username:          vcConfig.User,
-			Password:          vcConfig.Password,
-			Hostname:          vcConfig.VCenterIP,
-			RoundTripperCount: vcConfig.RoundTripperCount,
-			Port:              vcConfig.VCenterPort,
-			Thumbprint:        vcConfig.Thumbprint,
+			Username:          icsConfig.User,
+			Password:          icsConfig.Password,
+			Hostname:          icsConfig.ICenterIP,
+			RoundTripperCount: icsConfig.RoundTripperCount,
+			Port:              icsConfig.ICenterPort,
+			Thumbprint:        icsConfig.Thumbprint,
 		}
 		icsIns := ICSInstance{
 			Conn: &icsConn,
-			Cfg:  vcConfig,
+			Cfg:  icsConfig,
 		}
-		icsInstanceMap[vcConfig.TenantRef] = &icsIns
+		icsInstanceMap[icsConfig.TenantRef] = &icsIns
 	}
 
 	return icsInstanceMap
@@ -95,13 +95,13 @@ func generateInstanceMap(cfg *icscfg.Config) map[string]*ICSInstance {
 func (connMgr *ConnectionManager) InitializeSecretLister() {
 	// For each vsi that has a Secret set createManagersPerTenant
 	for _, vInstance := range connMgr.IcsInstanceMap {
-		klog.V(3).Infof("Checking vcServer=%s SecretRef=%s", vInstance.Cfg.VCenterIP, vInstance.Cfg.SecretRef)
+		klog.V(3).Infof("Checking vcServer=%s SecretRef=%s", vInstance.Cfg.ICenterIP, vInstance.Cfg.SecretRef)
 		if strings.EqualFold(vInstance.Cfg.SecretRef, icscfg.DefaultCredentialManager) {
-			klog.V(3).Infof("Skipping. iCenter %s is configured using global service account/secret.", vInstance.Cfg.VCenterIP)
+			klog.V(3).Infof("Skipping. iCenter %s is configured using global service account/secret.", vInstance.Cfg.ICenterIP)
 			continue
 		}
 
-		klog.V(3).Infof("Adding credMgr/informMgr for vcServer=%s", vInstance.Cfg.VCenterIP)
+		klog.V(3).Infof("Adding credMgr/informMgr for vcServer=%s", vInstance.Cfg.ICenterIP)
 		credsMgr, informMgr := connMgr.createManagersPerTenant(vInstance.Cfg.SecretName,
 			vInstance.Cfg.SecretNamespace, "", connMgr.client)
 		connMgr.credentialManagers[vInstance.Cfg.SecretRef] = credsMgr
@@ -148,14 +148,14 @@ func (connMgr *ConnectionManager) Connect(ctx context.Context, vcInstance *ICSIn
 	}
 //ics
 	klog.V(2).Infof("Invalid credentials. Fetching credentials from secrets. vcServer=%s credentialHolder=%s",
-		vcInstance.Cfg.VCenterIP, vcInstance.Cfg.SecretRef)
+		vcInstance.Cfg.ICenterIP, vcInstance.Cfg.SecretRef)
 
 	credMgr := connMgr.credentialManagers[vcInstance.Cfg.SecretRef]
 	if credMgr == nil {
-		klog.Errorf("Unable to find credential manager for vcServer=%s credentialHolder=%s", vcInstance.Cfg.VCenterIP, vcInstance.Cfg.SecretRef)
+		klog.Errorf("Unable to find credential manager for vcServer=%s credentialHolder=%s", vcInstance.Cfg.ICenterIP, vcInstance.Cfg.SecretRef)
 		return ErrUnableToFindCredentialManager
 	}
-	credentials, err := credMgr.GetCredential(vcInstance.Cfg.VCenterIP)
+	credentials, err := credMgr.GetCredential(vcInstance.Cfg.ICenterIP)
 	if err != nil {
 		klog.Error("Failed to get credentials from Secret Credential Manager with err:", err)
 		return err
@@ -185,9 +185,9 @@ func (connMgr *ConnectionManager) Verify() error {
 	for _, vcInstance := range connMgr.IcsInstanceMap {
 		err := connMgr.Connect(context.Background(), vcInstance)
 		if err == nil {
-			klog.V(3).Infof("iCenter connect %s succeeded.", vcInstance.Cfg.VCenterIP)
+			klog.V(3).Infof("iCenter connect %s succeeded.", vcInstance.Cfg.ICenterIP)
 		} else {
-			klog.Errorf("iCenter %s failed. Err: %q", vcInstance.Cfg.VCenterIP, err)
+			klog.Errorf("iCenter %s failed. Err: %q", vcInstance.Cfg.ICenterIP, err)
 			return err
 		}
 	}
@@ -200,9 +200,9 @@ func (connMgr *ConnectionManager) VerifyWithContext(ctx context.Context) error {
 	for _, vcInstance := range connMgr.IcsInstanceMap {
 		err := connMgr.Connect(ctx, vcInstance)
 		if err == nil {
-			klog.V(3).Infof("iCenter connect %s succeeded.", vcInstance.Cfg.VCenterIP)
+			klog.V(3).Infof("iCenter connect %s succeeded.", vcInstance.Cfg.ICenterIP)
 		} else {
-			klog.Errorf("iCenter %s failed. Err: %q", vcInstance.Cfg.VCenterIP, err)
+			klog.Errorf("iCenter %s failed. Err: %q", vcInstance.Cfg.ICenterIP, err)
 			return err
 		}
 	}

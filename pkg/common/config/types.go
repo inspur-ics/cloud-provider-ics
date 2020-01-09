@@ -25,9 +25,9 @@ type Config struct {
 		Password string `gcfg:"password"`
 		// Deprecated. Use VirtualCenter to specify multiple iCenter Servers.
 		// iCenter IP.
-		VCenterIP string `gcfg:"server"`
+		ICenterIP string `gcfg:"server"`
 		// iCenter port.
-		VCenterPort string `gcfg:"port"`
+		ICenterPort string `gcfg:"port"`
 
 		// Datacenter in which VMs are located.
 		Datacenters string `gcfg:"datacenters"`
@@ -82,9 +82,9 @@ type VirtualCenterConfig struct {
 	// iCenterIP - If this field in the config is set, it is assumed then that value in [VirtualCenter "<value>"]
 	// is now the TenantRef above and this field is the actual iCenterIP. Otherwise for backward
 	// compatibility, the value by default is the IP or FQDN of the iCenter Server.
-	VCenterIP string `gcfg:"server"`
+	ICenterIP string `gcfg:"server"`
 	// iCenter port.
-	VCenterPort string `gcfg:"port"`
+	ICenterPort string `gcfg:"port"`
 
 	// Datacenter in which VMs are located.
 	Datacenters string `gcfg:"datacenters"`

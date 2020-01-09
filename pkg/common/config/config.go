@@ -68,10 +68,10 @@ func (cfg *Config) FromEnv() error {
 
 	//Globals
 	if v := os.Getenv("ICS_VCENTER"); v != "" {
-		cfg.Global.VCenterIP = v
+		cfg.Global.ICenterIP = v
 	}
 	if v := os.Getenv("ICS_VCENTER_PORT"); v != "" {
-		cfg.Global.VCenterPort = v
+		cfg.Global.ICenterPort = v
 	}
 	if v := os.Getenv("ICS_USER"); v != "" {
 		cfg.Global.User = v
@@ -180,7 +180,7 @@ func (cfg *Config) FromEnv() error {
 			}
 			_, port, errPort := getEnvKeyValue("VCENTER_"+id+"_PORT", false)
 			if errPort != nil {
-				port = cfg.Global.VCenterPort
+				port = cfg.Global.ICenterPort
 			}
 /*			
 			insecureFlag := false
@@ -244,8 +244,8 @@ func (cfg *Config) FromEnv() error {
 				User:              username,
 				Password:          password,
 				TenantRef:         tenantRef,
-				VCenterIP:         vcenterIP,
-				VCenterPort:       port,
+				ICenterIP:         vcenterIP,
+				ICenterPort:       port,
 //				InsecureFlag:      insecureFlag,
 				Datacenters:       datacenters,
 				RoundTripperCount: roundtrip,
@@ -261,13 +261,13 @@ func (cfg *Config) FromEnv() error {
 
         // only global icenter exits, use it to initialize virtualcenter.
 	// it must have at least one virtualcenter 
-	if cfg.Global.VCenterIP != "" && cfg.VirtualCenter[cfg.Global.VCenterIP] == nil {
-		cfg.VirtualCenter[cfg.Global.VCenterIP] = &VirtualCenterConfig{
+	if cfg.Global.ICenterIP != "" && cfg.VirtualCenter[cfg.Global.ICenterIP] == nil {
+		cfg.VirtualCenter[cfg.Global.ICenterIP] = &VirtualCenterConfig{
 			User:              cfg.Global.User,
 			Password:          cfg.Global.Password,
-			TenantRef:         cfg.Global.VCenterIP,
-			VCenterIP:         cfg.Global.VCenterIP,
-			VCenterPort:       cfg.Global.VCenterPort,
+			TenantRef:         cfg.Global.ICenterIP,
+			ICenterIP:         cfg.Global.ICenterIP,
+			ICenterPort:       cfg.Global.ICenterPort,
 //			InsecureFlag:      cfg.Global.InsecureFlag,
 			Datacenters:       cfg.Global.Datacenters,
 			RoundTripperCount: cfg.Global.RoundTripperCount,
@@ -322,8 +322,8 @@ func (cfg *Config) validateConfig() error {
 	if cfg.Global.RoundTripperCount == 0 {
 		cfg.Global.RoundTripperCount = DefaultRoundTripperCount
 	}
-	if cfg.Global.VCenterPort == "" {
-		cfg.Global.VCenterPort = DefaultVCenterPort
+	if cfg.Global.ICenterPort == "" {
+		cfg.Global.ICenterPort = DefaultICenterPort
 	}
 	if cfg.Global.APIBinding == "" {
 		cfg.Global.APIBinding = DefaultAPIBinding
@@ -338,15 +338,15 @@ func (cfg *Config) validateConfig() error {
 		return err
 	}
 
-	// Create a single instance of ICSInstance for the Global VCenterIP if the
+	// Create a single instance of ICSInstance for the Global ICenterIP if the
 	// VirtualCenter does not already exist in the map
-	if cfg.Global.VCenterIP != "" && cfg.VirtualCenter[cfg.Global.VCenterIP] == nil {
+	if cfg.Global.ICenterIP != "" && cfg.VirtualCenter[cfg.Global.ICenterIP] == nil {
 		vcConfig := &VirtualCenterConfig{
 			User:              cfg.Global.User,
 			Password:          cfg.Global.Password,
-			TenantRef:         cfg.Global.VCenterIP,
-			VCenterIP:         cfg.Global.VCenterIP,
-			VCenterPort:       cfg.Global.VCenterPort,
+			TenantRef:         cfg.Global.ICenterIP,
+			ICenterIP:         cfg.Global.ICenterIP,
+			ICenterPort:       cfg.Global.ICenterPort,
 //			InsecureFlag:      cfg.Global.InsecureFlag,
 			Datacenters:       cfg.Global.Datacenters,
 			RoundTripperCount: cfg.Global.RoundTripperCount,
@@ -358,7 +358,7 @@ func (cfg *Config) validateConfig() error {
 			IPFamily:          cfg.Global.IPFamily,
 			IPFamilyPriority:  ipFamilyPriority,
 		}
-		cfg.VirtualCenter[cfg.Global.VCenterIP] = vcConfig
+		cfg.VirtualCenter[cfg.Global.ICenterIP] = vcConfig
 	}
 
 	// Must have at least one vCenter defined
@@ -371,17 +371,17 @@ func (cfg *Config) validateConfig() error {
 	for vcServer, vcConfig := range cfg.VirtualCenter {
 		klog.V(4).Infof("Initializing vc server %s", vcServer)
 		if vcServer == "" {
-			klog.Error(ErrInvalidVCenterIP)
-			return ErrInvalidVCenterIP
+			klog.Error(ErrInvalidICenterIP)
+			return ErrInvalidICenterIP
 		}
 
-		// If vcConfig.VCenterIP is explicitly set, that means the vcServer
+		// If vcConfig.ICenterIP is explicitly set, that means the vcServer
 		// above is the TenantRef
-		if vcConfig.VCenterIP != "" {
-			//vcConfig.VCenterIP is already set
+		if vcConfig.ICenterIP != "" {
+			//vcConfig.ICenterIP is already set
 			vcConfig.TenantRef = vcServer
 		} else {
-			vcConfig.VCenterIP = vcServer
+			vcConfig.ICenterIP = vcServer
 			vcConfig.TenantRef = vcServer
 		}
 
@@ -406,8 +406,8 @@ func (cfg *Config) validateConfig() error {
 			vcConfig.SecretRef = vcConfig.SecretNamespace + "/" + vcConfig.SecretName
 		}
 
-		if vcConfig.VCenterPort == "" {
-			vcConfig.VCenterPort = cfg.Global.VCenterPort
+		if vcConfig.ICenterPort == "" {
+			vcConfig.ICenterPort = cfg.Global.ICenterPort
 		}
 
 		if vcConfig.Datacenters == "" {

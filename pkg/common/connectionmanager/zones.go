@@ -246,10 +246,10 @@ func (cm *ConnectionManager) getDIFromMultiVCorDC(ctx context.Context,
 				}
 
 				for _, host := range hostList {
-					klog.V(3).Infof("Finding zone in vc=%s and datacenter=%s for host: %s", vsi.Cfg.VCenterIP, datacenterObj.Name(), host.Name())
+					klog.V(3).Infof("Finding zone in vc=%s and datacenter=%s for host: %s", vsi.Cfg.ICenterIP, datacenterObj.Name(), host.Name())
 					queueChannel <- &zoneSearch{
 						tenantRef:  vsi.Cfg.TenantRef,
-						vc:         vsi.Cfg.VCenterIP,
+						vc:         vsi.Cfg.ICenterIP,
 						datacenter: datacenterObj,
 						host:       host,
 					}
