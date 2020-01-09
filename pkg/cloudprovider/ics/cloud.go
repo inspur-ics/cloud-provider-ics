@@ -49,7 +49,7 @@ func init() {
 }
 
 // Creates new Controller node interface and returns
-func newICs(cfg *CPIConfig, finalize ...bool) (*ICs, error) {
+func newICs(cfg *CPIConfig, finalize ...bool) (*ICS, error) {
 	vs, err := buildICsFromConfig(cfg)
 	if err != nil {
 		return nil, err
@@ -62,7 +62,7 @@ func newICs(cfg *CPIConfig, finalize ...bool) (*ICs, error) {
 }
 
 // Initialize initializes the cloud provider.
-func (vs *ICs) Initialize(clientBuilder cloudprovider.ControllerClientBuilder, stop <-chan struct{}) {
+func (vs *ICS) Initialize(clientBuilder cloudprovider.ControllerClientBuilder, stop <-chan struct{}) {
 	client, err := clientBuilder.Client(ClientName)
 	if err == nil {
 		klog.V(1).Info("Kubernetes Client Init Succeeded")
@@ -93,60 +93,60 @@ func (vs *ICs) Initialize(clientBuilder cloudprovider.ControllerClientBuilder, s
 
 // LoadBalancer returns a balancer interface. Also returns true if the
 // interface is supported, false otherwise.
-func (vs *ICs) LoadBalancer() (cloudprovider.LoadBalancer, bool) {
+func (vs *ICS) LoadBalancer() (cloudprovider.LoadBalancer, bool) {
 	klog.Warning("The ics cloud provider does not support load balancers")
 	return nil, false
 }
 
 // Instances returns an instances interface. Also returns true if the
 // interface is supported, false otherwise.
-func (vs *ICs) Instances() (cloudprovider.Instances, bool) {
+func (vs *ICS) Instances() (cloudprovider.Instances, bool) {
 	klog.V(6).Info("Calling the Instances interface on ics cloud provider")
 	return vs.instances, true
 }
 
 // Zones returns a zones interface. Also returns true if the interface
 // is supported, false otherwise.
-func (vs *ICs) Zones() (cloudprovider.Zones, bool) {
+func (vs *ICS) Zones() (cloudprovider.Zones, bool) {
 	klog.V(6).Info("Calling the Zones interface on ics cloud provider")
 	return vs.zones, true
 }
 
 // Clusters returns a clusters interface.  Also returns true if the interface
 // is supported, false otherwise.
-func (vs *ICs) Clusters() (cloudprovider.Clusters, bool) {
+func (vs *ICS) Clusters() (cloudprovider.Clusters, bool) {
 	klog.Warning("The ics cloud provider does not support clusters")
 	return nil, false
 }
 
 // Routes returns a routes interface along with whether the interface
 // is supported.
-func (vs *ICs) Routes() (cloudprovider.Routes, bool) {
+func (vs *ICS) Routes() (cloudprovider.Routes, bool) {
 	klog.Warning("The ics cloud provider does not support routes")
 	return nil, false
 }
 
 // ProviderName returns the cloud provider ID.
-func (vs *ICs) ProviderName() string {
+func (vs *ICS) ProviderName() string {
 	return ProviderName
 }
 
 // ScrubDNS is not implemented.
 // TODO(akutz) Add better documentation for this function.
-func (vs *ICs) ScrubDNS(nameservers, searches []string) (nsOut, srchOut []string) {
+func (vs *ICS) ScrubDNS(nameservers, searches []string) (nsOut, srchOut []string) {
 	return nil, nil
 }
 
 // HasClusterID returns true if a ClusterID is required and set/
-func (vs *ICs) HasClusterID() bool {
+func (vs *ICS) HasClusterID() bool {
 	return true
 }
 
 // Initializes ics from ics CloudProvider Configuration
-func buildICsFromConfig(cfg *CPIConfig) (*ICs, error) {
+func buildICsFromConfig(cfg *CPIConfig) (*ICS, error) {
 	nm := newNodeManager(cfg, nil)
 
-	vs := ICs{
+	vs := ICS{
 		cfg:         cfg,
 		nodeManager: nm,
 		instances:   newInstances(nm),
@@ -156,12 +156,12 @@ func buildICsFromConfig(cfg *CPIConfig) (*ICs, error) {
 	return &vs, nil
 }
 
-func logout(vs *ICs) {
+func logout(vs *ICS) {
 	vs.connectionManager.Logout()
 }
 
 // Notification handler when node is added into k8s cluster.
-func (vs *ICs) nodeAdded(obj interface{}) {
+func (vs *ICS) nodeAdded(obj interface{}) {
 	node, ok := obj.(*v1.Node)
 	if node == nil || !ok {
 		klog.Warningf("nodeAdded: unrecognized object %+v", obj)
@@ -172,7 +172,7 @@ func (vs *ICs) nodeAdded(obj interface{}) {
 }
 
 // Notification handler when node is removed from k8s cluster.
-func (vs *ICs) nodeDeleted(obj interface{}) {
+func (vs *ICS) nodeDeleted(obj interface{}) {
 	node, ok := obj.(*v1.Node)
 	if node == nil || !ok {
 		klog.Warningf("nodeDeleted: unrecognized object %+v", obj)

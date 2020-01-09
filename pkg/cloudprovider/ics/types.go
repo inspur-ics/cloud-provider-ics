@@ -22,7 +22,7 @@ import (
 	v1 "k8s.io/api/core/v1"
 	cloudprovider "k8s.io/cloud-provider"
 
-	vcfg "github.com/inspur-ics/cloud-provider-ics/pkg/common/config"
+	icscfg "github.com/inspur-ics/cloud-provider-ics/pkg/common/config"
 	cm "github.com/inspur-ics/cloud-provider-ics/pkg/common/connectionmanager"
 	k8s "github.com/inspur-ics/cloud-provider-ics/pkg/common/kubernetes"
 	"github.com/inspur-ics/cloud-provider-ics/pkg/common/icslib"
@@ -35,7 +35,7 @@ type GRPCServer interface {
 
 // CPIConfig is used to read and store information (related only to the CPI) from the cloud configuration file
 type CPIConfig struct {
-	vcfg.Config
+	icscfg.Config
 
 	Nodes struct {
 		// IP address on VirtualMachine's network interfaces included in the fields' CIDRs
@@ -52,7 +52,7 @@ type CPIConfig struct {
 }
 
 // VSphere is an implementation of cloud provider Interface for ics.
-type ICs struct {
+type ICS struct {
 	cfg               *CPIConfig
 	connectionManager *cm.ConnectionManager
 	nodeManager       *NodeManager

@@ -18,10 +18,9 @@ package ics
 
 import (
 	"fmt"
+	"github.com/src-d/gcfg"
 	"io"
 	"os"
-
-	"gopkg.in/gcfg.v1"
 )
 
 // FromCPIEnv initializes the provided configuratoin object with values
