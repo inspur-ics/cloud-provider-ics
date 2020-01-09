@@ -59,6 +59,7 @@ type VMDiscoveryInfo struct {
 	NodeName   string
 }
 
+/*
 // FcdDiscoveryInfo contains FCD info about a discovered FCD
 type FcdDiscoveryInfo struct {
 	TenantRef  string
@@ -66,6 +67,7 @@ type FcdDiscoveryInfo struct {
 	FCDInfo    *icslib.FirstClassDiskInfo
 	VcServer   string
 }
+*/
 
 // ListDiscoveryInfo represents a VC/DC pair
 type ListDiscoveryInfo struct {

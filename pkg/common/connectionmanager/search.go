@@ -45,15 +45,15 @@ func (f FindVM) String() string {
 func (cm *ConnectionManager) WhichVCandDCByNodeID(ctx context.Context, nodeID string, searchBy FindVM) (*VMDiscoveryInfo, error) {
 	if nodeID == "" {
 		klog.V(3).Info("WhichVCandDCByNodeID called but nodeID is empty")
-//ics
 		return nil, icslib.ErrNoVMFound
 	}
+//ics
 	type vmSearch struct {
 		tenantRef  string
 		vc         string
 		datacenter *icslib.Datacenter
-//ics
 	}
+//ics
 
 	var mutex = &sync.Mutex{}
 	var globalErrMutex = &sync.Mutex{}
@@ -61,6 +61,7 @@ func (cm *ConnectionManager) WhichVCandDCByNodeID(ctx context.Context, nodeID st
 	var wg sync.WaitGroup
 	var globalErr *error
 
+    //default, 8*10
 	queueChannel = make(chan *vmSearch, QueueSize)
 
 	myNodeID := nodeID
@@ -244,6 +245,7 @@ func (cm *ConnectionManager) WhichVCandDCByNodeID(ctx context.Context, nodeID st
 	return nil, icslib.ErrNoVMFound
 }
 
+/*
 // WhichVCandDCByFCDId searches for an FCD using the provided ID.
 func (cm *ConnectionManager) WhichVCandDCByFCDId(ctx context.Context, fcdID string) (*FcdDiscoveryInfo, error) {
 	if fcdID == "" {
@@ -393,3 +395,4 @@ func (cm *ConnectionManager) WhichVCandDCByFCDId(ctx context.Context, fcdID stri
 	klog.V(4).Infof("WhichVCandDCByFCDId: %q FCD not found", fcdID)
 	return nil, icslib.ErrNoDiskIDFound
 }
+*/

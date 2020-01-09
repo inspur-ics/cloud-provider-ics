@@ -78,7 +78,7 @@ func generateInstanceMap(cfg *icscfg.Config) map[string]*ICSInstance {
 			Hostname:          vcConfig.VCenterIP,
 			RoundTripperCount: vcConfig.RoundTripperCount,
 			Port:              vcConfig.VCenterPort,
-			Thumbprint:        vcConfig.Thumbprint,
+//			Thumbprint:        vcConfig.Thumbprint,
 		}
 		icsIns := ICSInstance{
 			Conn: &icsConn,

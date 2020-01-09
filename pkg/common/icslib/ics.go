@@ -18,17 +18,19 @@ package icslib
 
 import (
 	"context"
-	"errors"
+//	"errors"
 //	"fmt"
 //	"path/filepath"
 //	"strings"
 	"sync"
 
-	"k8s.io/klog"
+//	"k8s.io/klog"
 	tp "github.com/inspur-ics/ics-go-sdk/client/types"
 //	icsvm "github.com/inspur-ics/ics-go-sdk/vm"
 )
 
+<<<<<<< HEAD
+=======
 // Error Messages
 const (
 	FileAlreadyExistErrMsg         = "File requested already exist"
@@ -55,6 +57,7 @@ var (
 	ErrNoDataStoreClustersFound = errors.New(NoDataStoreClustersFoundErrMsg)
 )
 
+>>>>>>> 0d5eea4cb56729edcc47376aadcf81e342eeea9d
 type ICSConnection struct {
 //	Client            *vim25.Client
     Client            string
@@ -68,6 +71,30 @@ type ICSConnection struct {
 	RoundTripperCount uint
 	credentialsLock   sync.Mutex
 }
+
+// Datacenter extends the govmomi Datacenter object
+type Datacenter struct {
+	*tp.Datacenter
+	//ics added
+	dcname          string
+}
+
+type VirtualMachine struct {
+	*tp.VirtualMachine
+	//	Datacenter *Datacenter
+}
+
+/*
+type FirstClassDiskInfo struct {
+	//	*FirstClassDisk
+
+	//	DatastoreInfo  *DatastoreInfo
+	//	StoragePodInfo *StoragePodInfo
+	//ics added
+	name          string
+}
+ */
+
 // Connect makes connection to vCenter and sets VSphereConnection.Client.
 // If connection.Client is already set, it obtains the existing user session.
 // if user session is not valid, connection.Client will be set to the new client.
@@ -78,18 +105,6 @@ func (connection *ICSConnection) Connect(ctx context.Context) error {
 // Logout calls SessionManager.Logout for the given connection.
 func (connection *ICSConnection) Logout(ctx context.Context) {
 	return
-}
-
-// Datacenter extends the govmomi Datacenter object
-type Datacenter struct {
-//	*object.Datacenter
-//ics added
-	 dcname          string
-}
-
-type VirtualMachine struct {
-	*tp.VirtualMachine
-//	Datacenter *Datacenter
 }
 
 // IsActive checks if the VM is active.
@@ -112,7 +127,11 @@ func IsInvalidCredentialsError(err error) bool {
 
 // GetDatacenter returns the DataCenter Object for the given datacenterPath
 // If datacenter is located in a folder, include full path to datacenter else just provide the datacenter name
+<<<<<<< HEAD
+func GetDatacenter(ctx context.Context, connection *ICSConnection, datacenterName string) (*Datacenter, error) {
+=======
 func GetDatacenter(ctx context.Context, connection *ICSConnection, datacenterPath string) (*Datacenter, error) {
+>>>>>>> 0d5eea4cb56729edcc47376aadcf81e342eeea9d
 	dc := Datacenter{}
 	return &dc, nil
 }
@@ -128,21 +147,13 @@ func GetNumberOfDatacenters(ctx context.Context, connection *ICSConnection) (int
 	return 10, nil
 }
 
-// FirstClassDiskInfo extends the govmomi FirstClassDisk object
-type FirstClassDiskInfo struct {
-//	*FirstClassDisk
-
-//	DatastoreInfo  *DatastoreInfo
-//	StoragePodInfo *StoragePodInfo
-	//ics added
-	name          string
-}
-
+/*
 // DoesFirstClassDiskExist returns information about an FCD if it exists.
 func (dc *Datacenter) DoesFirstClassDiskExist(ctx context.Context, fcdID string) (*FirstClassDiskInfo, error) {
 	klog.Infof("DoesFirstClassDiskExist(%s): NOT FOUND", fcdID)
 	return nil, ErrNoDiskIDFound
 }
+ */
 
 // GetVMByIP gets the VM object from the given IP address
 func (dc *Datacenter) GetVMByIP(ctx context.Context, ipAddy string) (*VirtualMachine, error) {

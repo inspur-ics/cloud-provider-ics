@@ -134,9 +134,11 @@ func (cfg *Config) FromEnv() error {
 		cfg.Global.CAFile = v
 	}
 */
+/*
 	if v := os.Getenv("ICS_THUMBPRINT"); v != "" {
 		cfg.Global.Thumbprint = v
 	}
+*/	
 	if v := os.Getenv("ICS_LABEL_REGION"); v != "" {
 		cfg.Labels.Region = v
 	}
@@ -210,11 +212,12 @@ func (cfg *Config) FromEnv() error {
 				caFile = cfg.Global.CAFile
 			}
 */
+/*
 			_, thumbprint, errThumbprint := getEnvKeyValue("VCENTER_"+id+"_THUMBPRINT", false)
 			if errThumbprint != nil {
 				thumbprint = cfg.Global.Thumbprint
 			}
-
+*/
 			_, secretName, secretNameErr := getEnvKeyValue("VCENTER_"+id+"_SECRET_NAME", false)
 			_, secretNamespace, secretNamespaceErr := getEnvKeyValue("VCENTER_"+id+"_SECRET_NAMESPACE", false)
 
@@ -250,7 +253,7 @@ func (cfg *Config) FromEnv() error {
 				Datacenters:       datacenters,
 				RoundTripperCount: roundtrip,
 //				CAFile:            caFile,
-				Thumbprint:        thumbprint,
+//				Thumbprint:        thumbprint,
 				SecretRef:         secretRef,
 				SecretName:        secretName,
 				SecretNamespace:   secretNamespace,
@@ -272,7 +275,7 @@ func (cfg *Config) FromEnv() error {
 			Datacenters:       cfg.Global.Datacenters,
 			RoundTripperCount: cfg.Global.RoundTripperCount,
 //			CAFile:            cfg.Global.CAFile,
-			Thumbprint:        cfg.Global.Thumbprint,
+//			Thumbprint:        cfg.Global.Thumbprint,
 			SecretRef:         DefaultCredentialManager,
 			SecretName:        cfg.Global.SecretName,
 			SecretNamespace:   cfg.Global.SecretNamespace,
@@ -351,7 +354,7 @@ func (cfg *Config) validateConfig() error {
 			Datacenters:       cfg.Global.Datacenters,
 			RoundTripperCount: cfg.Global.RoundTripperCount,
 //			CAFile:            cfg.Global.CAFile,
-			Thumbprint:        cfg.Global.Thumbprint,
+//			Thumbprint:        cfg.Global.Thumbprint,
 			SecretRef:         DefaultCredentialManager,
 			SecretName:        cfg.Global.SecretName,
 			SecretNamespace:   cfg.Global.SecretNamespace,
@@ -423,10 +426,11 @@ func (cfg *Config) validateConfig() error {
 			vcConfig.CAFile = cfg.Global.CAFile
 		}
 */
+/*
 		if vcConfig.Thumbprint == "" {
 			vcConfig.Thumbprint = cfg.Global.Thumbprint
 		}
-
+*/
 		if vcConfig.IPFamily == "" {
 			vcConfig.IPFamily = cfg.Global.IPFamily
 		}
