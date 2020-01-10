@@ -18,7 +18,7 @@ package connectionmanager
 
 import (
 	"context"
-//	"fmt"
+	//	"fmt"
 //	"net/url"
 //	"strings"
 //	"sync"
@@ -130,7 +130,8 @@ func (cm *ConnectionManager) getDIFromSingleVC(ctx context.Context,
 
 func (cm *ConnectionManager) getDIFromMultiVCorDC(ctx context.Context,
 	zoneLabel string, regionLabel string, zoneLooking string, regionLooking string) (*ZoneDiscoveryInfo, error) {
-/*	
+//ics block
+/*
 	klog.V(4).Infof("getDIFromMultiVCorDC called with zone: %s and region: %s", zoneLooking, regionLooking)
 
 	if len(zoneLabel) == 0 || len(regionLabel) == 0 || len(zoneLooking) == 0 || len(regionLooking) == 0 {
@@ -238,7 +239,9 @@ func (cm *ConnectionManager) getDIFromMultiVCorDC(ctx context.Context,
 				finder := icsfind.NewFinder(datacenterObj.Client(), false)
 				finder.SetDatacenter(datacenterObj.Datacenter)
 */
+//ics block
 //				hostList, err := finder.HostSystemList(ctx, "*/*")
+//ics block
 /*
 				if err != nil {
 					klog.Errorf("HostSystemList failed: %v", err)
@@ -246,10 +249,10 @@ func (cm *ConnectionManager) getDIFromMultiVCorDC(ctx context.Context,
 				}
 
 				for _, host := range hostList {
-					klog.V(3).Infof("Finding zone in vc=%s and datacenter=%s for host: %s", vsi.Cfg.ICenterIP, datacenterObj.Name(), host.Name())
+					klog.V(3).Infof("Finding zone in vc=%s and datacenter=%s for host: %s", vsi.Cfg.VCenterIP, datacenterObj.Name(), host.Name())
 					queueChannel <- &zoneSearch{
 						tenantRef:  vsi.Cfg.TenantRef,
-						vc:         vsi.Cfg.ICenterIP,
+						vc:         vsi.Cfg.VCenterIP,
 						datacenter: datacenterObj,
 						host:       host,
 					}
@@ -302,6 +305,7 @@ func (cm *ConnectionManager) getDIFromMultiVCorDC(ctx context.Context,
 
 	klog.V(4).Infof("getDIFromMultiVCorDC: zone: %s and region: %s not found", zoneLabel, regionLabel)
 */
+//ics block
 //ics
 	return nil, icslib.ErrNoZoneRegionFound
 //ics
@@ -334,10 +338,9 @@ func withTagsClient(ctx context.Context, connection *icslib.ICSConnection, f fun
     return nil
 }
 */
-
-//ics
 //ics
 
+//ics
 /*
 // LookupZoneByMoref searches for a zone using the provided managed object reference.
 func (cm *ConnectionManager) LookupZoneByMoref(ctx context.Context, tenantRef string,
@@ -422,3 +425,10 @@ func (cm *ConnectionManager) LookupZoneByMoref(ctx context.Context, tenantRef st
 	return result, nil
 }
 */
+
+// LookupZoneByMoref searches for a zone using the provided managed object reference.
+func (cm *ConnectionManager) LookupZoneByMoref(ctx context.Context, tenantRef string,
+	h *icslib.Host, zoneLabel string, regionLabel string) (map[string]string, error) {
+
+	return nil, nil
+}

@@ -4,6 +4,7 @@ require (
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible // indirect
 	github.com/docker/distribution v2.7.1+incompatible // indirect
 	github.com/evanphx/json-patch v4.5.0+incompatible // indirect
+	github.com/go-resty/resty v1.12.0 // indirect
 	github.com/golang/groupcache v0.0.0-20190702054246-869f871628b6 // indirect
 	github.com/golang/protobuf v1.3.2
 	github.com/google/btree v1.0.0 // indirect
@@ -16,7 +17,7 @@ require (
 	github.com/spf13/pflag v1.0.3
 	github.com/vmware/govmomi v0.21.0
 	golang.org/x/lint v0.0.0-20190409202823-959b441ac422 // indirect
-	golang.org/x/net v0.0.0-20190724013045-ca1201d0de80
+	golang.org/x/net v0.0.0-20191209160850-c0dbc17a3553
 	golang.org/x/time v0.0.0-20190308202827-9d24e82272b4 // indirect
 	golang.org/x/tools v0.0.0-20190827205025-b29f5f60c37a // indirect
 	google.golang.org/grpc v1.22.1
@@ -62,3 +63,5 @@ replace (
 )
 
 module github.com/inspur-ics/cloud-provider-ics
+
+replace github.com/go-resty/resty v1.12.0 => gopkg.in/resty.v1 v1.12.0

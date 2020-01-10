@@ -18,37 +18,39 @@ package icslib
 
 import (
 	"context"
-//	"errors"
+	"sync"
+
+	//	"errors"
 //	"fmt"
 //	"path/filepath"
 //	"strings"
-	"sync"
+//	"sync"
 
 //	"k8s.io/klog"
 	tp "github.com/inspur-ics/ics-go-sdk/client/types"
-//	icsvm "github.com/inspur-ics/ics-go-sdk/vm"
+	icssdk "github.com/inspur-ics/ics-go-sdk"
 )
 
 
 type ICSConnection struct {
-//	Client            *vim25.Client
-    Client            string
-	Username          string
-	Password          string
-	Hostname          string
-	Port              string
-	CACert            string
-	Thumbprint        string
-	Insecure          bool
+	icssdk.ICSConnection
+//	Client            *client.Client
+//	Username          string
+//	Password          string
+//	Hostname          string
+//	Port              string
+//	Insecure          bool
+	ICSCredentialsLock   sync.Mutex
 	RoundTripperCount uint
-	credentialsLock   sync.Mutex
 }
 
 // Datacenter extends the govmomi Datacenter object
 type Datacenter struct {
 	*tp.Datacenter
-	//ics added
-	dcname          string
+}
+
+type Host struct {
+	*tp.Host
 }
 
 type VirtualMachine struct {
@@ -88,13 +90,17 @@ func (vm *VirtualMachine) IsActive(ctx context.Context) (bool, error) {
 	return false, nil
 }
 
-func (vm *VirtualMachine) HostSystem(ctx context.Context) (bool, error) {
-	return false, nil
+func (vm *VirtualMachine) HostSystem(ctx context.Context) (*Host, error) {
+	return nil, nil
 }
 
 // IsInvalidCredentialsError returns true if error is of type InvalidLogin
 func IsInvalidCredentialsError(err error) bool {
-	return false
+	isInvalidCredentialsError := false
+//	if soap.IsSoapFault(err) {
+//		_, isInvalidCredentialsError = soap.ToSoapFault(err).VimFault().(types.InvalidLogin)
+//	}
+	return isInvalidCredentialsError
 }
 
 // GetDatacenter returns the DataCenter Object for the given datacenterPath
@@ -147,8 +153,8 @@ func (dc *Datacenter) Name() string {
 // UpdateCredentials updates username and password.
 // Note: Updated username and password will be used when there is no session active
 func (connection *ICSConnection) UpdateCredentials(username string, password string) {
-	connection.credentialsLock.Lock()
-	defer connection.credentialsLock.Unlock()
+	connection.ICSCredentialsLock.Lock()
+	defer connection.ICSCredentialsLock.Unlock()
 	connection.Username = username
 	connection.Password = password
 }
