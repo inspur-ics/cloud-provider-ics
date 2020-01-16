@@ -22,10 +22,10 @@ import (
 	v1 "k8s.io/api/core/v1"
 	cloudprovider "k8s.io/cloud-provider"
 
-	icscfg "github.com/inspur-ics/cloud-provider-ics/pkg/common/config"
+	icfg "github.com/inspur-ics/cloud-provider-ics/pkg/common/config"
 	cm "github.com/inspur-ics/cloud-provider-ics/pkg/common/connectionmanager"
-	k8s "github.com/inspur-ics/cloud-provider-ics/pkg/common/kubernetes"
 	"github.com/inspur-ics/cloud-provider-ics/pkg/common/icslib"
+	k8s "github.com/inspur-ics/cloud-provider-ics/pkg/common/kubernetes"
 )
 
 // GRPCServer describes an object that can start a gRPC server.
@@ -35,7 +35,7 @@ type GRPCServer interface {
 
 // CPIConfig is used to read and store information (related only to the CPI) from the cloud configuration file
 type CPIConfig struct {
-	icscfg.Config
+	icfg.Config
 
 	Nodes struct {
 		// IP address on VirtualMachine's network interfaces included in the fields' CIDRs
@@ -51,7 +51,7 @@ type CPIConfig struct {
 	}
 }
 
-// VSphere is an implementation of cloud provider Interface for ics.
+// ICS is an implementation of cloud provider Interface for ICS.
 type ICS struct {
 	cfg               *CPIConfig
 	connectionManager *cm.ConnectionManager
@@ -67,7 +67,7 @@ type NodeInfo struct {
 	tenantRef     string
 	dataCenter    *icslib.Datacenter
 	vm            *icslib.VirtualMachine
-	vcServer      string
+	icsServer      string
 	UUID          string
 	NodeName      string
 	NodeType      string
@@ -80,8 +80,8 @@ type DatacenterInfo struct {
 	vmList map[string]*NodeInfo
 }
 
-// VCenterInfo is information about a iCenter.
-type VCenterInfo struct {
+// ICenterInfo is information about a iCenter.
+type ICenterInfo struct {
 	address string
 	dcList  map[string]*DatacenterInfo
 }
@@ -92,8 +92,8 @@ type NodeManager struct {
 	nodeNameMap map[string]*NodeInfo
 	// Maps UUID to node info.
 	nodeUUIDMap map[string]*NodeInfo
-	// Maps VC -> DC -> VM
-	vcList map[string]*VCenterInfo
+	// Maps ICS -> DC -> VM
+	icsList map[string]*ICenterInfo
 	// Maps UUID to node info.
 	nodeRegUUIDMap map[string]*v1.Node
 	// ConnectionManager

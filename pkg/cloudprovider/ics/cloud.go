@@ -50,39 +50,39 @@ func init() {
 
 // Creates new Controller node interface and returns
 func newICS(cfg *CPIConfig, finalize ...bool) (*ICS, error) {
-	vs, err := buildICSFromConfig(cfg)
+	ics, err := buildICSFromConfig(cfg)
 	if err != nil {
 		return nil, err
 	}
 	if len(finalize) == 1 && finalize[0] {
 		// optional for use in tests
-		runtime.SetFinalizer(vs, logout)
+		runtime.SetFinalizer(ics, logout)
 	}
-	return vs, nil
+	return ics, nil
 }
 
 // Initialize initializes the cloud provider.
-func (vs *ICS) Initialize(clientBuilder cloudprovider.ControllerClientBuilder, stop <-chan struct{}) {
+func (ics *ICS) Initialize(clientBuilder cloudprovider.ControllerClientBuilder, stop <-chan struct{}) {
 	client, err := clientBuilder.Client(ClientName)
 	if err == nil {
 		klog.V(1).Info("Kubernetes Client Init Succeeded")
 
-		vs.informMgr = k8s.NewInformer(client, true)
+		ics.informMgr = k8s.NewInformer(client, true)
 
-		connMgr := cm.NewConnectionManager(&vs.cfg.Config, vs.informMgr, client)
-		vs.connectionManager = connMgr
-		vs.nodeManager.connectionManager = connMgr
+		connMgr := cm.NewConnectionManager(&ics.cfg.Config, ics.informMgr, client)
+		ics.connectionManager = connMgr
+		ics.nodeManager.connectionManager = connMgr
 
-		vs.informMgr.AddNodeListener(vs.nodeAdded, vs.nodeDeleted, nil)
+		ics.informMgr.AddNodeListener(ics.nodeAdded, ics.nodeDeleted, nil)
 
-		vs.informMgr.Listen()
+		ics.informMgr.Listen()
 
 		//if running secrets, init them
 		connMgr.InitializeSecretLister()
 
-		if !vs.cfg.Global.APIDisable {
+		if !ics.cfg.Global.APIDisable {
 			klog.V(1).Info("Starting the API Server")
-			vs.server.Start()
+			ics.server.Start()
 		} else {
 			klog.V(1).Info("API Server is disabled")
 		}
@@ -93,91 +93,90 @@ func (vs *ICS) Initialize(clientBuilder cloudprovider.ControllerClientBuilder, s
 
 // LoadBalancer returns a balancer interface. Also returns true if the
 // interface is supported, false otherwise.
-func (vs *ICS) LoadBalancer() (cloudprovider.LoadBalancer, bool) {
-	klog.Warning("The ics cloud provider does not support load balancers")
+func (ics *ICS) LoadBalancer() (cloudprovider.LoadBalancer, bool) {
+	klog.Warning("The inCloud Sphere cloud provider does not support load balancers")
 	return nil, false
 }
 
 // Instances returns an instances interface. Also returns true if the
 // interface is supported, false otherwise.
-func (vs *ICS) Instances() (cloudprovider.Instances, bool) {
-	klog.V(6).Info("Calling the Instances interface on ics cloud provider")
-	return vs.instances, true
+func (ics *ICS) Instances() (cloudprovider.Instances, bool) {
+	klog.V(6).Info("Calling the Instances interface on inCloud Sphere cloud provider")
+	return ics.instances, true
 }
 
 // Zones returns a zones interface. Also returns true if the interface
 // is supported, false otherwise.
-func (vs *ICS) Zones() (cloudprovider.Zones, bool) {
-	klog.V(6).Info("Calling the Zones interface on ics cloud provider")
-	return vs.zones, true
+func (ics *ICS) Zones() (cloudprovider.Zones, bool) {
+	klog.V(6).Info("Calling the Zones interface on inCloud Sphere cloud provider")
+	return ics.zones, true
 }
 
 // Clusters returns a clusters interface.  Also returns true if the interface
 // is supported, false otherwise.
-func (vs *ICS) Clusters() (cloudprovider.Clusters, bool) {
-	klog.Warning("The ics cloud provider does not support clusters")
+func (ics *ICS) Clusters() (cloudprovider.Clusters, bool) {
+	klog.Warning("The inCloud Sphere cloud provider does not support clusters")
 	return nil, false
 }
 
 // Routes returns a routes interface along with whether the interface
 // is supported.
-func (vs *ICS) Routes() (cloudprovider.Routes, bool) {
-	klog.Warning("The ics cloud provider does not support routes")
+func (ics *ICS) Routes() (cloudprovider.Routes, bool) {
+	klog.Warning("The inCloud Sphere cloud provider does not support routes")
 	return nil, false
 }
 
 // ProviderName returns the cloud provider ID.
-func (vs *ICS) ProviderName() string {
+func (ics *ICS) ProviderName() string {
 	return ProviderName
 }
 
 // ScrubDNS is not implemented.
-// TODO(akutz) Add better documentation for this function.
-func (vs *ICS) ScrubDNS(nameservers, searches []string) (nsOut, srchOut []string) {
+func (ics *ICS) ScrubDNS(nameservers, searches []string) (nsOut, srchOut []string) {
 	return nil, nil
 }
 
 // HasClusterID returns true if a ClusterID is required and set/
-func (vs *ICS) HasClusterID() bool {
+func (ics *ICS) HasClusterID() bool {
 	return true
 }
 
-// Initializes ics from ics CloudProvider Configuration
+// Initializes inCloud Sphere from inCloud Sphere CloudProvider Configuration
 func buildICSFromConfig(cfg *CPIConfig) (*ICS, error) {
 	nm := newNodeManager(cfg, nil)
 
-	vs := ICS{
+	ics := ICS{
 		cfg:         cfg,
 		nodeManager: nm,
 		instances:   newInstances(nm),
 		zones:       newZones(nm, cfg.Labels.Zone, cfg.Labels.Region),
 		server:      server.NewServer(cfg.Global.APIBinding, nm),
 	}
-	return &vs, nil
+	return &ics, nil
 }
 
-func logout(vs *ICS) {
-	vs.connectionManager.Logout()
+func logout(ics *ICS) {
+	ics.connectionManager.Logout()
 }
 
 // Notification handler when node is added into k8s cluster.
-func (vs *ICS) nodeAdded(obj interface{}) {
+func (ics *ICS) nodeAdded(obj interface{}) {
 	node, ok := obj.(*v1.Node)
 	if node == nil || !ok {
 		klog.Warningf("nodeAdded: unrecognized object %+v", obj)
 		return
 	}
 
-	vs.nodeManager.RegisterNode(node)
+	ics.nodeManager.RegisterNode(node)
 }
 
 // Notification handler when node is removed from k8s cluster.
-func (vs *ICS) nodeDeleted(obj interface{}) {
+func (ics *ICS) nodeDeleted(obj interface{}) {
 	node, ok := obj.(*v1.Node)
 	if node == nil || !ok {
 		klog.Warningf("nodeDeleted: unrecognized object %+v", obj)
 		return
 	}
 
-	vs.nodeManager.UnregisterNode(node)
+	ics.nodeManager.UnregisterNode(node)
 }

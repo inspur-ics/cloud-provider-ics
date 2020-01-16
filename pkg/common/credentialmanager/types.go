@@ -26,7 +26,7 @@ import (
 // SecretCache is used to cache information about Kubernetes secrets data.
 type SecretCache struct {
 	cacheLock     sync.Mutex
-	VirtualCenter map[string]*Credential
+	ICSCenter map[string]*Credential
 	Secret        *v1.Secret
 	SecretFile    map[string][]byte
 }

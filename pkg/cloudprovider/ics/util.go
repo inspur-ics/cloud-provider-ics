@@ -17,12 +17,10 @@ limitations under the License.
 package ics
 
 import (
-	"fmt"
 	"net"
 	"strings"
 
 	"github.com/pkg/errors"
-	"k8s.io/klog"
 )
 
 const (
@@ -47,19 +45,19 @@ func GetUUIDFromProviderID(providerID string) string {
 //
 // K8s:    56492e42-22ad-3911-6d72-59cc8f26bc90
 // VMware: 422e4956-ad22-1139-6d72-59cc8f26bc90
-func ConvertK8sUUIDtoNormal(k8sUUID string) string {
-	if len(k8sUUID) < MinUUIDLen {
-		klog.Errorf("The UUID length is invalid. Returning UUID=%s as is.", k8sUUID)
-		return k8sUUID
-	}
-	uuid := fmt.Sprintf("%s%s%s%s-%s%s-%s%s-%s-%s",
-		k8sUUID[6:8], k8sUUID[4:6], k8sUUID[2:4], k8sUUID[0:2],
-		k8sUUID[11:13], k8sUUID[9:11],
-		k8sUUID[16:18], k8sUUID[14:16],
-		k8sUUID[19:23],
-		k8sUUID[24:36])
-	return strings.ToLower(strings.TrimSpace(uuid))
-}
+//func ConvertK8sUUIDtoNormal(k8sUUID string) string {
+//	if len(k8sUUID) < MinUUIDLen {
+//		klog.Errorf("The UUID length is invalid. Returning UUID=%s as is.", k8sUUID)
+//		return k8sUUID
+//	}
+//	uuid := fmt.Sprintf("%s%s%s%s-%s%s-%s%s-%s-%s",
+//		k8sUUID[6:8], k8sUUID[4:6], k8sUUID[2:4], k8sUUID[0:2],
+//		k8sUUID[11:13], k8sUUID[9:11],
+//		k8sUUID[16:18], k8sUUID[14:16],
+//		k8sUUID[19:23],
+//		k8sUUID[24:36])
+//	return strings.ToLower(strings.TrimSpace(uuid))
+//}
 
 // ErrOnLocalOnlyIPAddr returns an error if the provided IP address is
 // accessible only on the VM's guest OS.

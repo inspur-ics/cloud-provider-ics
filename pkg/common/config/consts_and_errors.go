@@ -29,8 +29,8 @@ const (
 	// exposing the API service.
 	DefaultAPIBinding string = ":43001"
 
-	// DefaultVCenterPort is the default port used to access iCenter.
-	DefaultVCenterPort string = "443"
+	// DefaultICenterPort is the default port used to access iCenter.
+	DefaultICenterPort string = "443"
 
 	// DefaultSecretDirectory is the default path to the secrets directory.
 	DefaultSecretDirectory string = "/etc/cloud/secrets"
@@ -54,13 +54,13 @@ var (
 	// ErrPasswordMissing is returned when the provided password is empty.
 	ErrPasswordMissing = errors.New("Password is missing")
 
-	// ErrInvalidVCenterIP is returned when the provided iCenter IP address is
+	// ErrInvalidICenterIP is returned when the provided iCenter IP address is
 	// missing from the provided configuration.
-	ErrInvalidVCenterIP = errors.New("ics.conf does not have the VirtualCenter IP address specified")
+	ErrInvalidICenterIP = errors.New("ics.conf does not have the ICSCenter IP address specified")
 
-	// ErrMissingVCenter is returned when the provided configuration does not
-	// define any iCenters.
-	ErrMissingVCenter = errors.New("No Virtual Center hosts defined")
+	// ErrMissingICenter is returned when the provided configuration does not
+	// define any vCenters.
+	ErrMissingICenter = errors.New("No ICS Center hosts defined")
 
 	// ErrInvalidIPFamilyType is returned when an invalid IPFamily type is encountered
 	ErrInvalidIPFamilyType = errors.New("Invalid IP Family type")

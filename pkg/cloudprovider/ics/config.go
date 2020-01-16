@@ -33,32 +33,31 @@ func (cfg *CPIConfig) FromCPIEnv() error {
 		return err
 	}
 
-	if v := os.Getenv("ICS_NODES_INTERNAL_NETWORK_SUBNET_CIDR"); v != "" {
-		cfg.Nodes.InternalNetworkSubnetCIDR = v
+	if env := os.Getenv("ICS_NODES_INTERNAL_NETWORK_SUBNET_CIDR"); env != "" {
+		cfg.Nodes.InternalNetworkSubnetCIDR = env
 	}
-	if v := os.Getenv("ICS_NODES_EXTERNAL_NETWORK_SUBNET_CIDR"); v != "" {
-		cfg.Nodes.ExternalNetworkSubnetCIDR = v
+	if env := os.Getenv("ICS_NODES_EXTERNAL_NETWORK_SUBNET_CIDR"); env != "" {
+		cfg.Nodes.ExternalNetworkSubnetCIDR = env
 	}
 
-	if v := os.Getenv("ICS_NODES_INTERNAL_VM_NETWORK_NAME"); v != "" {
-		cfg.Nodes.InternalVMNetworkName = v
+	if env := os.Getenv("ICS_NODES_INTERNAL_VM_NETWORK_NAME"); env != "" {
+		cfg.Nodes.InternalVMNetworkName = env
 	}
-	if v := os.Getenv("ICS_NODES_EXTERNAL_VM_NETWORK_NAME"); v != "" {
-		cfg.Nodes.ExternalVMNetworkName = v
+	if env := os.Getenv("ICS_NODES_EXTERNAL_VM_NETWORK_NAME"); env != "" {
+		cfg.Nodes.ExternalVMNetworkName = env
 	}
 
 	return nil
 }
 
-// ReadCPIConfig parses ics cloud config file and stores it into CPIConfig.
+// ReadCPIConfig parses inCloud Sphere cloud config file and stores it into CPIConfig.
 // Environment variables are also checked
 func ReadCPIConfig(config io.Reader) (*CPIConfig, error) {
 	if config == nil {
-		return nil, fmt.Errorf("no ics cloud provider config file given")
+		return nil, fmt.Errorf("no inCloud Sphere cloud provider config file given")
 	}
 
 	cfg := &CPIConfig{}
-
 	if err := gcfg.FatalOnly(gcfg.ReadInto(cfg, config)); err != nil {
 		return nil, err
 	}

@@ -9,15 +9,15 @@ import (
 	"google.golang.org/grpc"
 
 	pb "github.com/inspur-ics/cloud-provider-ics/pkg/cloudprovider/ics/proto"
-	vcfg "github.com/inspur-ics/cloud-provider-ics/pkg/common/config"
+	icfg "github.com/inspur-ics/cloud-provider-ics/pkg/common/config"
 )
 
-// NewIcsCloudProviderClient creates CloudProviderIcsClient
-func NewIcsCloudProviderClient(ctx context.Context) (pb.CloudProviderIcsClient, error) {
+// NewICSCloudProviderClient creates CloudProviderICSClient
+func NewICSCloudProviderClient(ctx context.Context) (pb.CloudProviderICSClient, error) {
 	var conn *grpc.ClientConn
 	var err error
 	for i := 0; i < RetryAttempts; i++ {
-		conn, err = grpc.Dial(vcfg.DefaultAPIBinding, grpc.WithInsecure())
+		conn, err = grpc.Dial(icfg.DefaultAPIBinding, grpc.WithInsecure())
 		if err == nil {
 			break
 		}
@@ -28,7 +28,7 @@ func NewIcsCloudProviderClient(ctx context.Context) (pb.CloudProviderIcsClient, 
 		return nil, err
 	}
 
-	c := pb.NewCloudProviderIcsClient(conn)
+	c := pb.NewCloudProviderICSClient(conn)
 
 	return c, nil
 }

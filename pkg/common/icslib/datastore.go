@@ -14,4 +14,20 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package cli
+package icslib
+
+import (
+	"github.com/inspur-ics/ics-go-sdk/client/types"
+)
+
+// Datastore extends the govmomi Datastore object
+type Datastore struct {
+	Common
+	*types.Datastore
+	Datacenter *Datacenter
+}
+
+// DatastoreInfo is a structure to store the Datastore and it's Info.
+type DatastoreInfo struct {
+	*Datastore
+}

@@ -26,6 +26,7 @@ import (
 	"k8s.io/klog"
 
 	"gopkg.in/gcfg.v1"
+
 )
 
 func getEnvKeyValue(match string, partial bool) (string, string, error) {
@@ -62,53 +63,44 @@ func getEnvKeyValue(match string, partial bool) (string, string, error) {
 func (cfg *Config) FromEnv() error {
 
 	//Init
-	if cfg.VirtualCenter == nil {
-		cfg.VirtualCenter = make(map[string]*VirtualCenterConfig)
+	if cfg.ICSCenter == nil {
+		cfg.ICSCenter = make(map[string]*ICSCenterConfig)
 	}
 
 	//Globals
-	if v := os.Getenv("ICS_VCENTER"); v != "" {
-		cfg.Global.VCenterIP = v
+	if env := os.Getenv("ICS_ICENTER"); env != "" {
+		cfg.Global.ICenterIP = env
 	}
-	if v := os.Getenv("ICS_VCENTER_PORT"); v != "" {
-		cfg.Global.VCenterPort = v
+	if env := os.Getenv("ICS_ICENTER_PORT"); env != "" {
+		cfg.Global.ICenterPort = env
 	}
-	if v := os.Getenv("ICS_USER"); v != "" {
-		cfg.Global.User = v
+	if env := os.Getenv("ICS_USER"); env != "" {
+		cfg.Global.User = env
 	}
-	if v := os.Getenv("ICS_PASSWORD"); v != "" {
-		cfg.Global.Password = v
+	if env := os.Getenv("ICS_PASSWORD"); env != "" {
+		cfg.Global.Password = env
 	}
-	if v := os.Getenv("ICS_DATACENTER"); v != "" {
-		cfg.Global.Datacenters = v
+	if env := os.Getenv("ICS_DATACENTER"); env != "" {
+		cfg.Global.Datacenters = env
 	}
-	if v := os.Getenv("ICS_SECRET_NAME"); v != "" {
-		cfg.Global.SecretName = v
+	if env := os.Getenv("ICS_SECRET_NAME"); env != "" {
+		cfg.Global.SecretName = env
 	}
-	if v := os.Getenv("ICS_SECRET_NAMESPACE"); v != "" {
-		cfg.Global.SecretNamespace = v
+	if env := os.Getenv("ICS_SECRET_NAMESPACE"); env != "" {
+		cfg.Global.SecretNamespace = env
 	}
 
-	if v := os.Getenv("ICS_ROUNDTRIP_COUNT"); v != "" {
-		tmp, err := strconv.ParseUint(v, 10, 32)
-		if err != nil {
-			klog.Errorf("Failed to parse ICS_ROUNDTRIP_COUNT: %s", err)
-		} else {
-			cfg.Global.RoundTripperCount = uint(tmp)
-		}
-	}
-/*
-	if v := os.Getenv("ICS_INSECURE"); v != "" {
-		InsecureFlag, err := strconv.ParseBool(v)
+	if env := os.Getenv("ICS_INSECURE"); env != "" {
+		InsecureFlag, err := strconv.ParseBool(env)
 		if err != nil {
 			klog.Errorf("Failed to parse ICS_INSECURE: %s", err)
 		} else {
 			cfg.Global.InsecureFlag = InsecureFlag
 		}
 	}
-*/
-	if v := os.Getenv("ICS_API_DISABLE"); v != "" {
-		APIDisable, err := strconv.ParseBool(v)
+
+	if env := os.Getenv("ICS_API_DISABLE"); env != "" {
+		APIDisable, err := strconv.ParseBool(env)
 		if err != nil {
 			klog.Errorf("Failed to parse ICS_API_DISABLE: %s", err)
 		} else {
@@ -116,12 +108,12 @@ func (cfg *Config) FromEnv() error {
 		}
 	}
 
-	if v := os.Getenv("ICS_API_BINDING"); v != "" {
-		cfg.Global.APIBinding = v
+	if env := os.Getenv("ICS_API_BINDING"); env != "" {
+		cfg.Global.APIBinding = env
 	}
 
-	if v := os.Getenv("ICS_SECRETS_DIRECTORY"); v != "" {
-		cfg.Global.SecretsDirectory = v
+	if env := os.Getenv("ICS_SECRETS_DIRECTORY"); env != "" {
+		cfg.Global.SecretsDirectory = env
 	}
 	if cfg.Global.SecretsDirectory == "" {
 		cfg.Global.SecretsDirectory = DefaultSecretDirectory
@@ -129,31 +121,21 @@ func (cfg *Config) FromEnv() error {
 	if _, err := os.Stat(cfg.Global.SecretsDirectory); os.IsNotExist(err) {
 		cfg.Global.SecretsDirectory = "" //Dir does not exist, set to empty string
 	}
-/*
-	if v := os.Getenv("ICS_CAFILE"); v != "" {
-		cfg.Global.CAFile = v
+	if env := os.Getenv("ICS_LABEL_REGION"); env != "" {
+		cfg.Labels.Region = env
 	}
-*/
-/*
-	if v := os.Getenv("ICS_THUMBPRINT"); v != "" {
-		cfg.Global.Thumbprint = v
-	}
-*/	
-	if v := os.Getenv("ICS_LABEL_REGION"); v != "" {
-		cfg.Labels.Region = v
-	}
-	if v := os.Getenv("ICS_LABEL_ZONE"); v != "" {
-		cfg.Labels.Zone = v
+	if env := os.Getenv("ICS_LABEL_ZONE"); env != "" {
+		cfg.Labels.Zone = env
 	}
 
-	if v := os.Getenv("ICS_IP_FAMILY"); v != "" {
-		cfg.Global.IPFamily = v
+	if env := os.Getenv("ICS_IP_FAMILY"); env != "" {
+		cfg.Global.IPFamily = env
 	}
 	if cfg.Global.IPFamily == "" {
 		cfg.Global.IPFamily = DefaultIPFamily
 	}
 
-	//Build VirtualCenter from ENVs
+	//Build ICSCenter from ENVs
 	for _, e := range os.Environ() {
 		pair := strings.Split(e, "=")
 
@@ -164,62 +146,40 @@ func (cfg *Config) FromEnv() error {
 		key := pair[0]
 		value := pair[1]
 
-		if strings.HasPrefix(key, "ICS_VCENTER_") && len(value) > 0 {
-			id := strings.TrimPrefix(key, "ICS_VCENTER_")
-			vcenter := value
+		if strings.HasPrefix(key, "ICS_ICENTER_") && len(value) > 0 {
+			id := strings.TrimPrefix(key, "ICS_ICENTER_")
+			icenter := value
 
-			_, username, errUsername := getEnvKeyValue("VCENTER_"+id+"_USERNAME", false)
+			_, username, errUsername := getEnvKeyValue("ICENTER_"+id+"_USERNAME", false)
 			if errUsername != nil {
 				username = cfg.Global.User
 			}
-			_, password, errPassword := getEnvKeyValue("VCENTER_"+id+"_PASSWORD", false)
+			_, password, errPassword := getEnvKeyValue("ICENTER_"+id+"_PASSWORD", false)
 			if errPassword != nil {
 				password = cfg.Global.Password
 			}
-			_, server, errServer := getEnvKeyValue("VCENTER_"+id+"_SERVER", false)
+			_, server, errServer := getEnvKeyValue("ICENTER_"+id+"_SERVER", false)
 			if errServer != nil {
 				server = ""
 			}
-			_, port, errPort := getEnvKeyValue("VCENTER_"+id+"_PORT", false)
+			_, port, errPort := getEnvKeyValue("ICENTER_"+id+"_PORT", false)
 			if errPort != nil {
-				port = cfg.Global.VCenterPort
+				port = cfg.Global.ICenterPort
 			}
-/*			
 			insecureFlag := false
-			_, insecureTmp, errInsecure := getEnvKeyValue("VCENTER_"+id+"_INSECURE", false)
+			_, insecureTmp, errInsecure := getEnvKeyValue("ICENTER_"+id+"_INSECURE", false)
 			if errInsecure != nil {
 				insecureFlagTmp, errTmp := strconv.ParseBool(insecureTmp)
 				if errTmp == nil {
 					insecureFlag = insecureFlagTmp
 				}
 			}
-*/
-			_, datacenters, errDatacenters := getEnvKeyValue("VCENTER_"+id+"_DATACENTERS", false)
+			_, datacenters, errDatacenters := getEnvKeyValue("ICENTER_"+id+"_DATACENTERS", false)
 			if errDatacenters != nil {
 				datacenters = cfg.Global.Datacenters
 			}
-			roundtrip := DefaultRoundTripperCount
-			_, roundtripTmp, errRoundtrip := getEnvKeyValue("VCENTER_"+id+"_ROUNDTRIP", false)
-			if errRoundtrip != nil {
-				roundtripFlagTmp, errTmp := strconv.ParseUint(roundtripTmp, 10, 32)
-				if errTmp == nil {
-					roundtrip = uint(roundtripFlagTmp)
-				}
-			}
-/*
-			_, caFile, errCaFile := getEnvKeyValue("VCENTER_"+id+"_CAFILE", false)
-			if errCaFile != nil {
-				caFile = cfg.Global.CAFile
-			}
-*/
-/*
-			_, thumbprint, errThumbprint := getEnvKeyValue("VCENTER_"+id+"_THUMBPRINT", false)
-			if errThumbprint != nil {
-				thumbprint = cfg.Global.Thumbprint
-			}
-*/
-			_, secretName, secretNameErr := getEnvKeyValue("VCENTER_"+id+"_SECRET_NAME", false)
-			_, secretNamespace, secretNamespaceErr := getEnvKeyValue("VCENTER_"+id+"_SECRET_NAMESPACE", false)
+			_, secretName, secretNameErr := getEnvKeyValue("ICENTER_"+id+"_SECRET_NAME", false)
+			_, secretNamespace, secretNamespaceErr := getEnvKeyValue("ICENTER_"+id+"_SECRET_NAMESPACE", false)
 
 			if secretNameErr != nil || secretNamespaceErr != nil {
 				secretName = ""
@@ -227,33 +187,30 @@ func (cfg *Config) FromEnv() error {
 			}
 			secretRef := DefaultCredentialManager
 			if secretName != "" && secretNamespace != "" {
-				secretRef = vcenter
+				secretRef = icenter
 			}
 
-			_, ipFamily, errIPFamily := getEnvKeyValue("VCENTER_"+id+"_IP_FAMILY", false)
+			_, ipFamily, errIPFamily := getEnvKeyValue("ICENTER_"+id+"_IP_FAMILY", false)
 			if errIPFamily != nil {
 				ipFamily = cfg.Global.IPFamily
 			}
 
-			// If server is explicitly set, that means the vcenter value above is the TenantRef
-			vcenterIP := vcenter
-			tenantRef := vcenter
+			// If server is explicitly set, that means the icenter value above is the TenantRef
+			icenterIP := icenter
+			tenantRef := icenter
 			if server != "" {
-				vcenterIP = server
-				tenantRef = vcenter
+				icenterIP = server
+				tenantRef = icenter
 			}
 
-			cfg.VirtualCenter[tenantRef] = &VirtualCenterConfig{
+			cfg.ICSCenter[tenantRef] = &ICSCenterConfig{
 				User:              username,
 				Password:          password,
 				TenantRef:         tenantRef,
-				VCenterIP:         vcenterIP,
-				VCenterPort:       port,
-//				InsecureFlag:      insecureFlag,
+				ICenterIP:         icenterIP,
+				ICenterPort:       port,
+				InsecureFlag:      insecureFlag,
 				Datacenters:       datacenters,
-				RoundTripperCount: roundtrip,
-//				CAFile:            caFile,
-//				Thumbprint:        thumbprint,
 				SecretRef:         secretRef,
 				SecretName:        secretName,
 				SecretNamespace:   secretNamespace,
@@ -262,20 +219,15 @@ func (cfg *Config) FromEnv() error {
 		}
 	}
 
-        // only global icenter exits, use it to initialize virtualcenter.
-	// it must have at least one virtualcenter 
-	if cfg.Global.VCenterIP != "" && cfg.VirtualCenter[cfg.Global.VCenterIP] == nil {
-		cfg.VirtualCenter[cfg.Global.VCenterIP] = &VirtualCenterConfig{
+	if cfg.Global.ICenterIP != "" && cfg.ICSCenter[cfg.Global.ICenterIP] == nil {
+		cfg.ICSCenter[cfg.Global.ICenterIP] = &ICSCenterConfig{
 			User:              cfg.Global.User,
 			Password:          cfg.Global.Password,
-			TenantRef:         cfg.Global.VCenterIP,
-			VCenterIP:         cfg.Global.VCenterIP,
-			VCenterPort:       cfg.Global.VCenterPort,
-//			InsecureFlag:      cfg.Global.InsecureFlag,
+			TenantRef:         cfg.Global.ICenterIP,
+			ICenterIP:         cfg.Global.ICenterIP,
+			ICenterPort:       cfg.Global.ICenterPort,
+			InsecureFlag:      cfg.Global.InsecureFlag,
 			Datacenters:       cfg.Global.Datacenters,
-			RoundTripperCount: cfg.Global.RoundTripperCount,
-//			CAFile:            cfg.Global.CAFile,
-//			Thumbprint:        cfg.Global.Thumbprint,
 			SecretRef:         DefaultCredentialManager,
 			SecretName:        cfg.Global.SecretName,
 			SecretNamespace:   cfg.Global.SecretNamespace,
@@ -322,11 +274,8 @@ func validateIPFamily(value string) ([]string, error) {
 
 func (cfg *Config) validateConfig() error {
 	//Fix default global values
-	if cfg.Global.RoundTripperCount == 0 {
-		cfg.Global.RoundTripperCount = DefaultRoundTripperCount
-	}
-	if cfg.Global.VCenterPort == "" {
-		cfg.Global.VCenterPort = DefaultVCenterPort
+	if cfg.Global.ICenterPort == "" {
+		cfg.Global.ICenterPort = DefaultICenterPort
 	}
 	if cfg.Global.APIBinding == "" {
 		cfg.Global.APIBinding = DefaultAPIBinding
@@ -341,126 +290,109 @@ func (cfg *Config) validateConfig() error {
 		return err
 	}
 
-	// Create a single instance of ICSInstance for the Global VCenterIP if the
-	// VirtualCenter does not already exist in the map
-	if cfg.Global.VCenterIP != "" && cfg.VirtualCenter[cfg.Global.VCenterIP] == nil {
-		vcConfig := &VirtualCenterConfig{
+	// Create a single instance of ICSInstance for the Global ICenterIP if the
+	// ICSCenter does not already exist in the map
+	if cfg.Global.ICenterIP != "" && cfg.ICSCenter[cfg.Global.ICenterIP] == nil {
+		icsConfig := &ICSCenterConfig{
 			User:              cfg.Global.User,
 			Password:          cfg.Global.Password,
-			TenantRef:         cfg.Global.VCenterIP,
-			VCenterIP:         cfg.Global.VCenterIP,
-			VCenterPort:       cfg.Global.VCenterPort,
-//			InsecureFlag:      cfg.Global.InsecureFlag,
+			TenantRef:         cfg.Global.ICenterIP,
+			ICenterIP:         cfg.Global.ICenterIP,
+			ICenterPort:       cfg.Global.ICenterPort,
+			InsecureFlag:      cfg.Global.InsecureFlag,
 			Datacenters:       cfg.Global.Datacenters,
-			RoundTripperCount: cfg.Global.RoundTripperCount,
-//			CAFile:            cfg.Global.CAFile,
-//			Thumbprint:        cfg.Global.Thumbprint,
 			SecretRef:         DefaultCredentialManager,
 			SecretName:        cfg.Global.SecretName,
 			SecretNamespace:   cfg.Global.SecretNamespace,
 			IPFamily:          cfg.Global.IPFamily,
 			IPFamilyPriority:  ipFamilyPriority,
 		}
-		cfg.VirtualCenter[cfg.Global.VCenterIP] = vcConfig
+		cfg.ICSCenter[cfg.Global.ICenterIP] = icsConfig
 	}
 
-	// Must have at least one vCenter defined
-	if len(cfg.VirtualCenter) == 0 {
-		klog.Error(ErrMissingVCenter)
-		return ErrMissingVCenter
+	// Must have at least one iCenter defined
+	if len(cfg.ICSCenter) == 0 {
+		klog.Error(ErrMissingICenter)
+		return ErrMissingICenter
 	}
 
 	// ics.conf is no longer supported in the old format.
-	for vcServer, vcConfig := range cfg.VirtualCenter {
-		klog.V(4).Infof("Initializing vc server %s", vcServer)
-		if vcServer == "" {
-			klog.Error(ErrInvalidVCenterIP)
-			return ErrInvalidVCenterIP
+	for icsServer, icsConfig := range cfg.ICSCenter {
+		klog.V(4).Infof("Initializing ics server %s", icsServer)
+		if icsServer == "" {
+			klog.Error(ErrInvalidICenterIP)
+			return ErrInvalidICenterIP
 		}
 
-		// If vcConfig.VCenterIP is explicitly set, that means the vcServer
+		// If icsConfig.ICenterIP is explicitly set, that means the icsServer
 		// above is the TenantRef
-		if vcConfig.VCenterIP != "" {
-			//vcConfig.VCenterIP is already set
-			vcConfig.TenantRef = vcServer
+		if icsConfig.ICenterIP != "" {
+			//icsConfig.ICenterIP is already set
+			icsConfig.TenantRef = icsServer
 		} else {
-			vcConfig.VCenterIP = vcServer
-			vcConfig.TenantRef = vcServer
+			icsConfig.ICenterIP = icsServer
+			icsConfig.TenantRef = icsServer
 		}
 
-		if !cfg.IsSecretInfoProvided() && !vcConfig.IsSecretInfoProvided() {
-			if vcConfig.User == "" {
-				vcConfig.User = cfg.Global.User
-				if vcConfig.User == "" {
-					klog.Errorf("vcConfig.User is empty for vc %s!", vcServer)
+		if !cfg.IsSecretInfoProvided() && !icsConfig.IsSecretInfoProvided() {
+			if icsConfig.User == "" {
+				icsConfig.User = cfg.Global.User
+				if icsConfig.User == "" {
+					klog.Errorf("icsConfig.User is empty for ics %s!", icsServer)
 					return ErrUsernameMissing
 				}
 			}
-			if vcConfig.Password == "" {
-				vcConfig.Password = cfg.Global.Password
-				if vcConfig.Password == "" {
-					klog.Errorf("vcConfig.Password is empty for vc %s!", vcServer)
+			if icsConfig.Password == "" {
+				icsConfig.Password = cfg.Global.Password
+				if icsConfig.Password == "" {
+					klog.Errorf("icsConfig.Password is empty for ics %s!", icsServer)
 					return ErrPasswordMissing
 				}
 			}
-		} else if cfg.IsSecretInfoProvided() && !vcConfig.IsSecretInfoProvided() {
-			vcConfig.SecretRef = DefaultCredentialManager
-		} else if vcConfig.IsSecretInfoProvided() {
-			vcConfig.SecretRef = vcConfig.SecretNamespace + "/" + vcConfig.SecretName
+		} else if cfg.IsSecretInfoProvided() && !icsConfig.IsSecretInfoProvided() {
+			icsConfig.SecretRef = DefaultCredentialManager
+		} else if icsConfig.IsSecretInfoProvided() {
+			icsConfig.SecretRef = icsConfig.SecretNamespace + "/" + icsConfig.SecretName
 		}
 
-		if vcConfig.VCenterPort == "" {
-			vcConfig.VCenterPort = cfg.Global.VCenterPort
+		if icsConfig.ICenterPort == "" {
+			icsConfig.ICenterPort = cfg.Global.ICenterPort
 		}
 
-		if vcConfig.Datacenters == "" {
+		if icsConfig.Datacenters == "" {
 			if cfg.Global.Datacenters != "" {
-				vcConfig.Datacenters = cfg.Global.Datacenters
+				icsConfig.Datacenters = cfg.Global.Datacenters
 			}
 		}
-		if vcConfig.RoundTripperCount == 0 {
-			vcConfig.RoundTripperCount = cfg.Global.RoundTripperCount
-		}
-/*
-		if vcConfig.CAFile == "" {
-			vcConfig.CAFile = cfg.Global.CAFile
-		}
-*/
-/*
-		if vcConfig.Thumbprint == "" {
-			vcConfig.Thumbprint = cfg.Global.Thumbprint
-		}
-*/
-		if vcConfig.IPFamily == "" {
-			vcConfig.IPFamily = cfg.Global.IPFamily
+
+		if icsConfig.IPFamily == "" {
+			icsConfig.IPFamily = cfg.Global.IPFamily
 		}
 
-		ipFamilyPriority, err := validateIPFamily(vcConfig.IPFamily)
+		ipFamilyPriority, err := validateIPFamily(icsConfig.IPFamily)
 		if err != nil {
-			klog.Errorf("Invalid vcConfig IPFamily: %s, err=%s", vcConfig.IPFamily, err)
+			klog.Errorf("Invalid icsConfig IPFamily: %s, err=%s", icsConfig.IPFamily, err)
 			return err
 		}
-		vcConfig.IPFamilyPriority = ipFamilyPriority
-/*
-		insecure := vcConfig.InsecureFlag
+		icsConfig.IPFamilyPriority = ipFamilyPriority
+
+		insecure := icsConfig.InsecureFlag
 		if !insecure {
-			vcConfig.InsecureFlag = cfg.Global.InsecureFlag
+			icsConfig.InsecureFlag = cfg.Global.InsecureFlag
 		}
-*/
 	}
 
 	return nil
 }
 
-// ReadConfig parses ics cloud config file and stores it into VSphereConfig.
+// ReadConfig parses inCloud Sphere cloud config file and stores it into ICSConfig.
 // Environment variables are also checked
 func ReadConfig(config io.Reader) (*Config, error) {
 	if config == nil {
-		return nil, fmt.Errorf("no vSphere cloud provider config file given")
+		return nil, fmt.Errorf("no inCloud Sphere cloud provider config file given")
 	}
 
 	cfg := &Config{}
-
 	if err := gcfg.FatalOnly(gcfg.ReadInto(cfg, config)); err != nil {
 		return nil, err
 	}

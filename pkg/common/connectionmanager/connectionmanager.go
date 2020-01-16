@@ -24,22 +24,20 @@ import (
 	listerv1 "k8s.io/client-go/listers/core/v1"
 	"k8s.io/klog"
 
-	icscfg "github.com/inspur-ics/cloud-provider-ics/pkg/common/config"
+	icfg "github.com/inspur-ics/cloud-provider-ics/pkg/common/config"
 	cm "github.com/inspur-ics/cloud-provider-ics/pkg/common/credentialmanager"
 	k8s "github.com/inspur-ics/cloud-provider-ics/pkg/common/kubernetes"
-	icslib "github.com/inspur-ics/cloud-provider-ics/pkg/common/icslib"
-	tp "github.com/inspur-ics/ics-go-sdk/client/types"
-	icssdk "github.com/inspur-ics/ics-go-sdk"
+	icsgo "github.com/inspur-ics/ics-go-sdk"
 )
 
 // NewConnectionManager returns a new ConnectionManager object
 // This function also initializes the Default/Global lister for secrets. In other words,
 // If a single global secret is used for all VCs, the informMgr param will be used to
 // obtain those secrets
-func NewConnectionManager(cfg *icscfg.Config, informMgr *k8s.InformerManager, client clientset.Interface) *ConnectionManager {
+func NewConnectionManager(cfg *icfg.Config, informMgr *k8s.InformerManager, client clientset.Interface) *ConnectionManager {
 	connMgr := &ConnectionManager{
 		client:             client,
-		IcsInstanceMap:     generateInstanceMap(cfg),
+		ICSInstanceMap: generateInstanceMap(cfg),
 		credentialManagers: make(map[string]*cm.CredentialManager),
 		informerManagers:   make(map[string]*k8s.InformerManager),
 	}
@@ -47,8 +45,8 @@ func NewConnectionManager(cfg *icscfg.Config, informMgr *k8s.InformerManager, cl
 	if informMgr != nil {
 		klog.V(2).Info("Initializing with K8s SecretLister")
 		credMgr := cm.NewCredentialManager(cfg.Global.SecretName, cfg.Global.SecretNamespace, "", informMgr.GetSecretLister())
-		connMgr.credentialManagers[icscfg.DefaultCredentialManager] = credMgr
-		connMgr.informerManagers[icscfg.DefaultCredentialManager] = informMgr
+		connMgr.credentialManagers[icfg.DefaultCredentialManager] = credMgr
+		connMgr.informerManagers[icfg.DefaultCredentialManager] = informMgr
 
 		return connMgr
 	}
@@ -56,38 +54,35 @@ func NewConnectionManager(cfg *icscfg.Config, informMgr *k8s.InformerManager, cl
 	if cfg.Global.SecretsDirectory != "" {
 		klog.V(2).Info("Initializing for generic CO with secrets")
 		credMgr, _ := connMgr.createManagersPerTenant("", "", cfg.Global.SecretsDirectory, nil)
-		connMgr.credentialManagers[icscfg.DefaultCredentialManager] = credMgr
+		connMgr.credentialManagers[icfg.DefaultCredentialManager] = credMgr
 
 		return connMgr
 	}
 
 	klog.V(2).Info("Initializing generic CO")
 	credMgr := cm.NewCredentialManager("", "", "", nil)
-	connMgr.credentialManagers[icscfg.DefaultCredentialManager] = credMgr
+	connMgr.credentialManagers[icfg.DefaultCredentialManager] = credMgr
 
 	return connMgr
 }
 
 // generateInstanceMap creates a map of iCenter connection objects that can be
-// use to create a connection to a iCenter using icslib package
-func generateInstanceMap(cfg *icscfg.Config) map[string]*ICSInstance {
+// use to create a connection to a iCenter using vclib package
+func generateInstanceMap(cfg *icfg.Config) map[string]*ICSInstance {
 	icsInstanceMap := make(map[string]*ICSInstance)
-
-	for _, vcConfig := range cfg.VirtualCenter {
-		icsConn := icslib.ICSConnection{
-		    ICSConnection: icssdk.ICSConnection{
-				Username: vcConfig.User,
-				Password: vcConfig.Password,
-				Hostname: vcConfig.VCenterIP,
-				Port:     vcConfig.VCenterPort,
-			},
-			RoundTripperCount: vcConfig.RoundTripperCount,
+	for _, icsConfig := range cfg.ICSCenter {
+		icsConn := icsgo.ICSConnection{
+			Username:          icsConfig.User,
+			Password:          icsConfig.Password,
+			Hostname:          icsConfig.ICenterIP,
+			Insecure:          icsConfig.InsecureFlag,
+			Port:              icsConfig.ICenterPort,
 		}
 		icsIns := ICSInstance{
 			Conn: &icsConn,
-			Cfg:  vcConfig,
+			Cfg:  icsConfig,
 		}
-		icsInstanceMap[vcConfig.TenantRef] = &icsIns
+		icsInstanceMap[icsConfig.TenantRef] = &icsIns
 	}
 
 	return icsInstanceMap
@@ -97,18 +92,18 @@ func generateInstanceMap(cfg *icscfg.Config) map[string]*ICSInstance {
 // handled through the Default/Global lister tied to the default service account.
 func (connMgr *ConnectionManager) InitializeSecretLister() {
 	// For each vsi that has a Secret set createManagersPerTenant
-	for _, vInstance := range connMgr.IcsInstanceMap {
-		klog.V(3).Infof("Checking vcServer=%s SecretRef=%s", vInstance.Cfg.VCenterIP, vInstance.Cfg.SecretRef)
-		if strings.EqualFold(vInstance.Cfg.SecretRef, icscfg.DefaultCredentialManager) {
-			klog.V(3).Infof("Skipping. iCenter %s is configured using global service account/secret.", vInstance.Cfg.VCenterIP)
+	for _, instance := range connMgr.ICSInstanceMap {
+		klog.V(3).Infof("Checking icsServer=%s SecretRef=%s", instance.Cfg.ICenterIP, instance.Cfg.SecretRef)
+		if strings.EqualFold(instance.Cfg.SecretRef, icfg.DefaultCredentialManager) {
+			klog.V(3).Infof("Skipping. iCenter %s is configured using global service account/secret.", instance.Cfg.ICenterIP)
 			continue
 		}
 
-		klog.V(3).Infof("Adding credMgr/informMgr for vcServer=%s", vInstance.Cfg.VCenterIP)
-		credsMgr, informMgr := connMgr.createManagersPerTenant(vInstance.Cfg.SecretName,
-			vInstance.Cfg.SecretNamespace, "", connMgr.client)
-		connMgr.credentialManagers[vInstance.Cfg.SecretRef] = credsMgr
-		connMgr.informerManagers[vInstance.Cfg.SecretRef] = informMgr
+		klog.V(3).Infof("Adding credMgr/informMgr for icsServer=%s", instance.Cfg.ICenterIP)
+		credsMgr, informMgr := connMgr.createManagersPerTenant(instance.Cfg.SecretName,
+			instance.Cfg.SecretNamespace, "", connMgr.client)
+		connMgr.credentialManagers[instance.Cfg.SecretRef] = credsMgr
+		connMgr.informerManagers[instance.Cfg.SecretRef] = informMgr
 	}
 }
 
@@ -136,60 +131,57 @@ func (connMgr *ConnectionManager) createManagersPerTenant(secretName string, sec
 // 		1. It will fetch credentials from credentialManager
 //      2. Update the credentials
 //		3. Connects again to iCenter with fetched credentials
-func (connMgr *ConnectionManager) Connect(ctx context.Context, vcInstance *ICSInstance) error {
+func (connMgr *ConnectionManager) Connect(ctx context.Context, icsInstance *ICSInstance) error {
 	connMgr.Lock()
 	defer connMgr.Unlock()
-
-	err := vcInstance.Conn.Connect(ctx)
+	err := icsInstance.Conn.Connect(ctx)
 	if err == nil {
 		return nil
 	}
-//ics
-	if !icslib.IsInvalidCredentialsError(err) || connMgr.credentialManagers == nil {
+
+	if err != nil || connMgr.credentialManagers == nil {
 		klog.Errorf("Cannot connect to iCenter with err: %v", err)
 		return err
 	}
-//ics
-	klog.V(2).Infof("Invalid credentials. Fetching credentials from secrets. vcServer=%s credentialHolder=%s",
-		vcInstance.Cfg.VCenterIP, vcInstance.Cfg.SecretRef)
 
-	credMgr := connMgr.credentialManagers[vcInstance.Cfg.SecretRef]
+	klog.V(2).Infof("Invalid credentials. Fetching credentials from secrets. icsServer=%s credentialHolder=%s",
+		icsInstance.Cfg.ICenterIP, icsInstance.Cfg.SecretRef)
+
+	credMgr := connMgr.credentialManagers[icsInstance.Cfg.SecretRef]
 	if credMgr == nil {
-		klog.Errorf("Unable to find credential manager for vcServer=%s credentialHolder=%s", vcInstance.Cfg.VCenterIP, vcInstance.Cfg.SecretRef)
+		klog.Errorf("Unable to find credential manager for icsServer=%s credentialHolder=%s", icsInstance.Cfg.ICenterIP, icsInstance.Cfg.SecretRef)
 		return ErrUnableToFindCredentialManager
 	}
-	credentials, err := credMgr.GetCredential(vcInstance.Cfg.VCenterIP)
+	credentials, err := credMgr.GetCredential(icsInstance.Cfg.ICenterIP)
 	if err != nil {
 		klog.Error("Failed to get credentials from Secret Credential Manager with err:", err)
 		return err
 	}
-	vcInstance.Conn.UpdateCredentials(credentials.User, credentials.Password)
-	return vcInstance.Conn.Connect(ctx)
+	icsInstance.Conn.UpdateCredentials(credentials.User, credentials.Password)
+	return icsInstance.Conn.Connect(ctx)
 }
 
 // Logout closes existing connections to remote iCenter endpoints.
 func (connMgr *ConnectionManager) Logout() {
-//ics block
-	for _, icsIns := range connMgr.IcsInstanceMap {
+	for _, icsIns := range connMgr.ICSInstanceMap {
 		connMgr.Lock()
 		c := icsIns.Conn.Client
 		connMgr.Unlock()
 		if c != nil {
 			icsIns.Conn.Logout(context.TODO())
 		}
-    }
-//ics block
+	}
 }
 
 // Verify validates the configuration by attempting to connect to the
 // configured, remote iCenter endpoints.
 func (connMgr *ConnectionManager) Verify() error {
-	for _, vcInstance := range connMgr.IcsInstanceMap {
-		err := connMgr.Connect(context.Background(), vcInstance)
+	for _, icsInstance := range connMgr.ICSInstanceMap {
+		err := connMgr.Connect(context.Background(), icsInstance)
 		if err == nil {
-			klog.V(3).Infof("iCenter connect %s succeeded.", vcInstance.Cfg.VCenterIP)
+			klog.V(3).Infof("iCenter connect %s succeeded.", icsInstance.Cfg.ICenterIP)
 		} else {
-			klog.Errorf("iCenter %s failed. Err: %q", vcInstance.Cfg.VCenterIP, err)
+			klog.Errorf("iCenter %s failed. Err: %q", icsInstance.Cfg.ICenterIP, err)
 			return err
 		}
 	}
@@ -199,12 +191,12 @@ func (connMgr *ConnectionManager) Verify() error {
 // VerifyWithContext is the same as Verify but allows a Go Context
 // to control the lifecycle of the connection event.
 func (connMgr *ConnectionManager) VerifyWithContext(ctx context.Context) error {
-	for _, vcInstance := range connMgr.IcsInstanceMap {
-		err := connMgr.Connect(ctx, vcInstance)
+	for _, icsInstance := range connMgr.ICSInstanceMap {
+		err := connMgr.Connect(ctx, icsInstance)
 		if err == nil {
-			klog.V(3).Infof("iCenter connect %s succeeded.", vcInstance.Cfg.VCenterIP)
+			klog.V(3).Infof("iCenter connect %s succeeded.", icsInstance.Cfg.ICenterIP)
 		} else {
-			klog.Errorf("iCenter %s failed. Err: %q", vcInstance.Cfg.VCenterIP, err)
+			klog.Errorf("iCenter %s failed. Err: %q", icsInstance.Cfg.ICenterIP, err)
 			return err
 		}
 	}
@@ -212,6 +204,10 @@ func (connMgr *ConnectionManager) VerifyWithContext(ctx context.Context) error {
 }
 
 // APIVersion returns the version of the iCenter API
-func (connMgr *ConnectionManager) APIVersion(vcInstance *ICSInstance) (string, error) {
-	return tp.ApiVersion, nil
+func (connMgr *ConnectionManager) APIVersion(icsInstance *ICSInstance) (string, error) {
+	if err := connMgr.Connect(context.Background(), icsInstance); err != nil {
+		return "", err
+	}
+	//FIXME TODO.
+	return "5.6", nil
 }

@@ -18,7 +18,6 @@ package icslib
 
 import "errors"
 
-
 // Error Messages
 const (
 	FileAlreadyExistErrMsg         = "File requested already exist"

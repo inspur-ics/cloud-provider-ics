@@ -16,7 +16,7 @@ limitations under the License.
 
 package config
 
-// IsSecretInfoProvided returns true if the secret per VC has been configured
-func (vcc *VirtualCenterConfig) IsSecretInfoProvided() bool {
-	return vcc.SecretName != "" && vcc.SecretNamespace != ""
+// IsSecretInfoProvided returns true if the secret per ICS has been configured
+func (icsc *ICSCenterConfig) IsSecretInfoProvided() bool {
+	return icsc.SecretName != "" && icsc.SecretNamespace != ""
 }

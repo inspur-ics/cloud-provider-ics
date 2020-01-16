@@ -38,7 +38,7 @@ func NewCredentialManager(secretName string, secretNamespace string, secretsDire
 		SecretLister:           secretLister,
 		secretsDirectoryParsed: false,
 		Cache: &SecretCache{
-			VirtualCenter: make(map[string]*Credential),
+			ICSCenter: make(map[string]*Credential),
 		},
 	}
 }
@@ -164,7 +164,7 @@ func (cache *SecretCache) UpdateSecretFile(data map[string][]byte) {
 func (cache *SecretCache) GetCredential(server string) (Credential, bool) {
 	cache.cacheLock.Lock()
 	defer cache.cacheLock.Unlock()
-	credential, found := cache.VirtualCenter[server]
+	credential, found := cache.ICSCenter[server]
 	if !found {
 		return Credential{}, found
 	}
@@ -184,7 +184,7 @@ func (cache *SecretCache) parseSecret() error {
 		data = cache.SecretFile
 	}
 
-	return parseConfig(data, cache.VirtualCenter)
+	return parseConfig(data, cache.ICSCenter)
 }
 
 // parseConfig returns iCenter ip/fdqn mapping to its credentials viz. Username and Password.
@@ -195,25 +195,25 @@ func parseConfig(data map[string][]byte, config map[string]*Credential) error {
 	for credentialKey, credentialValue := range data {
 		credentialKey = strings.ToLower(credentialKey)
 		if strings.HasSuffix(credentialKey, "password") {
-			vcServer := strings.Split(credentialKey, ".password")[0]
-			if _, ok := config[vcServer]; !ok {
-				config[vcServer] = &Credential{}
+			icsServer := strings.Split(credentialKey, ".password")[0]
+			if _, ok := config[icsServer]; !ok {
+				config[icsServer] = &Credential{}
 			}
-			config[vcServer].Password = string(credentialValue)
+			config[icsServer].Password = string(credentialValue)
 		} else if strings.HasSuffix(credentialKey, "username") {
-			vcServer := strings.Split(credentialKey, ".username")[0]
-			if _, ok := config[vcServer]; !ok {
-				config[vcServer] = &Credential{}
+			icsServer := strings.Split(credentialKey, ".username")[0]
+			if _, ok := config[icsServer]; !ok {
+				config[icsServer] = &Credential{}
 			}
-			config[vcServer].User = string(credentialValue)
+			config[icsServer].User = string(credentialValue)
 		} else {
 			klog.Errorf("Unknown secret key %s", credentialKey)
 			return ErrUnknownSecretKey
 		}
 	}
-	for vcServer, credential := range config {
+	for icsServer, credential := range config {
 		if credential.User == "" || credential.Password == "" {
-			klog.Errorf("Username/Password is missing for server %s", vcServer)
+			klog.Errorf("Username/Password is missing for server %s", icsServer)
 			return ErrCredentialMissing
 		}
 	}

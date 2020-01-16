@@ -24,7 +24,7 @@ import (
 
 	"k8s.io/klog"
 
-	icslib "github.com/inspur-ics/cloud-provider-ics/pkg/common/icslib"
+	"github.com/inspur-ics/cloud-provider-ics/pkg/common/icslib"
 )
 
 // String returns the string representation of the FindVM constant.
@@ -41,19 +41,17 @@ func (f FindVM) String() string {
 	}
 }
 
-// WhichVCandDCByNodeID finds the VC/DC combo that owns a particular VM
-func (cm *ConnectionManager) WhichVCandDCByNodeID(ctx context.Context, nodeID string, searchBy FindVM) (*VMDiscoveryInfo, error) {
+// WhichICSandDCByNodeID finds the ICS/DC combo that owns a particular VM
+func (cm *ConnectionManager) WhichICSandDCByNodeID(ctx context.Context, nodeID string, searchBy FindVM) (*VMDiscoveryInfo, error) {
 	if nodeID == "" {
-		klog.V(3).Info("WhichVCandDCByNodeID called but nodeID is empty")
+		klog.V(3).Info("WhichICSandDCByNodeID called but nodeID is empty")
 		return nil, icslib.ErrNoVMFound
 	}
-//ics
 	type vmSearch struct {
 		tenantRef  string
-		vc         string
+		ics         string
 		datacenter *icslib.Datacenter
 	}
-//ics
 
 	var mutex = &sync.Mutex{}
 	var globalErrMutex = &sync.Mutex{}
@@ -61,20 +59,19 @@ func (cm *ConnectionManager) WhichVCandDCByNodeID(ctx context.Context, nodeID st
 	var wg sync.WaitGroup
 	var globalErr *error
 
-	//default, 8*10
 	queueChannel = make(chan *vmSearch, QueueSize)
 
 	myNodeID := nodeID
 	switch searchBy {
 	case FindVMByUUID:
-		klog.V(3).Info("WhichVCandDCByNodeID by UUID")
+		klog.V(3).Info("WhichICSandDCByNodeID by UUID")
 		myNodeID = strings.TrimSpace(strings.ToLower(nodeID))
 	case FindVMByIP:
-		klog.V(3).Info("WhichVCandDCByNodeID by IP")
+		klog.V(3).Info("WhichICSandDCByNodeID by IP")
 	default:
-		klog.V(3).Info("WhichVCandDCByNodeID by Name")
+		klog.V(3).Info("WhichICSandDCByNodeID by Name")
 	}
-	klog.V(2).Info("WhichVCandDCByNodeID nodeID: ", myNodeID)
+	klog.V(2).Info("WhichICSandDCByNodeID nodeID: ", myNodeID)
 
 	vmFound := false
 	globalErr = nil
@@ -99,18 +96,16 @@ func (cm *ConnectionManager) WhichVCandDCByNodeID(ctx context.Context, nodeID st
 	}
 
 	go func() {
-//ics	
-		for _, vsi := range cm.IcsInstanceMap {
-//ics
+		for _, instance := range cm.ICSInstanceMap {
 			var datacenterObjs []*icslib.Datacenter
-//ics
+
 			if getVMFound() {
 				break
 			}
 
 			var err error
 			for i := 0; i < NumConnectionAttempts; i++ {
-				err = cm.Connect(ctx, vsi)
+				err = cm.Connect(ctx, instance)
 				if err == nil {
 					break
 				}
@@ -118,32 +113,28 @@ func (cm *ConnectionManager) WhichVCandDCByNodeID(ctx context.Context, nodeID st
 			}
 
 			if err != nil {
-				klog.Error("WhichVCandDCByNodeID error vc:", err)
+				klog.Error("WhichICSandDCByNodeID error ics:", err)
 				setGlobalErr(err)
 				continue
 			}
 
-			if vsi.Cfg.Datacenters == "" {
-//ics
-				datacenterObjs, err = icslib.GetAllDatacenter(ctx, vsi.Conn)
-//ics
+			if instance.Cfg.Datacenters == "" {
+				datacenterObjs, err = icslib.GetAllDatacenter(ctx, instance.Conn)
 				if err != nil {
-					klog.Error("WhichVCandDCByNodeID error dc:", err)
+					klog.Error("WhichICSandDCByNodeID error dc:", err)
 					setGlobalErr(err)
 					continue
 				}
 			} else {
-				datacenters := strings.Split(vsi.Cfg.Datacenters, ",")
+				datacenters := strings.Split(instance.Cfg.Datacenters, ",")
 				for _, dc := range datacenters {
 					dc = strings.TrimSpace(dc)
 					if dc == "" {
 						continue
 					}
-//ics
-					datacenterObj, err := icslib.GetDatacenter(ctx, vsi.Conn, dc)
-//ics
+					datacenterObj, err := icslib.GetDatacenter(ctx, instance.Conn, dc)
 					if err != nil {
-						klog.Error("WhichVCandDCByNodeID error dc:", err)
+						klog.Error("WhichICSandDCByNodeID error dc:", err)
 						setGlobalErr(err)
 						continue
 					}
@@ -156,10 +147,10 @@ func (cm *ConnectionManager) WhichVCandDCByNodeID(ctx context.Context, nodeID st
 					break
 				}
 
-				klog.V(4).Infof("Finding node %s in vc=%s and datacenter=%s", myNodeID, vsi.Cfg.VCenterIP, datacenterObj.Name())
+				klog.V(4).Infof("Finding node %s in ics=%s and datacenter=%s", myNodeID, instance.Cfg.ICenterIP, datacenterObj.Name)
 				queueChannel <- &vmSearch{
-					tenantRef:  vsi.Cfg.TenantRef,
-					vc:         vsi.Cfg.VCenterIP,
+					tenantRef:  instance.Cfg.TenantRef,
+					ics:         instance.Cfg.ICenterIP,
 					datacenter: datacenterObj,
 				}
 			}
@@ -172,46 +163,44 @@ func (cm *ConnectionManager) WhichVCandDCByNodeID(ctx context.Context, nodeID st
 		wg.Add(1)
 		go func() {
 			for res := range queueChannel {
-//ics
 				var vm *icslib.VirtualMachine
 				var err error
 
 				switch searchBy {
+				//FIXME TODO.WANGYONGCHAO
 				case FindVMByUUID:
 					vm, err = res.datacenter.GetVMByUUID(ctx, myNodeID)
 				case FindVMByIP:
 					vm, err = res.datacenter.GetVMByIP(ctx, myNodeID)
 				default:
 					vm, err = res.datacenter.GetVMByDNSName(ctx, myNodeID)
-//ics					
 				}
 
 				if err != nil {
-					klog.Errorf("Error while looking for vm=%s(%s) in vc=%s and datacenter=%s: %v",
-						myNodeID, searchBy, res.vc, res.datacenter.Name(), err)
-
+					klog.Errorf("Error while looking for vm=%s(%s) in ics=%s and datacenter=%s: %v",
+						myNodeID, searchBy, res.ics, res.datacenter.Name, err)
 					if err != icslib.ErrNoVMFound {
 						setGlobalErr(err)
 					} else {
-						klog.V(2).Infof("Did not find node %s in vc=%s and datacenter=%s",
-							myNodeID, res.vc, res.datacenter.Name())
+						klog.V(2).Infof("Did not find node %s in ics=%s and datacenter=%s",
+							myNodeID, res.ics, res.datacenter.Name)
 					}
 					continue
 				}
-//ics block
-				hostName := vm.VMHostName
+
+				hostName := vm.Name
 				if searchBy == FindVMByIP {
-					klog.V(2).Infof("WhichVCandDCByNodeID by IP. Overriding ics from=%s to to=%s", vm.VMHostName, myNodeID)
+					klog.V(2).Infof("WhichICSandDCByNodeID by IP. Overriding VMName from=%s to to=%s", vm.Name, myNodeID)
 					hostName = myNodeID
 				}
 
 				UUID := strings.ToLower(strings.TrimSpace(vm.UUID))
 
-				klog.V(2).Infof("Found node %s as vm=%+v in vc=%s and datacenter=%s",
-					nodeID, vm, res.vc, res.datacenter.Name())
+				klog.V(2).Infof("Found node %s as vm=%+v in ics=%s and datacenter=%s",
+					nodeID, vm, res.ics, res.datacenter.Name)
 				klog.V(2).Infof("Hostname: %s, UUID: %s", hostName, UUID)
-//ics block
-				vmInfo = &VMDiscoveryInfo{TenantRef: res.tenantRef, DataCenter: res.datacenter, VM: vm, VcServer: res.vc,
+
+				vmInfo = &VMDiscoveryInfo{TenantRef: res.tenantRef, DataCenter: res.datacenter, VM: vm, IcsServer: res.ics,
 					UUID: UUID, NodeName: hostName}
 				setVMFound(true)
 				break
@@ -227,22 +216,22 @@ func (cm *ConnectionManager) WhichVCandDCByNodeID(ctx context.Context, nodeID st
 		return nil, *globalErr
 	}
 
-	klog.V(4).Infof("WhichVCandDCByNodeID: %q vm not found", myNodeID)
+	klog.V(4).Infof("WhichICSandDCByNodeID: %q vm not found", myNodeID)
 	return nil, icslib.ErrNoVMFound
 }
 
-/*
-// WhichVCandDCByFCDId searches for an FCD using the provided ID.
-func (cm *ConnectionManager) WhichVCandDCByFCDId(ctx context.Context, fcdID string) (*FcdDiscoveryInfo, error) {
+// WhichICSandDCByFCDId searches for an FCD using the provided ID.
+func (cm *ConnectionManager) WhichICSandDCByFCDId(ctx context.Context, fcdID string) (*FcdDiscoveryInfo, error) {
+
 	if fcdID == "" {
-		klog.V(3).Info("WhichVCandDCByFCDId called but fcdID is empty")
+		klog.V(3).Info("WhichICSandDCByFCDId called but fcdID is empty")
 		return nil, icslib.ErrNoDiskIDFound
 	}
-	klog.V(2).Info("WhichVCandDCByFCDId fcdID: ", fcdID)
+	klog.V(2).Info("WhichICSandDCByFCDId fcdID: ", fcdID)
 
 	type fcdSearch struct {
 		tenantRef  string
-		vc         string
+		ics         string
 		datacenter *icslib.Datacenter
 	}
 
@@ -276,9 +265,8 @@ func (cm *ConnectionManager) WhichVCandDCByFCDId(ctx context.Context, fcdID stri
 		return found
 	}
 
-//ics
 	go func() {
-		for _, vsi := range cm.IcsInstanceMap {
+		for _, instance := range cm.ICSInstanceMap {
 			var datacenterObjs []*icslib.Datacenter
 
 			if getFCDFound() {
@@ -287,7 +275,7 @@ func (cm *ConnectionManager) WhichVCandDCByFCDId(ctx context.Context, fcdID stri
 
 			var err error
 			for i := 0; i < NumConnectionAttempts; i++ {
-				err = cm.Connect(ctx, vsi)
+				err = cm.Connect(ctx, instance)
 				if err == nil {
 					break
 				}
@@ -295,28 +283,28 @@ func (cm *ConnectionManager) WhichVCandDCByFCDId(ctx context.Context, fcdID stri
 			}
 
 			if err != nil {
-				klog.Error("WhichVCandDCByFCDId error vc:", err)
+				klog.Error("WhichICSandDCByFCDId error ics:", err)
 				setGlobalErr(err)
 				continue
 			}
 
-			if vsi.Cfg.Datacenters == "" {
-				datacenterObjs, err = icslib.GetAllDatacenter(ctx, vsi.Conn)
+			if instance.Cfg.Datacenters == "" {
+				datacenterObjs, err = icslib.GetAllDatacenter(ctx, instance.Conn)
 				if err != nil {
-					klog.Error("WhichVCandDCByFCDId error dc:", err)
+					klog.Error("WhichICSandDCByFCDId error dc:", err)
 					setGlobalErr(err)
 					continue
 				}
 			} else {
-				datacenters := strings.Split(vsi.Cfg.Datacenters, ",")
+				datacenters := strings.Split(instance.Cfg.Datacenters, ",")
 				for _, dc := range datacenters {
 					dc = strings.TrimSpace(dc)
 					if dc == "" {
 						continue
 					}
-					datacenterObj, err := icslib.GetDatacenter(ctx, vsi.Conn, dc)
+					datacenterObj, err := icslib.GetDatacenter(ctx, instance.Conn, dc)
 					if err != nil {
-						klog.Error("WhichVCandDCByFCDId error dc:", err)
+						klog.Error("WhichICSandDCByFCDId error dc:", err)
 						setGlobalErr(err)
 						continue
 					}
@@ -329,10 +317,10 @@ func (cm *ConnectionManager) WhichVCandDCByFCDId(ctx context.Context, fcdID stri
 					break
 				}
 
-				klog.V(4).Infof("Finding FCD %s in vc=%s and datacenter=%s", fcdID, vsi.Cfg.VCenterIP, datacenterObj.Name())
+				klog.V(4).Infof("Finding FCD %s in ics=%s and datacenter=%s", fcdID, instance.Cfg.ICenterIP, datacenterObj.Name)
 				queueChannel <- &fcdSearch{
-					tenantRef:  vsi.Cfg.TenantRef,
-					vc:         vsi.Cfg.VCenterIP,
+					tenantRef:  instance.Cfg.TenantRef,
+					ics:         instance.Cfg.ICenterIP,
 					datacenter: datacenterObj,
 				}
 			}
@@ -346,30 +334,30 @@ func (cm *ConnectionManager) WhichVCandDCByFCDId(ctx context.Context, fcdID stri
 		go func() {
 			for res := range queueChannel {
 
+				//FIXME TODO.WANGYONGCHAO
 				fcd, err := res.datacenter.DoesFirstClassDiskExist(ctx, fcdID)
 				if err != nil {
-					klog.Errorf("Error while looking for FCD=%+v in vc=%s and datacenter=%s: %v",
-						fcd, res.vc, res.datacenter.Name(), err)
+					klog.Errorf("Error while looking for FCD=%+v in ics=%s and datacenter=%s: %v",
+						fcd, res.ics, res.datacenter.Name, err)
 					if err != icslib.ErrNoDiskIDFound {
 						setGlobalErr(err)
 					} else {
-						klog.V(2).Infof("Did not find FCD %s in vc=%s and datacenter=%s",
-							fcdID, res.vc, res.datacenter.Name())
+						klog.V(2).Infof("Did not find FCD %s in ics=%s and datacenter=%s",
+							fcdID, res.ics, res.datacenter.Name)
 					}
 					continue
 				}
 
-				klog.V(2).Infof("Found FCD %s as vm=%+v in vc=%s and datacenter=%s",
-					fcdID, fcd, res.vc, res.datacenter.Name())
+				klog.V(2).Infof("Found FCD %s as vm=%+v in ics=%s and datacenter=%s",
+					fcdID, fcd, res.ics, res.datacenter.Name)
 
-				fcdInfo = &FcdDiscoveryInfo{TenantRef: res.tenantRef, DataCenter: res.datacenter, FCDInfo: fcd, VcServer: res.vc}
+				fcdInfo = &FcdDiscoveryInfo{TenantRef: res.tenantRef, DataCenter: res.datacenter, FCDInfo: fcd, IcsServer: res.ics}
 				setFCDFound(true)
 				break
 			}
 			wg.Done()
 		}()
 	}
-//ics
 	wg.Wait()
 	if fcdFound {
 		return fcdInfo, nil
@@ -378,7 +366,6 @@ func (cm *ConnectionManager) WhichVCandDCByFCDId(ctx context.Context, fcdID stri
 		return nil, *globalErr
 	}
 
-	klog.V(4).Infof("WhichVCandDCByFCDId: %q FCD not found", fcdID)
+	klog.V(4).Infof("WhichICSandDCByFCDId: %q FCD not found", fcdID)
 	return nil, icslib.ErrNoDiskIDFound
 }
-*/

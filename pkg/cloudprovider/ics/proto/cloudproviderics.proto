@@ -18,19 +18,19 @@ syntax = "proto3";
 
 option java_multiple_files = true;
 option java_package = "com.inspur.cloudprovider.ics";
-option java_outer_classname = "CloudProviderIcs";
+option java_outer_classname = "CloudProviderICS";
 
 package cloudproviderics;
 
 // The service definition.
-service CloudProviderIcs {
+service CloudProviderICS {
   rpc GetNode (GetNodeRequest) returns (GetNodeReply) {}
   rpc ListNodes (ListNodesRequest) returns (ListNodesReply) {}
   rpc GetVersion (VersionRequest) returns (VersionReply) {}
 }
 
 message Node {
-	string vcenter = 1;
+	string icenter = 1;
 	string datacenter = 2;
 	string name = 3;
 	repeated string dnsnames = 4;
@@ -48,7 +48,7 @@ message GetNodeReply {
 }
 
 message ListNodesRequest {
-  string vcenter = 1;
+  string icenter = 1;
   string datacenter = 2;
 }
 

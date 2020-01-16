@@ -184,9 +184,7 @@ func (i *instances) InstanceShutdownByProviderID(ctx context.Context, providerID
 		}
 		klog.V(2).Infof("instances.InstanceShutdownByProviderID() EXISTS with %q", uid)
 	}
-
 	active, err := i.nodeManager.nodeUUIDMap[uid].vm.IsActive(ctx)
 	klog.V(2).Infof("VM=%s IsActive=%t", uid, active)
-	// invert the return value
 	return !active, err
 }

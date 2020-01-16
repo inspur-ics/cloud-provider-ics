@@ -51,8 +51,8 @@ const (
 // Error Messages
 const (
 	ConnectionNotFoundErrMsg       = "iCenter not found"
-	MustHaveAtLeastOneVCDCErrMsg   = "Must have at least oneiCenter/Datacenter configured"
-	MultiVCRequiresZonesErrMsg     = "The use of multiple iCenters require the use of zones"
+	MustHaveAtLeastOneICSDCErrMsg   = "Must have at least one iCenter/Datacenter configured"
+	MultiICSRequiresZonesErrMsg     = "The use of multiple vCenters require the use of zones"
 	MultiDCRequiresZonesErrMsg     = "The use of multiple Datacenters within a iCenter require the use of zones"
 	UnsupportedConfigurationErrMsg = "Unsupported configuration"
 	UnableToFindCredentialManager  = "Unable to find Credential Manager"
@@ -61,8 +61,8 @@ const (
 // Error constants
 var (
 	ErrConnectionNotFound            = errors.New(ConnectionNotFoundErrMsg)
-	ErrMustHaveAtLeastOneVCDC        = errors.New(MustHaveAtLeastOneVCDCErrMsg)
-	ErrMultiVCRequiresZones          = errors.New(MultiVCRequiresZonesErrMsg)
+	ErrMustHaveAtLeastOneICSDC        = errors.New(MustHaveAtLeastOneICSDCErrMsg)
+	ErrMultiICSRequiresZones          = errors.New(MultiICSRequiresZonesErrMsg)
 	ErrMultiDCRequiresZones          = errors.New(MultiDCRequiresZonesErrMsg)
 	ErrUnsupportedConfiguration      = errors.New(UnsupportedConfigurationErrMsg)
 	ErrUnableToFindCredentialManager = errors.New(UnableToFindCredentialManager)

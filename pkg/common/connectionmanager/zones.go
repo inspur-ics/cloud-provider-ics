@@ -18,73 +18,66 @@ package connectionmanager
 
 import (
 	"context"
-	//	"fmt"
-//	"net/url"
-//	"strings"
-//	"sync"
+	"fmt"
+	"strings"
+	"sync"
 	"time"
 
+	"github.com/inspur-ics/cloud-provider-ics/pkg/common/icslib"
+	icsgo "github.com/inspur-ics/ics-go-sdk"
+	rest "github.com/inspur-ics/ics-go-sdk/client"
+	ht "github.com/inspur-ics/ics-go-sdk/host"
+	tags "github.com/inspur-ics/ics-go-sdk/tag"
 	"k8s.io/klog"
-
-//	"github.com/inspur-ics/cloud-provider-ics/pkg/common/goicssdk/icsfind"
-//	"github.com/inspur-ics/cloud-provider-ics/pkg/common/goicssdk/icsobject"
-//	"github.com/inspur-ics/cloud-provider-ics/pkg/common/goicssdk/vapi/icsrest"
-//	"github.com/inspur-ics/cloud-provider-ics/pkg/common/goicssdk/vapi/icstags"
-//	"github.com/inspur-ics/cloud-provider-ics/pkg/common/goicssdk"
-//	"github.com/inspur-ics/cloud-provider-ics/pkg/common/goicssdk/icstypes"
-
-	icslib "github.com/inspur-ics/cloud-provider-ics/pkg/common/icslib"
 )
 
 //Well-known keys for k/v maps
 const (
 
 	// ZoneLabel is the label for zones.
-	//cluster label
 	ZoneLabel = "Zone"
 
 	// RegionLabel is the label for regions.
-	//datacenter label
 	RegionLabel = "Region"
 )
 
-// WhichVCandDCByZone gets the corresponding VC+DC combo that supports the availability zone
-func (cm *ConnectionManager) WhichVCandDCByZone(ctx context.Context,
+// WhichICSandDCByZone gets the corresponding ICS+DC combo that supports the availability zone
+func (cm *ConnectionManager) WhichICSandDCByZone(ctx context.Context,
 	zoneLabel string, regionLabel string, zoneLooking string, regionLooking string) (*ZoneDiscoveryInfo, error) {
-	klog.V(4).Infof("WhichVCandDCByZone called with zone: %s and region: %s", zoneLooking, regionLooking)
+	klog.V(4).Infof("WhichICSandDCByZone called with zone: %s and region: %s", zoneLooking, regionLooking)
 
-	// Need at least one VC
-	numOfVCs := len(cm.IcsInstanceMap)
-	if numOfVCs == 0 {
-		err := ErrMustHaveAtLeastOneVCDC
+	// Need at least one ICS
+	numOfICSs := len(cm.ICSInstanceMap)
+	if numOfICSs == 0 {
+		err := ErrMustHaveAtLeastOneICSDC
 		klog.Errorf("%v", err)
 		return nil, err
 	}
 
-	if numOfVCs == 1 {
-		klog.Info("Single VC Detected")
-		return cm.getDIFromSingleVC(ctx, zoneLabel, regionLabel, zoneLooking, regionLooking)
+	if numOfICSs == 1 {
+		klog.Info("Single ICS Detected")
+		return cm.getDIFromSingleICS(ctx, zoneLabel, regionLabel, zoneLooking, regionLooking)
 	}
 
-	klog.Info("Multi VC Detected")
-	return cm.getDIFromMultiVCorDC(ctx, zoneLabel, regionLabel, zoneLooking, regionLooking)
+	klog.Info("Multi ICS Detected")
+	return cm.getDIFromMultiICSorDC(ctx, zoneLabel, regionLabel, zoneLooking, regionLooking)
 }
 
-func (cm *ConnectionManager) getDIFromSingleVC(ctx context.Context,
+func (cm *ConnectionManager) getDIFromSingleICS(ctx context.Context,
 	zoneLabel string, regionLabel string, zoneLooking string, regionLooking string) (*ZoneDiscoveryInfo, error) {
-	klog.V(4).Infof("getDIFromSingleVC called with zone: %s and region: %s", zoneLooking, regionLooking)
+	klog.V(4).Infof("getDIFromSingleICS called with zone: %s and region: %s", zoneLooking, regionLooking)
 
-	if len(cm.IcsInstanceMap) != 1 {
+	if len(cm.ICSInstanceMap) != 1 {
 		err := ErrUnsupportedConfiguration
 		klog.Errorf("%v", err)
 		return nil, err
 	}
 
-	var vc string
+	var ics string
 
-	// Get first ics Instance
+	// Get first inCloud Sphere Instance
 	var tmpVsi *ICSInstance
-	for _, tmpVsi = range cm.IcsInstanceMap {
+	for _, tmpVsi = range cm.ICSInstanceMap {
 		break //Grab the first one because there is only one
 	}
 
@@ -96,57 +89,54 @@ func (cm *ConnectionManager) getDIFromSingleVC(ctx context.Context,
 		}
 		time.Sleep(time.Duration(RetryAttemptDelaySecs) * time.Second)
 	}
-//ics
+
+	//FIXME TODO.WANGYONGCHAO
 	numOfDc, err := icslib.GetNumberOfDatacenters(ctx, tmpVsi.Conn)
-//ics
 	if err != nil {
 		klog.Errorf("%v", err)
 		return nil, err
 	}
 
-	// More than 1 DC in this VC
+	// More than 1 DC in this ICS
 	if numOfDc > 1 {
 		klog.Info("Multi Datacenter configuration detected")
-		return cm.getDIFromMultiVCorDC(ctx, zoneLabel, regionLabel, zoneLooking, regionLooking)
+		return cm.getDIFromMultiICSorDC(ctx, zoneLabel, regionLabel, zoneLooking, regionLooking)
 	}
 
-	// We are sure this is single VC and DC
+	// We are sure this is single ICS and DC
 	klog.Info("Single iCenter/Datacenter configuration detected")
-//ics
+
+	//FIXME TODO.WANGYONGCHAO
 	datacenterObjs, err := icslib.GetAllDatacenter(ctx, tmpVsi.Conn)
-//ics
 	if err != nil {
 		klog.Error("GetAllDatacenter failed. Err:", err)
 		return nil, err
 	}
 
 	discoveryInfo := &ZoneDiscoveryInfo{
-		VcServer:   vc,
+		IcsServer:   ics,
 		DataCenter: datacenterObjs[0],
 	}
 
 	return discoveryInfo, nil
 }
 
-func (cm *ConnectionManager) getDIFromMultiVCorDC(ctx context.Context,
+func (cm *ConnectionManager) getDIFromMultiICSorDC(ctx context.Context,
 	zoneLabel string, regionLabel string, zoneLooking string, regionLooking string) (*ZoneDiscoveryInfo, error) {
-//ics block
-/*
-	klog.V(4).Infof("getDIFromMultiVCorDC called with zone: %s and region: %s", zoneLooking, regionLooking)
+	klog.V(4).Infof("getDIFromMultiICSorDC called with zone: %s and region: %s", zoneLooking, regionLooking)
 
 	if len(zoneLabel) == 0 || len(regionLabel) == 0 || len(zoneLooking) == 0 || len(regionLooking) == 0 {
-		err := ErrMultiVCRequiresZones
+		err := ErrMultiICSRequiresZones
 		klog.Errorf("%v", err)
 		return nil, err
 	}
 
 	type zoneSearch struct {
 		tenantRef  string
-		vc         string
-//ics
+		ics         string
+		//FIXME TODO.WANGYONGCHAO
 		datacenter *icslib.Datacenter
-		host       *icsobject.HostSystem
-//ics
+		host       *icslib.HostSystem
 	}
 
 	var mutex = &sync.Mutex{}
@@ -180,10 +170,10 @@ func (cm *ConnectionManager) getDIFromMultiVCorDC(ctx context.Context,
 	}
 
 	go func() {
-		for _, vsi := range cm.IcsInstanceMap {
-//ics
+		for _, vsi := range cm.ICSInstanceMap {
+			//FIXME TODO.WANGYONGCHAO
 			var datacenterObjs []*icslib.Datacenter
-//ics
+
 			if getZoneFound() {
 				break
 			}
@@ -198,17 +188,16 @@ func (cm *ConnectionManager) getDIFromMultiVCorDC(ctx context.Context,
 			}
 
 			if err != nil {
-				klog.Error("getDIFromMultiVCorDC error vc:", err)
+				klog.Error("getDIFromMultiICSorDC error ics:", err)
 				setGlobalErr(err)
 				continue
 			}
 
 			if vsi.Cfg.Datacenters == "" {
-//ics
+				//FIXME TODO.WANGYONGCHAO
 				datacenterObjs, err = icslib.GetAllDatacenter(ctx, vsi.Conn)
-//ics
 				if err != nil {
-					klog.Error("getDIFromMultiVCorDC error dc:", err)
+					klog.Error("getDIFromMultiICSorDC error dc:", err)
 					setGlobalErr(err)
 					continue
 				}
@@ -219,46 +208,48 @@ func (cm *ConnectionManager) getDIFromMultiVCorDC(ctx context.Context,
 					if dc == "" {
 						continue
 					}
-//ics
+					//FIXME TODO.WANGYONGCHAO
 					datacenterObj, err := icslib.GetDatacenter(ctx, vsi.Conn, dc)
-//ics
 					if err != nil {
-						klog.Error("getDIFromMultiVCorDC error dc:", err)
+						klog.Error("getDIFromMultiICSorDC error dc:", err)
 						setGlobalErr(err)
 						continue
 					}
 					datacenterObjs = append(datacenterObjs, datacenterObj)
 				}
 			}
-//ics
+
 			for _, datacenterObj := range datacenterObjs {
 				if getZoneFound() {
 					break
 				}
 
-				finder := icsfind.NewFinder(datacenterObj.Client(), false)
-				finder.SetDatacenter(datacenterObj.Datacenter)
-*/
-//ics block
-//				hostList, err := finder.HostSystemList(ctx, "*/*")
-//ics block
-/*
+				////FIXME TODO.WANGYONGCHAO
+				//finder := find.NewFinder(datacenterObj.Client(), false)
+				//finder.SetDatacenter(datacenterObj.Datacenter)
+				//
+				////FIXME TODO.WANGYONGCHAO
+				//hostList, err := finder.HostSystemList(ctx, "*/*")
+				//if err != nil {
+				//	klog.Errorf("HostSystemList failed: %v", err)
+				//	continue
+				//}
+				hostList, err := icslib.GetHostSystemListByDC(ctx, vsi.Conn, datacenterObj.ID)
 				if err != nil {
 					klog.Errorf("HostSystemList failed: %v", err)
 					continue
 				}
 
 				for _, host := range hostList {
-					klog.V(3).Infof("Finding zone in vc=%s and datacenter=%s for host: %s", vsi.Cfg.VCenterIP, datacenterObj.Name(), host.Name())
+					klog.V(3).Infof("Finding zone in ics=%s and datacenter=%s for host: %s", vsi.Cfg.ICenterIP, datacenterObj.Name, host.HostName)
 					queueChannel <- &zoneSearch{
 						tenantRef:  vsi.Cfg.TenantRef,
-						vc:         vsi.Cfg.VCenterIP,
+						ics:         vsi.Cfg.ICenterIP,
 						datacenter: datacenterObj,
 						host:       host,
 					}
 				}
 			}
-//ics
 		}
 		close(queueChannel)
 	}()
@@ -269,10 +260,11 @@ func (cm *ConnectionManager) getDIFromMultiVCorDC(ctx context.Context,
 		go func() {
 			for res := range queueChannel {
 
-				klog.V(3).Infof("Checking zones for host: %s", res.host.Name())
-				result, err := cm.LookupZoneByMoref(ctx, res.tenantRef, res.host.Reference(), zoneLabel, regionLabel)
+				klog.V(3).Infof("Checking zones for host: %s", res.host.HostName)
+				//FIXME TODO.WANGYONGCHAO
+				result, err := cm.LookupZoneByMoref(ctx, res.tenantRef, res.host.ID, zoneLabel, regionLabel)
 				if err != nil {
-					klog.Errorf("Failed to find zone: %s and region: %s for host %s", zoneLabel, regionLabel, res.host.Name())
+					klog.Errorf("Failed to find zone: %s and region: %s for host %s", zoneLabel, regionLabel, res.host.HostName)
 					continue
 				}
 
@@ -282,10 +274,10 @@ func (cm *ConnectionManager) getDIFromMultiVCorDC(ctx context.Context,
 					continue
 				}
 
-				klog.Infof("Found zone: %s and region: %s for host %s", zoneLooking, regionLooking, res.host.Name())
+				klog.Infof("Found zone: %s and region: %s for host %s", zoneLooking, regionLooking, res.host.HostName)
 				zoneInfo = &ZoneDiscoveryInfo{
 					TenantRef:  res.tenantRef,
-					VcServer:   res.vc,
+					IcsServer:   res.ics,
 					DataCenter: res.datacenter,
 				}
 
@@ -303,74 +295,56 @@ func (cm *ConnectionManager) getDIFromMultiVCorDC(ctx context.Context,
 		return nil, *globalErr
 	}
 
-	klog.V(4).Infof("getDIFromMultiVCorDC: zone: %s and region: %s not found", zoneLabel, regionLabel)
-*/
-//ics block
-//ics
+	klog.V(4).Infof("getDIFromMultiICSorDC: zone: %s and region: %s not found", zoneLabel, regionLabel)
 	return nil, icslib.ErrNoZoneRegionFound
-//ics
 }
 
-//ics
-/*
-func withTagsClient(ctx context.Context, connection *icslib.ICSConnection, f func(c *icsrest.Client) error) error {
-	c := icsrest.NewClient(connection.Client)
-	signer, err := connection.Signer(ctx, connection.Client)
+//FIXME TODO.WANGYONGCHAO
+func withTagsClient(ctx context.Context, connection *icsgo.ICSConnection, f func(c *rest.Client) error) error {
+	c, err := connection.GetClient()
 	if err != nil {
 		return err
 	}
-	if signer == nil {
-		user := url.UserPassword(connection.Username, connection.Password)
-		err = c.Login(ctx, user)
-	} else {
-		err = c.LoginByToken(c.WithSigner(ctx, signer))
-	}
-	if err != nil {
-		return err
-	}
-
 	defer func() {
-		if err := c.Logout(ctx); err != nil {
+		if err := connection.Logout(ctx); err != nil {
 			klog.Errorf("failed to logout: %v", err)
 		}
 	}()
 	return f(c)
-    return nil
 }
-*/
-//ics
 
-//ics
-/*
 // LookupZoneByMoref searches for a zone using the provided managed object reference.
+//FIXME TODO.WANGYONGCHAO
 func (cm *ConnectionManager) LookupZoneByMoref(ctx context.Context, tenantRef string,
-	moRef icstypes.ManagedObjectReference, zoneLabel string, regionLabel string) (map[string]string, error) {
+	hostRef string, zoneLabel string, regionLabel string) (map[string]string, error) {
 
 	result := make(map[string]string)
 
-	vsi := cm.IcsInstanceMap[tenantRef]
+	vsi := cm.ICSInstanceMap[tenantRef]
 	if vsi == nil {
 		err := ErrConnectionNotFound
 		klog.Errorf("Unable to find Connection for tenantRef=%s", tenantRef)
 		return nil, err
 	}
 
-	err := withTagsClient(ctx, vsi.Conn, func(c *icsrest.Client) error {
-		client := icstags.NewManager(c)
+	err := withTagsClient(ctx, vsi.Conn, func(c *rest.Client) error {
+		client := tags.NewTagsService(c)
 
-		pc := vsi.Conn.Client.ServiceContent.PropertyCollector
-		// example result: ["Folder", "Datacenter", "Cluster", "Host"]
-		objects, err := icssdk.Ancestors(ctx, vsi.Conn.Client, pc, moRef)
+		hostService := ht.NewHostService(c)
+		host, err := hostService.GetHost(ctx, hostRef)
 		if err != nil {
-			klog.Errorf("Ancestors failed for %s with err %v", moRef, err)
+			klog.Errorf("Ancestors failed for %s with err %v", hostRef, err)
 			return err
 		}
+		objects := make(map[string]string, 10)
+		objects["DATACENTER"] = host.DataCenterID
+		objects["CLUSTER"] = host.ClusterID
+		objects["HOST"] = host.ID
 
 		// search the hierarchy, example order: ["Host", "Cluster", "Datacenter", "Folder"]
-		for i := range objects {
-			obj := objects[len(objects)-1-i]
-			klog.V(4).Infof("Name: %s, Type: %s", obj.Self.Value, obj.Self.Type)
-			tags, err := client.ListAttachedTags(ctx, obj)
+		for key, value := range objects {
+			klog.V(4).Infof("Name: %s, Type: %s", value, key)
+			tags, err := client.ListAttachedTags(ctx, key, value)
 			if err != nil {
 				klog.Errorf("Cannot list attached tags. Err: %v", err)
 				return err
@@ -381,20 +355,15 @@ func (cm *ConnectionManager) LookupZoneByMoref(ctx context.Context, tenantRef st
 					klog.Errorf("Zones Get tag %s: %s", value, err)
 					return err
 				}
-				category, err := client.GetCategory(ctx, tag.CategoryID)
-				if err != nil {
-					klog.Errorf("Zones Get category %s error", value)
-					return err
-				}
 
 				found := func() {
-					klog.V(2).Infof("Found %s tag (%s) attached to %s", category.Name, tag.Name, moRef)
+					klog.V(2).Infof("Found %s tag attached to %s", tag.Name, hostRef)
 				}
 				switch {
-				case category.Name == zoneLabel:
+				case tag.Description == zoneLabel:
 					result[ZoneLabel] = tag.Name
 					found()
-				case category.Name == regionLabel:
+				case tag.Description == regionLabel:
 					result[RegionLabel] = tag.Name
 					found()
 				}
@@ -404,31 +373,23 @@ func (cm *ConnectionManager) LookupZoneByMoref(ctx context.Context, tenantRef st
 				}
 			}
 		}
-//ics
+
 		if result[RegionLabel] == "" {
 			if regionLabel != "" {
-				return fmt.Errorf("ics region category %s does not match any tags for mo: %v", regionLabel, moRef)
+				return fmt.Errorf("inCloud Sphere region category %s does not match any tags for mo: %v", regionLabel, hostRef)
 			}
 		}
 		if result[ZoneLabel] == "" {
 			if zoneLabel != "" {
-				return fmt.Errorf("ics zone category %s does not match any tags for mo: %v", zoneLabel, moRef)
+				return fmt.Errorf("inCloud Sphere zone category %s does not match any tags for mo: %v", zoneLabel, hostRef)
 			}
 		}
 
 		return nil
 	})
 	if err != nil {
-		klog.Errorf("Get zone for mo: %s: %s", moRef, err)
+		klog.Errorf("Get zone for mo: %s: %s", hostRef, err)
 		return nil, err
 	}
 	return result, nil
-}
-*/
-
-// LookupZoneByMoref searches for a zone using the provided managed object reference.
-func (cm *ConnectionManager) LookupZoneByMoref(ctx context.Context, tenantRef string,
-	h *icslib.Host, zoneLabel string, regionLabel string) (map[string]string, error) {
-
-	return nil, nil
 }

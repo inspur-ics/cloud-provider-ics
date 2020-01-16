@@ -24,19 +24,18 @@ import (
 
 	"k8s.io/klog"
 
-	icslib "github.com/inspur-ics/cloud-provider-ics/pkg/common/icslib"
+	"github.com/inspur-ics/cloud-provider-ics/pkg/common/icslib"
 )
 
-// ListAllVCandDCPairs returns all VC/DC pairs
-func (cm *ConnectionManager) ListAllVCandDCPairs(ctx context.Context) ([]*ListDiscoveryInfo, error) {
-	klog.V(4).Infof("ListAllVCandDCPairs called")
+// ListAllICSandDCPairs returns all ICS/DC pairs
+func (cm *ConnectionManager) ListAllICSandDCPairs(ctx context.Context) ([]*ListDiscoveryInfo, error) {
+	klog.V(4).Infof("ListAllICSandDCPairs called")
 
-	listOfVCAndDCPairs := make([]*ListDiscoveryInfo, 0)
+	listOfICSAndDCPairs := make([]*ListDiscoveryInfo, 0)
 
-//ics
-	for _, vsi := range cm.IcsInstanceMap {
+	for _, vsi := range cm.ICSInstanceMap {
 		var datacenterObjs []*icslib.Datacenter
-//ics
+
 		var err error
 		for i := 0; i < NumConnectionAttempts; i++ {
 			err = cm.Connect(ctx, vsi)
@@ -47,13 +46,12 @@ func (cm *ConnectionManager) ListAllVCandDCPairs(ctx context.Context) ([]*ListDi
 		}
 
 		if err != nil {
-			klog.Error("Connect error vc:", err)
+			klog.Error("Connect error ics:", err)
 			continue
 		}
-//ics
+
 		if vsi.Cfg.Datacenters == "" {
 			datacenterObjs, err = icslib.GetAllDatacenter(ctx, vsi.Conn)
-//ics
 			if err != nil {
 				klog.Error("GetAllDatacenter error dc:", err)
 				continue
@@ -65,9 +63,7 @@ func (cm *ConnectionManager) ListAllVCandDCPairs(ctx context.Context) ([]*ListDi
 				if dc == "" {
 					continue
 				}
-//ics
 				datacenterObj, err := icslib.GetDatacenter(ctx, vsi.Conn, dc)
-//ics
 				if err != nil {
 					klog.Error("GetDatacenter error dc:", err)
 					continue
@@ -77,18 +73,18 @@ func (cm *ConnectionManager) ListAllVCandDCPairs(ctx context.Context) ([]*ListDi
 		}
 
 		for _, datacenterObj := range datacenterObjs {
-			listOfVCAndDCPairs = append(listOfVCAndDCPairs, &ListDiscoveryInfo{
+			listOfICSAndDCPairs = append(listOfICSAndDCPairs, &ListDiscoveryInfo{
 				TenantRef:  vsi.Cfg.TenantRef,
-				VcServer:   vsi.Cfg.VCenterIP,
+				IcsServer:   vsi.Cfg.ICenterIP,
 				DataCenter: datacenterObj,
 			})
 		}
 	}
 
-	sort.Slice(listOfVCAndDCPairs, func(i, j int) bool {
-		return strings.Compare(listOfVCAndDCPairs[i].VcServer, listOfVCAndDCPairs[j].VcServer) > 0 &&
-			strings.Compare(listOfVCAndDCPairs[i].DataCenter.Name(), listOfVCAndDCPairs[j].DataCenter.Name()) > 0
+	sort.Slice(listOfICSAndDCPairs, func(i, j int) bool {
+		return strings.Compare(listOfICSAndDCPairs[i].IcsServer, listOfICSAndDCPairs[j].IcsServer) > 0 &&
+			strings.Compare(listOfICSAndDCPairs[i].DataCenter.Name, listOfICSAndDCPairs[j].DataCenter.Name) > 0
 	})
 
-	return listOfVCAndDCPairs, nil
+	return listOfICSAndDCPairs, nil
 }

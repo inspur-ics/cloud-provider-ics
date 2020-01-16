@@ -44,7 +44,7 @@ const (
 // nodes into the supplied slice address.
 type NodeManagerInterface interface {
 	GetNode(UUID string, node *pb.Node) error
-	ExportNodes(vcenter string, datacenter string, nodeList *[]*pb.Node) error
+	ExportNodes(icenter string, datacenter string, nodeList *[]*pb.Node) error
 }
 
 // GRPCServer describes an object that can start a gRPC server.
@@ -66,12 +66,12 @@ func NewServer(binding string, nodeMgr NodeManagerInterface) GRPCServer {
 		s:       s,
 		nodeMgr: nodeMgr,
 	}
-	pb.RegisterCloudProviderIcsServer(s, myServer)
+	pb.RegisterCloudProviderICSServer(s, myServer)
 	reflection.Register(s)
 	return myServer
 }
 
-// GetNode implements CloudProviderIcs interface
+// GetNode implements CloudProviderICS interface
 func (s *server) GetNode(ctx context.Context, request *pb.GetNodeRequest) (*pb.GetNodeReply, error) {
 	reply := &pb.GetNodeReply{
 		Node: &pb.Node{},
@@ -83,16 +83,16 @@ func (s *server) GetNode(ctx context.Context, request *pb.GetNodeRequest) (*pb.G
 	return reply, nil
 }
 
-// ListNodes implements CloudProviderIcs interface
+// ListNodes implements CloudProviderICS interface
 func (s *server) ListNodes(ctx context.Context, request *pb.ListNodesRequest) (*pb.ListNodesReply, error) {
 	reply := &pb.ListNodesReply{
 		Nodes: make([]*pb.Node, 0),
 	}
 	//Do not allow specifying the Datacenter without specifying the iCenter
-	if request.Vcenter == "" && request.Datacenter != "" {
+	if request.Icenter == "" && request.Datacenter != "" {
 		request.Datacenter = ""
 	}
-	err := s.nodeMgr.ExportNodes(request.Vcenter, request.Datacenter, &reply.Nodes)
+	err := s.nodeMgr.ExportNodes(request.Icenter, request.Datacenter, &reply.Nodes)
 	if err != nil {
 		reply.Error = err.Error()
 	}
@@ -126,7 +126,7 @@ func (s *server) Start() {
 		ctx, cancel := context.WithTimeout(context.Background(), (5 * time.Second))
 		defer cancel()
 
-		c, err := NewIcsCloudProviderClient(ctx)
+		c, err := NewICSCloudProviderClient(ctx)
 		if err != nil {
 			klog.Warningf("could not greet: %v", err)
 			time.Sleep(1 * time.Second)

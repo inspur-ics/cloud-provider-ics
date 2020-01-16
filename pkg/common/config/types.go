@@ -19,21 +19,19 @@ package config
 // Config is used to read and store information from the cloud configuration file
 type Config struct {
 	Global struct {
-		//iCenter username.
+		// iCenter username.
 		User string `gcfg:"user"`
-		//iCenter password in clear text.
+		// iCenter password in clear text.
 		Password string `gcfg:"password"`
-		// Deprecated. Use VirtualCenter to specify multiple iCenter Servers.
+		// Deprecated. Use ICSCenter to specify multiple iCenter Servers.
 		// iCenter IP.
-		VCenterIP string `gcfg:"server"`
+		ICenterIP string `gcfg:"server"`
 		// iCenter port.
-		VCenterPort string `gcfg:"port"`
-
+		ICenterPort string `gcfg:"port"`
+		// True if iCenter uses self-signed cert.
+		InsecureFlag bool `gcfg:"insecure-flag"`
 		// Datacenter in which VMs are located.
 		Datacenters string `gcfg:"datacenters"`
-		// Soap round tripper count (retries = RoundTripper - 1)
-		RoundTripperCount uint `gcfg:"soap-roundtrip-count"`
-
 		// Name of the secret were iCenter credentials are present.
 		SecretName string `gcfg:"secret-name"`
 		// Secret Namespace where secret will be present that has iCenter credentials.
@@ -43,10 +41,10 @@ type Config struct {
 		// 2) we are not in a k8s env, namely DC/OS, since CSI is CO agnostic
 		// Default: /etc/cloud/credentials
 		SecretsDirectory string `gcfg:"secrets-directory"`
-		// Disable the ICS CCM API
+		// Disable the inCloud Sphere CCM API
 		// Default: true
 		APIDisable bool `gcfg:"api-disable"`
-		// Configurable ICS CCM API port
+		// Configurable inCloud Sphere CCM API port
 		// Default: 43001
 		APIBinding string `gcfg:"api-binding"`
 		// IP Family enables the ability to support IPv4 or IPv6
@@ -56,8 +54,8 @@ type Config struct {
 		IPFamily string `gcfg:"ip-family"`
 	}
 
-	// Virtual Center configurations
-	VirtualCenter map[string]*VirtualCenterConfig
+	// ICS Center configurations
+	ICSCenter map[string]*ICSCenterConfig
 
 	// Tag categories and tags which correspond to "built-in node labels: zones and region"
 	Labels struct {
@@ -66,30 +64,27 @@ type Config struct {
 	}
 }
 
-// VirtualCenterConfig contains information used to access a remote iCenter
+// ICSCenterConfig contains information used to access a remote iCenter
 // endpoint.
-type VirtualCenterConfig struct {
+type ICSCenterConfig struct {
 	// iCenter username.
 	User string `gcfg:"user"`
 	// iCenter password in clear text.
 	Password string `gcfg:"password"`
 	// TenantRef (intentionally not exposed via the config) is a unique tenant ref to
-	// be used in place of the vcServer as the primary connection key. If one label is set,
+	// be used in place of the icsServer as the primary connection key. If one label is set,
 	// all virtual center configs must have a unique label.
 	TenantRef string
-	// iCenterIP - If this field in the config is set, it is assumed then that value in [VirtualCenter "<value>"]
-	// is now the TenantRef above and this field is the actual iCenterIP. Otherwise for backward
+	// vCenterIP - If this field in the config is set, it is assumed then that value in [ICSCenter "<value>"]
+	// is now the TenantRef above and this field is the actual ICenterIP. Otherwise for backward
 	// compatibility, the value by default is the IP or FQDN of the iCenter Server.
-	VCenterIP string `gcfg:"server"`
+	ICenterIP string `gcfg:"server"`
 	// iCenter port.
-	VCenterPort string `gcfg:"port"`
-
+	ICenterPort string `gcfg:"port"`
+	// True if iCenter uses self-signed cert.
+	InsecureFlag bool `gcfg:"insecure-flag"`
 	// Datacenter in which VMs are located.
-	//like,"dc1,dc2,dc3,..."
 	Datacenters string `gcfg:"datacenters"`
-	// Soap round tripper count (retries = RoundTripper - 1)
-	RoundTripperCount uint `gcfg:"soap-roundtrip-count"`
-
 	// SecretRef (intentionally not exposed via the config) is a key to identify which
 	// InformerManager holds the secret
 	SecretRef string

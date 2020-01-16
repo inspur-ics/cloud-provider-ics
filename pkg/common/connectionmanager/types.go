@@ -19,11 +19,12 @@ package connectionmanager
 import (
 	"sync"
 
-	clientset "k8s.io/client-go/kubernetes"
-	icscfg "github.com/inspur-ics/cloud-provider-ics/pkg/common/config"
+	icfg "github.com/inspur-ics/cloud-provider-ics/pkg/common/config"
 	cm "github.com/inspur-ics/cloud-provider-ics/pkg/common/credentialmanager"
+	"github.com/inspur-ics/cloud-provider-ics/pkg/common/icslib"
 	k8s "github.com/inspur-ics/cloud-provider-ics/pkg/common/kubernetes"
-	icslib "github.com/inspur-ics/cloud-provider-ics/pkg/common/icslib"
+	icsgo "github.com/inspur-ics/ics-go-sdk"
+	clientset "k8s.io/client-go/kubernetes"
 )
 
 // ConnectionManager encapsulates iCenter connections
@@ -33,20 +34,20 @@ type ConnectionManager struct {
 	// The k8s client init from the cloud provider service account
 	client clientset.Interface
 
-	// Maps the VC server to ICSInstance
-	IcsInstanceMap map[string]*ICSInstance
-	// CredentialManager per VC
+	// Maps the ICS server to ICSInstance
+	ICSInstanceMap map[string]*ICSInstance
+	// CredentialManager per ICS
 	// The global CredentialManager will have an entry in this map with the key of "Global"
 	credentialManagers map[string]*cm.CredentialManager
-	// InformerManagers per VC
+	// InformerManagers per ICS
 	// The global InformerManager will have an entry in this map with the key of "Global"
 	informerManagers map[string]*k8s.InformerManager
 }
 
-// ICSInstance represents a ics instance where one or more kubernetes nodes are running.
+// ICSInstance represents a inCloud Sphere instance where one or more kubernetes nodes are running.
 type ICSInstance struct {
-	Conn *icslib.ICSConnection
-	Cfg  *icscfg.VirtualCenterConfig
+	Conn *icsgo.ICSConnection
+	Cfg  *icfg.ICSCenterConfig
 }
 
 // VMDiscoveryInfo contains VM info about a discovered VM
@@ -54,31 +55,29 @@ type VMDiscoveryInfo struct {
 	TenantRef  string
 	DataCenter *icslib.Datacenter
 	VM         *icslib.VirtualMachine
-	VcServer   string
+	IcsServer  string
 	UUID       string
 	NodeName   string
 }
 
-/*
 // FcdDiscoveryInfo contains FCD info about a discovered FCD
 type FcdDiscoveryInfo struct {
 	TenantRef  string
 	DataCenter *icslib.Datacenter
 	FCDInfo    *icslib.FirstClassDiskInfo
-	VcServer   string
+	IcsServer   string
 }
-*/
 
-// ListDiscoveryInfo represents a VC/DC pair
+// ListDiscoveryInfo represents a ICS/DC pair
 type ListDiscoveryInfo struct {
 	TenantRef  string
-	VcServer   string
+	IcsServer   string
 	DataCenter *icslib.Datacenter
 }
 
-// ZoneDiscoveryInfo contains VC+DC info based on a given zone
+// ZoneDiscoveryInfo contains ICS+DC info based on a given zone
 type ZoneDiscoveryInfo struct {
 	TenantRef  string
 	DataCenter *icslib.Datacenter
-	VcServer   string
+	IcsServer   string
 }

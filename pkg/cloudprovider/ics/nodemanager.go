@@ -20,25 +20,20 @@ import (
 	"context"
 	"errors"
 	"fmt"
-
-	//	"fmt"
 	"net"
 	"strings"
 
-	v1 "k8s.io/api/core/v1"
 	pb "github.com/inspur-ics/cloud-provider-ics/pkg/cloudprovider/ics/proto"
-	vcfg "github.com/inspur-ics/cloud-provider-ics/pkg/common/config"
+	icfg "github.com/inspur-ics/cloud-provider-ics/pkg/common/config"
 	cm "github.com/inspur-ics/cloud-provider-ics/pkg/common/connectionmanager"
+	v1 "k8s.io/api/core/v1"
 	v1helper "k8s.io/cloud-provider/node/helpers"
 	"k8s.io/klog"
-
-//	tp "github.com/inspur-ics/ics-go-sdk/client/types"
-	icslib "github.com/inspur-ics/cloud-provider-ics/pkg/common/icslib"
 )
 
 // Errors
 var (
-	// ErrICenterNotFound is returned when the configured Center cannot be
+	// ErrICenterNotFound is returned when the configured iCenter cannot be
 	// found.
 	ErrICenterNotFound = errors.New("iCenter not found")
 
@@ -55,7 +50,7 @@ func newNodeManager(cpiCfg *CPIConfig, cm *cm.ConnectionManager) *NodeManager {
 		nodeNameMap:       make(map[string]*NodeInfo),
 		nodeUUIDMap:       make(map[string]*NodeInfo),
 		nodeRegUUIDMap:    make(map[string]*v1.Node),
-		vcList:            make(map[string]*VCenterInfo),
+		icsList:            make(map[string]*ICenterInfo),
 		connectionManager: cm,
 		cpiCfg:            cpiCfg,
 	}
@@ -64,17 +59,17 @@ func newNodeManager(cpiCfg *CPIConfig, cm *cm.ConnectionManager) *NodeManager {
 // RegisterNode is the handler for when a node is added to a K8s cluster.
 func (nm *NodeManager) RegisterNode(node *v1.Node) {
 	klog.V(4).Info("RegisterNode ENTER: ", node.Name)
-	uuid := node.Status.NodeInfo.SystemUUID
-	nm.DiscoverNode(uuid, cm.FindVMByUUID)
-	nm.addNode(uuid, node)
+	//uuid := ConvertK8sUUIDtoNormal(node.Status.NodeInfo.SystemUUID)
+	nm.DiscoverNode(node.Status.NodeInfo.SystemUUID, cm.FindVMByUUID)
+	nm.addNode(node.Status.NodeInfo.SystemUUID, node)
 	klog.V(4).Info("RegisterNode LEAVE: ", node.Name)
 }
 
 // UnregisterNode is the handler for when a node is removed from a K8s cluster.
 func (nm *NodeManager) UnregisterNode(node *v1.Node) {
 	klog.V(4).Info("UnregisterNode ENTER: ", node.Name)
-        uuid := node.Status.NodeInfo.SystemUUID
-	nm.removeNode(uuid, node)
+	//uuid := ConvertK8sUUIDtoNormal(node.Status.NodeInfo.SystemUUID)
+	nm.removeNode(node.Status.NodeInfo.SystemUUID, node)
 	klog.V(4).Info("UnregisterNode LEAVE: ", node.Name)
 }
 
@@ -83,7 +78,7 @@ func (nm *NodeManager) addNodeInfo(node *NodeInfo) {
 	klog.V(4).Info("addNodeInfo NodeName: ", node.NodeName, ", UUID: ", node.UUID)
 	nm.nodeNameMap[node.NodeName] = node
 	nm.nodeUUIDMap[node.UUID] = node
-	nm.AddNodeInfoToVCList(node.vcServer, node.dataCenter.Name(), node)
+	nm.AddNodeInfoToICSList(node.icsServer, node.dataCenter.Name, node)
 	nm.nodeInfoLock.Unlock()
 }
 
@@ -104,24 +99,24 @@ func (nm *NodeManager) removeNode(uuid string, node *v1.Node) {
 func (nm *NodeManager) shakeOutNodeIDLookup(ctx context.Context, nodeID string, searchBy cm.FindVM) (*cm.VMDiscoveryInfo, error) {
 	// Search by NodeName
 	if searchBy == cm.FindVMByName {
-		vmDI, err := nm.connectionManager.WhichVCandDCByNodeID(ctx, nodeID, cm.FindVM(searchBy))
+		vmDI, err := nm.connectionManager.WhichICSandDCByNodeID(ctx, nodeID, cm.FindVM(searchBy))
 		if err == nil {
 			klog.Info("Discovered VM using FQDN or short-hand name")
 			return vmDI, err
 		}
 
-		vmDI, err = nm.connectionManager.WhichVCandDCByNodeID(ctx, nodeID, cm.FindVMByIP)
+		vmDI, err = nm.connectionManager.WhichICSandDCByNodeID(ctx, nodeID, cm.FindVMByIP)
 		if err == nil {
 			klog.Info("Discovered VM using IP address")
 			return vmDI, err
 		}
 
-		klog.Errorf("WhichVCandDCByNodeID failed using VM name. Err: %v", err)
+		klog.Errorf("WhichICSandDCByNodeID failed using VM name. Err: %v", err)
 		return nil, err
 	}
 
 	// Search by UUID
-	vmDI, err := nm.connectionManager.WhichVCandDCByNodeID(ctx, nodeID, cm.FindVM(searchBy))
+	vmDI, err := nm.connectionManager.WhichICSandDCByNodeID(ctx, nodeID, cm.FindVM(searchBy))
 	if err == nil {
 		klog.Info("Discovered VM using normal UUID format")
 		return vmDI, err
@@ -129,8 +124,15 @@ func (nm *NodeManager) shakeOutNodeIDLookup(ctx context.Context, nodeID string, 
 
 	// Need to lookup the original format of the UUID because photon 2.0 formats the UUID
 	// different from Photon 3, RHEL, CentOS, Ubuntu, and etc
-	klog.Errorf("WhichVCandDCByNodeID failed using normally formatted UUID. Err: %v", err)
-	klog.Errorf("WhichVCandDCByNodeID failed using UUID. Err: %v", err)
+	klog.Errorf("WhichICSandDCByNodeID failed using normally formatted UUID. Err: %v", err)
+	//reverseUUID := ConvertK8sUUIDtoNormal(nodeID)
+	vmDI, err = nm.connectionManager.WhichICSandDCByNodeID(ctx, nodeID, cm.FindVM(searchBy))
+	if err == nil {
+		klog.Info("Discovered VM using reverse UUID format")
+		return vmDI, err
+	}
+
+	klog.Errorf("WhichICSandDCByNodeID failed using UUID. Err: %v", err)
 	return nil, err
 }
 
@@ -143,9 +145,9 @@ func returnIPsFromSpecificFamily(family string, ips []string) []string {
 			continue
 		}
 
-		if strings.EqualFold(family, vcfg.IPv6Family) && net.ParseIP(ip).To4() == nil {
+		if strings.EqualFold(family, icfg.IPv6Family) && net.ParseIP(ip).To4() == nil {
 			matching = append(matching, ip)
-		} else if strings.EqualFold(family, vcfg.IPv4Family) && net.ParseIP(ip).To4() != nil {
+		} else if strings.EqualFold(family, icfg.IPv4Family) && net.ParseIP(ip).To4() != nil {
 			matching = append(matching, ip)
 		}
 	}
@@ -163,21 +165,19 @@ func (nm *NodeManager) DiscoverNode(nodeID string, searchBy cm.FindVM) error {
 		klog.Errorf("shakeOutNodeIDLookup failed. Err=%v", err)
 		return err
 	}
+	oVM := vmDI.VM
 
-    var dstVM icslib.VirtualMachine
-	dstVM = *vmDI.VM
-
-	tenantRef := vmDI.VcServer
+	tenantRef := vmDI.IcsServer
 	if vmDI.TenantRef != "" {
 		tenantRef = vmDI.TenantRef
 	}
-	vcInstance := nm.connectionManager.IcsInstanceMap[tenantRef]
+	icsInstance := nm.connectionManager.ICSInstanceMap[tenantRef]
 
-	ipFamily := []string{vcfg.DefaultIPFamily}
-	if vcInstance != nil {
-		ipFamily = vcInstance.Cfg.IPFamilyPriority
+	ipFamily := []string{icfg.DefaultIPFamily}
+	if icsInstance != nil {
+		ipFamily = icsInstance.Cfg.IPFamilyPriority
 	} else {
-		klog.Warningf("Unable to find vcInstance for %s. Defaulting to ipv4.", tenantRef)
+		klog.Warningf("Unable to find icsInstance for %s. Defaulting to ipv4.", tenantRef)
 	}
 
 	var internalNetworkSubnet *net.IPNet
@@ -207,44 +207,34 @@ func (nm *NodeManager) DiscoverNode(nodeID string, searchBy cm.FindVM) error {
 		addressMatchingEnabled = true
 	}
 
-//ics
 	found := false
 	addrs := []v1.NodeAddress{}
-
-	klog.V(2).Infof("Adding Hostname: %s", dstVM.VMHostName)
+	klog.V(2).Infof("Adding Hostname: %s", oVM.Name)
 	v1helper.AddToNodeAddresses(&addrs,
 		v1.NodeAddress{
 			Type:    v1.NodeHostName,
-			Address: dstVM.VMHostName,
+			Address: oVM.Name,
 		},
 	)
-//ics block
-	for _, v := range dstVM.Nics {
-		/*
-		if v.DeviceConfigId == -1 {
-			klog.V(4).Info("Skipping device because not a vNIC")
-			continue
-		}
-		*/
+
+	for _, v := range oVM.Nics {
 
 		klog.V(6).Infof("internalVMNetworkName = %s", internalVMNetworkName)
 		klog.V(6).Infof("externalVMNetworkName = %s", externalVMNetworkName)
-		klog.V(6).Infof("v.NetworkName = %s", v.NetworkName)
+		klog.V(6).Infof("v.Network = %s", v.Name)
 
-		if (internalVMNetworkName != "" && !strings.EqualFold(internalVMNetworkName, v.NetworkName)) &&
-			(externalVMNetworkName != "" && !strings.EqualFold(externalVMNetworkName, v.NetworkName)) {
+		if (internalVMNetworkName != "" && !strings.EqualFold(internalVMNetworkName, v.Name)) &&
+			(externalVMNetworkName != "" && !strings.EqualFold(externalVMNetworkName, v.Name)) {
 			klog.V(4).Infof("Skipping device because vNIC Network=%s doesn't match internal=%s or external=%s network names",
-				v.NetworkName, internalVMNetworkName, externalVMNetworkName)
+				v.Name, internalVMNetworkName, externalVMNetworkName)
 			continue
 		}
 
 		// Only return a single IP address based on the preference of IPFamily
 		// Must break out of loop in the event of ipv6,ipv4 where the NIC does
 		// contain a valid IPv6 and IPV4 address
-		var iplist []string
-		iplist = append(iplist, v.IP)
 		for _, family := range ipFamily {
-			ips := returnIPsFromSpecificFamily(family, iplist)
+			ips := returnIPsFromSpecificFamily(family, []string{v.IP})
 
 			if addressMatchingEnabled {
 				for _, ip := range ips {
@@ -273,7 +263,7 @@ func (nm *NodeManager) DiscoverNode(nodeID string, searchBy cm.FindVM) error {
 						)
 					}
 				}
-			} else if internalVMNetworkName != "" && strings.EqualFold(internalVMNetworkName, v.NetworkName) {
+			} else if internalVMNetworkName != "" && strings.EqualFold(internalVMNetworkName, v.Name) {
 				for _, ip := range ips {
 					klog.V(2).Infof("Adding Internal IP by NetworkName: %s", ip)
 					v1helper.AddToNodeAddresses(&addrs,
@@ -285,7 +275,7 @@ func (nm *NodeManager) DiscoverNode(nodeID string, searchBy cm.FindVM) error {
 					found = true
 					break
 				}
-			} else if externalVMNetworkName != "" && strings.EqualFold(externalVMNetworkName, v.NetworkName) {
+			} else if externalVMNetworkName != "" && strings.EqualFold(externalVMNetworkName, v.Name) {
 				for _, ip := range ips {
 					klog.V(2).Infof("Adding External IP by NetworkName: %s", ip)
 					v1helper.AddToNodeAddresses(&addrs,
@@ -319,28 +309,25 @@ func (nm *NodeManager) DiscoverNode(nodeID string, searchBy cm.FindVM) error {
 			}
 		}
 	}
-//ics block
+
 	if !found {
 		klog.Warningf("Unable to find a suitable IP address. ipFamily: %s", ipFamily)
 	}
+	klog.V(2).Infof("Found node %s as vm=%+v in ics=%s and datacenter=%s",
+		nodeID, vmDI.VM, vmDI.IcsServer, vmDI.DataCenter.Name)
+	klog.V(2).Info("Hostname: ", oVM.Name, " UUID: ", oVM.UUID)
 
-	klog.V(2).Infof("Found node %s as vm=%+v in vc=%s and datacenter=%s",
-		nodeID, vmDI.VM, vmDI.VcServer, vmDI.DataCenter.Name())
-	klog.V(2).Info("Hostname: ", dstVM.VMHostName, " UUID: ", dstVM.HostID)
-
-	os := "unknown"
-	os = dstVM.GuestosType
+	os := oVM.GuestosLabel
 
 	// store instance type in nodeinfo map
 	instanceType := fmt.Sprintf("ics-vm.cpu-%d.mem-%dgb.os-%s",
-		dstVM.CPUNum,
-		(dstVM.Memory / 1024),
+		oVM.CPUNum,
+		oVM.Memory / 1024,
 		os,
 	)
 
-	nodeInfo := &NodeInfo{tenantRef: tenantRef, dataCenter: vmDI.DataCenter, vm: vmDI.VM, vcServer: vmDI.VcServer,
+	nodeInfo := &NodeInfo{tenantRef: tenantRef, dataCenter: vmDI.DataCenter, vm: vmDI.VM, icsServer: vmDI.IcsServer,
 		UUID: vmDI.UUID, NodeName: vmDI.NodeName, NodeType: instanceType, NodeAddresses: addrs}
-
 	nm.addNodeInfo(nodeInfo)
 
 	return nil
@@ -354,8 +341,8 @@ func (nm *NodeManager) GetNode(UUID string, node *pb.Node) error {
 		return err
 	}
 
-	node.Vcenter = nodeInfo.vcServer
-	node.Datacenter = nodeInfo.dataCenter.Name()
+	node.Icenter = nodeInfo.icsServer
+	node.Datacenter = nodeInfo.dataCenter.Name
 	node.Name = nodeInfo.NodeName
 	node.Dnsnames = make([]string, 0)
 	node.Addresses = make([]string, 0)
@@ -376,28 +363,28 @@ func (nm *NodeManager) GetNode(UUID string, node *pb.Node) error {
 }
 
 // ExportNodes transforms the NodeInfoList to []*pb.Node
-func (nm *NodeManager) ExportNodes(vcenter string, datacenter string, nodeList *[]*pb.Node) error {
+func (nm *NodeManager) ExportNodes(icenter string, datacenter string, nodeList *[]*pb.Node) error {
 	nm.nodeInfoLock.Lock()
 	defer nm.nodeInfoLock.Unlock()
 
-	if vcenter != "" && datacenter != "" {
-		dc, err := nm.FindDatacenterInfoInVCList(vcenter, datacenter)
+	if icenter != "" && datacenter != "" {
+		dc, err := nm.FindDatacenterInfoInICSList(icenter, datacenter)
 		if err != nil {
 			return err
 		}
 
 		nm.datacenterToNodeList(dc.vmList, nodeList)
-	} else if vcenter != "" {
-		if nm.vcList[vcenter] == nil {
+	} else if icenter != "" {
+		if nm.icsList[icenter] == nil {
 			return ErrICenterNotFound
 		}
 
-		for _, dc := range nm.vcList[vcenter].dcList {
+		for _, dc := range nm.icsList[icenter].dcList {
 			nm.datacenterToNodeList(dc.vmList, nodeList)
 		}
 	} else {
-		for _, vc := range nm.vcList {
-			for _, dc := range vc.dcList {
+		for _, ics := range nm.icsList {
+			for _, dc := range ics.dcList {
 				nm.datacenterToNodeList(dc.vmList, nodeList)
 			}
 		}
@@ -417,8 +404,8 @@ func (nm *NodeManager) datacenterToNodeList(vmList map[string]*NodeInfo, nodeLis
 		}
 
 		pbNode := &pb.Node{
-			Vcenter:    node.vcServer,
-			Datacenter: node.dataCenter.Name(),
+			Icenter:    node.icsServer,
+			Datacenter: node.dataCenter.Name,
 			Name:       node.NodeName,
 			Dnsnames:   make([]string, 0),
 			Addresses:  make([]string, 0),
@@ -438,35 +425,35 @@ func (nm *NodeManager) datacenterToNodeList(vmList map[string]*NodeInfo, nodeLis
 	}
 }
 
-// AddNodeInfoToVCList creates a relational mapping from VC -> DC -> VM/Node
-func (nm *NodeManager) AddNodeInfoToVCList(vcenter string, datacenter string, node *NodeInfo) {
-	if nm.vcList[vcenter] == nil {
-		nm.vcList[vcenter] = &VCenterInfo{
-			address: vcenter,
+// AddNodeInfoToICSList creates a relational mapping from ICS -> DC -> VM/Node
+func (nm *NodeManager) AddNodeInfoToICSList(icenter string, datacenter string, node *NodeInfo) {
+	if nm.icsList[icenter] == nil {
+		nm.icsList[icenter] = &ICenterInfo{
+			address: icenter,
 			dcList:  make(map[string]*DatacenterInfo),
 		}
 	}
-	vc := nm.vcList[vcenter]
+	ics := nm.icsList[icenter]
 
-	if vc.dcList[datacenter] == nil {
-		vc.dcList[datacenter] = &DatacenterInfo{
+	if ics.dcList[datacenter] == nil {
+		ics.dcList[datacenter] = &DatacenterInfo{
 			name:   datacenter,
 			vmList: make(map[string]*NodeInfo),
 		}
 	}
-	dc := vc.dcList[datacenter]
+	dc := ics.dcList[datacenter]
 
 	dc.vmList[node.UUID] = node
 }
 
-// FindDatacenterInfoInVCList retrieves the DatacenterInfo from the tree
-func (nm *NodeManager) FindDatacenterInfoInVCList(vcenter string, datacenter string) (*DatacenterInfo, error) {
-	vc := nm.vcList[vcenter]
-	if vc == nil {
+// FindDatacenterInfoInICSList retrieves the DatacenterInfo from the tree
+func (nm *NodeManager) FindDatacenterInfoInICSList(icenter string, datacenter string) (*DatacenterInfo, error) {
+	ics := nm.icsList[icenter]
+	if ics == nil {
 		return nil, ErrICenterNotFound
 	}
 
-	dc := vc.dcList[datacenter]
+	dc := ics.dcList[datacenter]
 	if dc == nil {
 		return nil, ErrDatacenterNotFound
 	}
