@@ -23,7 +23,7 @@ ARG GOLANG_IMAGE=golang:1.12.10
 # the fully-qualified image can be obtained by entering
 # "gcr.io/distroless/static:latest" in a browser and then copying the
 # fully-qualified image from the web page.
-ARG DISTROLESS_IMAGE=gcr.io/distroless/static@sha256:9b60270ec0991bc4f14bda475e8cae75594d8197d0ae58576ace84694aa75d7a
+ARG DISTROLESS_IMAGE=gcr.io/distroless/static:latest
 
 ################################################################################
 ##                              BUILD STAGE                                   ##
@@ -42,6 +42,7 @@ WORKDIR /build
 COPY go.mod go.sum ./
 COPY pkg/    pkg/
 COPY cmd/    cmd/
+ADD mod/     /go/pkg/mod/
 ENV CGO_ENABLED=0
 ENV GOPROXY ${GOPROXY:-https://proxy.golang.org}
 RUN go build -a -ldflags='-w -s -extldflags=static -X main.version=${VERSION}' -o ics-cloud-controller-manager ./cmd/ics-cloud-controller-manager
