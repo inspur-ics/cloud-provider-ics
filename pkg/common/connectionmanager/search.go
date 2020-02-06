@@ -167,7 +167,6 @@ func (cm *ConnectionManager) WhichICSandDCByNodeID(ctx context.Context, nodeID s
 				var err error
 
 				switch searchBy {
-				//FIXME TODO.WANGYONGCHAO
 				case FindVMByUUID:
 					vm, err = res.datacenter.GetVMByUUID(ctx, myNodeID)
 				case FindVMByIP:
@@ -175,6 +174,8 @@ func (cm *ConnectionManager) WhichICSandDCByNodeID(ctx context.Context, nodeID s
 				default:
 					vm, err = res.datacenter.GetVMByDNSName(ctx, myNodeID)
 				}
+				klog.V(5).Infof("ICS GetVMBy %s, vm=%+v and datacenter=%+v",
+					searchBy, vm.VirtualMachine, vm.Datacenter)
 
 				if err != nil {
 					klog.Errorf("Error while looking for vm=%s(%s) in ics=%s and datacenter=%s: %v",
@@ -188,16 +189,16 @@ func (cm *ConnectionManager) WhichICSandDCByNodeID(ctx context.Context, nodeID s
 					continue
 				}
 
-				hostName := vm.Name
+				hostName := vm.VirtualMachine.Name
 				if searchBy == FindVMByIP {
-					klog.V(2).Infof("WhichICSandDCByNodeID by IP. Overriding VMName from=%s to to=%s", vm.Name, myNodeID)
+					klog.V(2).Infof("WhichICSandDCByNodeID by IP. Overriding VMName from=%s to to=%s", vm.VirtualMachine.Name, myNodeID)
 					hostName = myNodeID
 				}
 
-				UUID := strings.ToLower(strings.TrimSpace(vm.UUID))
+				UUID := strings.ToLower(strings.TrimSpace(vm.VirtualMachine.UUID))
 
 				klog.V(2).Infof("Found node %s as vm=%+v in ics=%s and datacenter=%s",
-					nodeID, vm, res.ics, res.datacenter.Name)
+					nodeID, vm.VirtualMachine, res.ics, res.datacenter.Name)
 				klog.V(2).Infof("Hostname: %s, UUID: %s", hostName, UUID)
 
 				vmInfo = &VMDiscoveryInfo{TenantRef: res.tenantRef, DataCenter: res.datacenter, VM: vm, IcsServer: res.ics,
