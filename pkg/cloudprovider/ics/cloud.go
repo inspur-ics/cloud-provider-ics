@@ -166,6 +166,7 @@ func (ics *ICS) nodeAdded(obj interface{}) {
 		klog.Warningf("nodeAdded: unrecognized object %+v", obj)
 		return
 	}
+	klog.Infof("ICS CPI the node Added :%+v", node)
 
 	ics.nodeManager.RegisterNode(node)
 }
