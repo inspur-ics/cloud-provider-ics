@@ -23,7 +23,7 @@ import (
 // Datastore extends the govmomi Datastore object
 type Datastore struct {
 	Common
-	*types.Datastore
+	*types.Storage
 	Datacenter *Datacenter
 }
 
