@@ -317,7 +317,7 @@ func (nm *NodeManager) DiscoverNode(nodeID string, searchBy cm.FindVM) error {
 		nodeID, vmDI.VM, vmDI.IcsServer, vmDI.DataCenter.Name)
 	klog.V(2).Info("Hostname: ", oVM.Name, " UUID: ", oVM.UUID)
 
-	os := oVM.GuestosLabel
+	os := strings.Fields(oVM.GuestosLabel)[0]
 
 	// store instance type in nodeinfo map
 	instanceType := fmt.Sprintf("ics-vm.cpu-%d.mem-%dgb.os-%s",
