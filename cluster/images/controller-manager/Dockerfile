@@ -42,7 +42,6 @@ WORKDIR /build
 COPY go.mod go.sum ./
 COPY pkg/    pkg/
 COPY cmd/    cmd/
-ADD mod/     /go/pkg/mod/
 ENV CGO_ENABLED=0
 ENV GOPROXY ${GOPROXY:-https://proxy.golang.org}
 RUN go build -a -ldflags='-w -s -extldflags=static -X main.version=${VERSION}' -o ics-cloud-controller-manager ./cmd/ics-cloud-controller-manager
