@@ -90,7 +90,6 @@ func (cm *ConnectionManager) getDIFromSingleICS(ctx context.Context,
 		time.Sleep(time.Duration(RetryAttemptDelaySecs) * time.Second)
 	}
 
-	//FIXME TODO.WANGYONGCHAO
 	numOfDc, err := icslib.GetNumberOfDatacenters(ctx, tmpVsi.Conn)
 	if err != nil {
 		klog.Errorf("%v", err)
@@ -106,7 +105,6 @@ func (cm *ConnectionManager) getDIFromSingleICS(ctx context.Context,
 	// We are sure this is single ICS and DC
 	klog.Info("Single iCenter/Datacenter configuration detected")
 
-	//FIXME TODO.WANGYONGCHAO
 	datacenterObjs, err := icslib.GetAllDatacenter(ctx, tmpVsi.Conn)
 	if err != nil {
 		klog.Error("GetAllDatacenter failed. Err:", err)
@@ -134,7 +132,6 @@ func (cm *ConnectionManager) getDIFromMultiICSorDC(ctx context.Context,
 	type zoneSearch struct {
 		tenantRef  string
 		ics         string
-		//FIXME TODO.WANGYONGCHAO
 		datacenter *icslib.Datacenter
 		host       *icslib.HostSystem
 	}
@@ -171,7 +168,6 @@ func (cm *ConnectionManager) getDIFromMultiICSorDC(ctx context.Context,
 
 	go func() {
 		for _, vsi := range cm.ICSInstanceMap {
-			//FIXME TODO.WANGYONGCHAO
 			var datacenterObjs []*icslib.Datacenter
 
 			if getZoneFound() {
@@ -194,7 +190,6 @@ func (cm *ConnectionManager) getDIFromMultiICSorDC(ctx context.Context,
 			}
 
 			if vsi.Cfg.Datacenters == "" {
-				//FIXME TODO.WANGYONGCHAO
 				datacenterObjs, err = icslib.GetAllDatacenter(ctx, vsi.Conn)
 				if err != nil {
 					klog.Error("getDIFromMultiICSorDC error dc:", err)
@@ -208,7 +203,6 @@ func (cm *ConnectionManager) getDIFromMultiICSorDC(ctx context.Context,
 					if dc == "" {
 						continue
 					}
-					//FIXME TODO.WANGYONGCHAO
 					datacenterObj, err := icslib.GetDatacenter(ctx, vsi.Conn, dc)
 					if err != nil {
 						klog.Error("getDIFromMultiICSorDC error dc:", err)
@@ -224,16 +218,6 @@ func (cm *ConnectionManager) getDIFromMultiICSorDC(ctx context.Context,
 					break
 				}
 
-				////FIXME TODO.WANGYONGCHAO
-				//finder := find.NewFinder(datacenterObj.Client(), false)
-				//finder.SetDatacenter(datacenterObj.Datacenter)
-				//
-				////FIXME TODO.WANGYONGCHAO
-				//hostList, err := finder.HostSystemList(ctx, "*/*")
-				//if err != nil {
-				//	klog.Errorf("HostSystemList failed: %v", err)
-				//	continue
-				//}
 				hostList, err := icslib.GetHostSystemListByDC(ctx, vsi.Conn, datacenterObj.ID)
 				if err != nil {
 					klog.Errorf("HostSystemList failed: %v", err)
@@ -261,7 +245,6 @@ func (cm *ConnectionManager) getDIFromMultiICSorDC(ctx context.Context,
 			for res := range queueChannel {
 
 				klog.V(3).Infof("Checking zones for host: %s", res.host.HostName)
-				//FIXME TODO.WANGYONGCHAO
 				result, err := cm.LookupZoneByMoref(ctx, res.tenantRef, res.host.ID, zoneLabel, regionLabel)
 				if err != nil {
 					klog.Errorf("Failed to find zone: %s and region: %s for host %s", zoneLabel, regionLabel, res.host.HostName)
@@ -299,7 +282,6 @@ func (cm *ConnectionManager) getDIFromMultiICSorDC(ctx context.Context,
 	return nil, icslib.ErrNoZoneRegionFound
 }
 
-//FIXME TODO.WANGYONGCHAO
 func withTagsClient(ctx context.Context, connection *icsgo.ICSConnection, f func(c *rest.Client) error) error {
 	c, err := connection.GetClient()
 	if err != nil {
@@ -314,7 +296,6 @@ func withTagsClient(ctx context.Context, connection *icsgo.ICSConnection, f func
 }
 
 // LookupZoneByMoref searches for a zone using the provided managed object reference.
-//FIXME TODO.WANGYONGCHAO
 func (cm *ConnectionManager) LookupZoneByMoref(ctx context.Context, tenantRef string,
 	hostRef string, zoneLabel string, regionLabel string) (map[string]string, error) {
 

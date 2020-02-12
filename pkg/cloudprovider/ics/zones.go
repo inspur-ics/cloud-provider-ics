@@ -68,7 +68,6 @@ func (z *zones) GetZone(ctx context.Context) (cloudprovider.Zone, error) {
 	//}
 	//klog.V(4).Infof("Host owning VM is %s", oHost.Summary.Config.Name)
 
-	//FIXME TODO.WANGYONGCHAO
 	zoneResult, err := z.nodeManager.connectionManager.LookupZoneByMoref(
 		ctx, node.tenantRef, node.vm.HostID, z.zone, z.region)
 	if err != nil {
@@ -111,7 +110,6 @@ func (z *zones) GetZoneByNodeName(ctx context.Context, nodeName k8stypes.NodeNam
 	//}
 	//klog.V(4).Infof("Host owning VM is %s", oHost.Summary.Config.Name)
 
-	//FIXME TODO.WANGYONGCHAO
 	zoneResult, err := z.nodeManager.connectionManager.LookupZoneByMoref(
 		ctx, node.tenantRef, node.vm.HostID, z.zone, z.region)
 	if err != nil {
@@ -154,7 +152,6 @@ func (z *zones) GetZoneByProviderID(ctx context.Context, providerID string) (clo
 	//}
 	//klog.V(4).Infof("Host owning VM is %s", oHost.Summary.Config.Name)
 
-	//FIXME TODO.WANGYONGCHAO
 	zoneResult, err := z.nodeManager.connectionManager.LookupZoneByMoref(
 		ctx, node.tenantRef, node.vm.HostID, z.zone, z.region)
 	if err != nil {
