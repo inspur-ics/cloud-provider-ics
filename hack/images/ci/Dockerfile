@@ -3,7 +3,7 @@
 ################################################################################
 # The golang image is used to create the project's module and build caches
 # and is also the image on which this image is based.
-ARG GOLANG_IMAGE=golang:1.12.10
+ARG GOLANG_IMAGE=golang:1.13.15
 
 # The image from which the Terraform project used to turn up a K8s cluster is
 # copied, as well as several programs.

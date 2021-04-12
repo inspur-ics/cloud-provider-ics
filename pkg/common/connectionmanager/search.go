@@ -49,7 +49,7 @@ func (cm *ConnectionManager) WhichICSandDCByNodeID(ctx context.Context, nodeID s
 	}
 	type vmSearch struct {
 		tenantRef  string
-		ics         string
+		ics        string
 		datacenter *icslib.Datacenter
 	}
 
@@ -113,7 +113,7 @@ func (cm *ConnectionManager) WhichICSandDCByNodeID(ctx context.Context, nodeID s
 			}
 
 			if err != nil {
-				klog.Error("WhichICSandDCByNodeID error ics:", err)
+				klog.Errorf("WhichICSandDCByNodeID error ics:%+v  err:%v\n", instance.Cfg, err)
 				setGlobalErr(err)
 				continue
 			}
@@ -150,7 +150,7 @@ func (cm *ConnectionManager) WhichICSandDCByNodeID(ctx context.Context, nodeID s
 				klog.V(4).Infof("Finding node %s in ics=%s and datacenter=%s", myNodeID, instance.Cfg.ICenterIP, datacenterObj.Name)
 				queueChannel <- &vmSearch{
 					tenantRef:  instance.Cfg.TenantRef,
-					ics:         instance.Cfg.ICenterIP,
+					ics:        instance.Cfg.ICenterIP,
 					datacenter: datacenterObj,
 				}
 			}
@@ -174,10 +174,8 @@ func (cm *ConnectionManager) WhichICSandDCByNodeID(ctx context.Context, nodeID s
 				default:
 					vm, err = res.datacenter.GetVMByDNSName(ctx, myNodeID)
 				}
-				klog.V(5).Infof("ICS GetVMBy %s, vm=%+v and datacenter=%+v",
-					searchBy, vm.VirtualMachine, vm.Datacenter)
 
-				if err != nil {
+				if err != nil || vm == nil {
 					klog.Errorf("Error while looking for vm=%s(%s) in ics=%s and datacenter=%s: %v",
 						myNodeID, searchBy, res.ics, res.datacenter.Name, err)
 					if err != icslib.ErrNoVMFound {
@@ -188,6 +186,9 @@ func (cm *ConnectionManager) WhichICSandDCByNodeID(ctx context.Context, nodeID s
 					}
 					continue
 				}
+
+				klog.V(5).Infof("ICS GetVMBy %s, vm=%+v and datacenter=%+v",
+					searchBy, vm.VirtualMachine, vm.Datacenter)
 
 				hostName := vm.VirtualMachine.Name
 				if searchBy == FindVMByIP {
@@ -232,7 +233,7 @@ func (cm *ConnectionManager) WhichICSandDCByFCDId(ctx context.Context, fcdID str
 
 	type fcdSearch struct {
 		tenantRef  string
-		ics         string
+		ics        string
 		datacenter *icslib.Datacenter
 	}
 
@@ -321,7 +322,7 @@ func (cm *ConnectionManager) WhichICSandDCByFCDId(ctx context.Context, fcdID str
 				klog.V(4).Infof("Finding FCD %s in ics=%s and datacenter=%s", fcdID, instance.Cfg.ICenterIP, datacenterObj.Name)
 				queueChannel <- &fcdSearch{
 					tenantRef:  instance.Cfg.TenantRef,
-					ics:         instance.Cfg.ICenterIP,
+					ics:        instance.Cfg.ICenterIP,
 					datacenter: datacenterObj,
 				}
 			}

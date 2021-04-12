@@ -4,19 +4,19 @@ require (
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible // indirect
 	github.com/docker/distribution v2.7.1+incompatible // indirect
 	github.com/evanphx/json-patch v4.5.0+incompatible // indirect
-	github.com/go-resty/resty v1.12.0 // indirect
+	github.com/go-resty/resty/v2 v2.4.0 // indirect
 	github.com/golang/groupcache v0.0.0-20190702054246-869f871628b6 // indirect
 	github.com/golang/protobuf v1.3.2
 	github.com/google/btree v1.0.0 // indirect
 	github.com/imdario/mergo v0.3.7 // indirect
-	github.com/inspur-ics/ics-go-sdk v0.0.0-20200115094535-57d6a762646c
+	github.com/inspur-ics/ics-go-sdk v0.0.0-20210316135436-779b48d8af63
 	github.com/opencontainers/go-digest v1.0.0-rc1 // indirect
 	github.com/pkg/errors v0.8.0
 	github.com/prometheus/client_golang v0.9.3-0.20190127221311-3c4408c8b829
 	github.com/spf13/cobra v0.0.3
 	github.com/spf13/pflag v1.0.3
 	golang.org/x/lint v0.0.0-20190409202823-959b441ac422 // indirect
-	golang.org/x/net v0.0.0-20191209160850-c0dbc17a3553
+	golang.org/x/net v0.0.0-20201224014010-6772e930b67b
 	golang.org/x/time v0.0.0-20190308202827-9d24e82272b4 // indirect
 	golang.org/x/tools v0.0.0-20190827205025-b29f5f60c37a // indirect
 	google.golang.org/grpc v1.22.1
@@ -29,7 +29,7 @@ require (
 	k8s.io/client-go v0.0.0
 	k8s.io/cloud-provider v0.0.0
 	k8s.io/component-base v0.0.0
-	k8s.io/klog v0.3.2
+	k8s.io/klog v1.0.0
 	k8s.io/kube-openapi v0.0.0-20190401085232-94e1e7b7574c // indirect
 	k8s.io/kubernetes v1.15.0
 	k8s.io/sample-controller v0.0.0-20190731144349-6f8905ae4ee5
@@ -62,5 +62,3 @@ replace (
 )
 
 module github.com/inspur-ics/cloud-provider-ics
-
-replace github.com/go-resty/resty v1.12.0 => gopkg.in/resty.v1 v1.12.0

@@ -14,7 +14,7 @@
 ##                               BUILD ARGS                                   ##
 ################################################################################
 # This build arg allows the specification of a custom Golang image.
-ARG GOLANG_IMAGE=golang:1.12.10
+ARG GOLANG_IMAGE=golang:1.13.15
 
 # The distroless image on which the CPI manager image is built.
 #
@@ -43,7 +43,7 @@ COPY go.mod go.sum ./
 COPY pkg/    pkg/
 COPY cmd/    cmd/
 ENV CGO_ENABLED=0
-ENV GOPROXY ${GOPROXY:-https://proxy.golang.org}
+ENV GOPROXY ${GOPROXY:-https://goproxy.io}
 RUN go build -a -ldflags='-w -s -extldflags=static -X main.version=${VERSION}' -o ics-cloud-controller-manager ./cmd/ics-cloud-controller-manager
 
 ################################################################################
