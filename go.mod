@@ -9,7 +9,7 @@ require (
 	github.com/golang/protobuf v1.3.2
 	github.com/google/btree v1.0.0 // indirect
 	github.com/imdario/mergo v0.3.7 // indirect
-	github.com/inspur-ics/ics-go-sdk v0.0.0-20200115094535-57d6a762646c
+	github.com/inspur-ics/ics-go-sdk v0.0.0-20210308090634-2047912b9c56
 	github.com/opencontainers/go-digest v1.0.0-rc1 // indirect
 	github.com/pkg/errors v0.8.0
 	github.com/prometheus/client_golang v0.9.3-0.20190127221311-3c4408c8b829
@@ -29,7 +29,7 @@ require (
 	k8s.io/client-go v0.0.0
 	k8s.io/cloud-provider v0.0.0
 	k8s.io/component-base v0.0.0
-	k8s.io/klog v0.3.2
+	k8s.io/klog v1.0.0
 	k8s.io/kube-openapi v0.0.0-20190401085232-94e1e7b7574c // indirect
 	k8s.io/kubernetes v1.15.0
 	k8s.io/sample-controller v0.0.0-20190731144349-6f8905ae4ee5
