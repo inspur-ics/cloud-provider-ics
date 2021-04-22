@@ -20,7 +20,6 @@ import (
 	"context"
 	"strings"
 
-
 	icsgo "github.com/inspur-ics/ics-go-sdk"
 	"github.com/inspur-ics/ics-go-sdk/client/types"
 	dc "github.com/inspur-ics/ics-go-sdk/datacenter"
@@ -100,7 +99,7 @@ func (dc *Datacenter) GetVMByIP(ctx context.Context, ipAddy string) (*VirtualMac
 		klog.Errorf("Unable to find VM by IP. VM IP: %s", ipAddy)
 		return nil, ErrNoVMFound
 	}
-	virtualMachine := VirtualMachine{Common{dc.Con},vm, dc}
+	virtualMachine := VirtualMachine{Common{dc.Con}, vm, dc}
 	return &virtualMachine, nil
 }
 
@@ -117,7 +116,7 @@ func (dc *Datacenter) GetVMByDNSName(ctx context.Context, dnsName string) (*Virt
 		klog.Errorf("Unable to find VM by DNS Name. VM DNS Name: %s", dnsName)
 		return nil, ErrNoVMFound
 	}
-	virtualMachine := VirtualMachine{Common{dc.Con},vm, dc}
+	virtualMachine := VirtualMachine{Common{dc.Con}, vm, dc}
 	return &virtualMachine, nil
 }
 
@@ -134,7 +133,7 @@ func (dc *Datacenter) GetVMByUUID(ctx context.Context, vmUUID string) (*VirtualM
 		klog.Errorf("Unable to find VM by UUID. VM UUID: %s", vmUUID)
 		return nil, ErrNoVMFound
 	}
-	virtualMachine := VirtualMachine{Common{dc.Con},vm, dc}
+	virtualMachine := VirtualMachine{Common{dc.Con}, vm, dc}
 	return &virtualMachine, nil
 }
 
@@ -148,7 +147,7 @@ func (dc *Datacenter) GetVMByPath(ctx context.Context, vmPath string) (*VirtualM
 		klog.Errorf("Failed to find VM by Path. VM Path: %s, err: %+v", vmPath, err)
 		return nil, err
 	}
-	virtualMachine := VirtualMachine{Common{dc.Con},vm, dc}
+	virtualMachine := VirtualMachine{Common{dc.Con}, vm, dc}
 	return &virtualMachine, nil
 }
 
@@ -164,7 +163,7 @@ func (dc *Datacenter) GetAllDatastores(ctx context.Context) (map[string]*Datasto
 	dsURLInfoMap := make(map[string]*DatastoreInfo)
 	for _, dsMo := range datastores {
 		dsURLInfoMap[dsMo.MountPath] = &DatastoreInfo{
-			&Datastore{Common{Con:dc.Con},
+			&Datastore{Common{Con: dc.Con},
 				dsMo,
 				dc}}
 	}
@@ -180,18 +179,17 @@ func (dc *Datacenter) GetDatastoreByPath(ctx context.Context, vmDiskPath string)
 // GetDatastoreByName gets the Datastore object for the given datastore name
 func (dc *Datacenter) GetDatastoreByName(ctx context.Context, name string) (*DatastoreInfo, error) {
 	sts := st.NewStorageService(dc.Client())
-	datastore, err := sts.GetDatastoreByName(ctx, name)
+	datastore, err := sts.GetStorageInfoByName(ctx, name)
 	if err != nil {
 		klog.Errorf("Failed while searching for datastore: %s. err: %+v", name, err)
 		return nil, err
 	}
 
 	return &DatastoreInfo{
-		&Datastore{Common{Con:dc.Con},
+		&Datastore{Common{Con: dc.Con},
 			datastore,
 			dc}}, nil
 }
-
 
 // GetDatastoreClusterByName gets the DatastoreCluster object for the given name
 func (dc *Datacenter) GetDatastoreClusterByName(ctx context.Context, name string) (*StoragePodInfo, error) {

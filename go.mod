@@ -8,7 +8,7 @@ require (
 	github.com/golang/protobuf v1.3.2
 	github.com/google/btree v1.0.0 // indirect
 	github.com/imdario/mergo v0.3.7 // indirect
-	github.com/inspur-ics/ics-go-sdk v1.0.2
+	github.com/inspur-ics/ics-go-sdk v0.0.0-20210413062110-c6b3c1e58a05
 	github.com/kr/pretty v0.1.0 // indirect
 	github.com/opencontainers/go-digest v1.0.0-rc1 // indirect
 	github.com/pkg/errors v0.8.0
@@ -32,11 +32,13 @@ require (
 	k8s.io/kube-openapi v0.0.0-20190401085232-94e1e7b7574c // indirect
 	k8s.io/kubernetes v1.15.0
 	k8s.io/sample-controller v0.0.0-20190731144349-6f8905ae4ee5
+	github.com/go-resty/resty v1.12.0
 )
 
 replace (
 	// these replacements are pinned to e8462b5b5dc2 which is the sha associated with the 1.15.0 tag on k/k
 	// as you cannot pin them to v1.15.0 directly
+	github.com/go-resty/resty => gopkg.in/resty.v1 v1.12.0
 	k8s.io/api => k8s.io/kubernetes/staging/src/k8s.io/api v0.0.0-20190615005809-e8462b5b5dc2
 	k8s.io/apiextensions-apiserver => k8s.io/kubernetes/staging/src/k8s.io/apiextensions-apiserver v0.0.0-20190615005809-e8462b5b5dc2
 	k8s.io/apimachinery => k8s.io/kubernetes/staging/src/k8s.io/apimachinery v0.0.0-20190615005809-e8462b5b5dc2
